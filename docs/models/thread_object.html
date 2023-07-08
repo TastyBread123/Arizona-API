@@ -54,7 +54,7 @@ class Thread:
     def answer(self, html_message: str) -&gt; bool:
         &#34;&#34;&#34;Оставить ответ в теме&#34;&#34;&#34;
 
-        token = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/threads/{self.id}&#34;).content, &#39;lxml&#39;).find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+        token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
         self.API.session.post(MAIN_URL + f&#34;/threads/{self.id}/add-reply&#34;, {&#39;_xfToken&#39;: token, &#39;message_html&#39;: html_message})
         return True
 
@@ -62,7 +62,7 @@ class Thread:
     def watch(self, stop: bool, email_subscribe: bool = False) -&gt; bool:
         &#34;&#34;&#34;Начать отслеживать тему&#34;&#34;&#34;
 
-        token = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/threads/{self.id}/watch&#34;).content, &#39;lxml&#39;).find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+        token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
         self.API.session.post(MAIN_URL + f&#34;/threads/{self.id}/watch&#34;, {&#39;_xfToken&#39;: token, &#39;stop&#39;: int(stop), &#39;email_subscribe&#39;: int(email_subscribe)})
         return True
     
@@ -70,7 +70,7 @@ class Thread:
     def close(self) -&gt; bool:
         &#34;&#34;&#34;Закрыть тему (для модерации)&#34;&#34;&#34;
 
-        token = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/threads/{self.id}/quick-close&#34;).content, &#39;lxml&#39;).find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+        token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
         self.API.session.post(MAIN_URL + f&#34;/threads/{self.id}/quick-close&#34;, {&#39;_xfToken&#39;: token})
         return True
 
@@ -78,7 +78,7 @@ class Thread:
     def pin(self) -&gt; bool:
         &#34;&#34;&#34;Закрепить тему (для модерации)&#34;&#34;&#34;
 
-        token = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/threads/{self.id}/quick-stick&#34;).content, &#39;lxml&#39;).find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+        token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
         self.API.session.post(MAIN_URL + f&#34;/threads/{self.id}/quick-stick&#34;, {&#39;_xfToken&#39;: token})
         return True
     
@@ -86,14 +86,14 @@ class Thread:
     def edit(self, html_message: str):
         &#34;&#34;&#34;Отредактировать тему&#34;&#34;&#34;
 
-        token = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/posts/{self.thread_post_id}/edit&#34;).content, &#39;lxml&#39;).find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+        token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
         self.API.session.post(f&#34;{MAIN_URL}/posts/{self.thread_post_id}/edit&#34;, {&#34;message_html&#34;: html_message, &#34;message&#34;: html_message, &#34;_xfToken&#34;: token})
 
 
     def delete(self, reason: str, hard_delete: int = 0) -&gt; bool:
         &#34;&#34;&#34;Удалить тему&#34;&#34;&#34;
 
-        token = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/threads/{self.id}/delete&#34;).content, &#39;lxml&#39;).find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+        token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
         self.API.session.post(f&#34;{MAIN_URL}/threads/{self.id}/delete&#34;, {&#34;reason&#34;: reason, &#34;hard_delete&#34;: hard_delete, &#34;_xfToken&#34;: token})
         return True
 
@@ -101,7 +101,7 @@ class Thread:
     def make_reaction(self, reaction_id: int) -&gt; bool:
         &#34;&#34;&#34;Поставить реакцию на тему&#34;&#34;&#34;
 
-        token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/posts/{self.thread_post_id}/react?reaction_id={reaction_id}&#34;).content, &#39;lxml&#39;).find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+        token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
         self.API.session.post(f&#39;{MAIN_URL}/posts/{self.thread_post_id}/react?reaction_id={reaction_id}&#39;, {&#39;_xfToken&#39;: token})
         return True
     
@@ -155,7 +155,7 @@ class Thread:
     def answer(self, html_message: str) -&gt; bool:
         &#34;&#34;&#34;Оставить ответ в теме&#34;&#34;&#34;
 
-        token = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/threads/{self.id}&#34;).content, &#39;lxml&#39;).find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+        token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
         self.API.session.post(MAIN_URL + f&#34;/threads/{self.id}/add-reply&#34;, {&#39;_xfToken&#39;: token, &#39;message_html&#39;: html_message})
         return True
 
@@ -163,7 +163,7 @@ class Thread:
     def watch(self, stop: bool, email_subscribe: bool = False) -&gt; bool:
         &#34;&#34;&#34;Начать отслеживать тему&#34;&#34;&#34;
 
-        token = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/threads/{self.id}/watch&#34;).content, &#39;lxml&#39;).find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+        token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
         self.API.session.post(MAIN_URL + f&#34;/threads/{self.id}/watch&#34;, {&#39;_xfToken&#39;: token, &#39;stop&#39;: int(stop), &#39;email_subscribe&#39;: int(email_subscribe)})
         return True
     
@@ -171,7 +171,7 @@ class Thread:
     def close(self) -&gt; bool:
         &#34;&#34;&#34;Закрыть тему (для модерации)&#34;&#34;&#34;
 
-        token = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/threads/{self.id}/quick-close&#34;).content, &#39;lxml&#39;).find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+        token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
         self.API.session.post(MAIN_URL + f&#34;/threads/{self.id}/quick-close&#34;, {&#39;_xfToken&#39;: token})
         return True
 
@@ -179,7 +179,7 @@ class Thread:
     def pin(self) -&gt; bool:
         &#34;&#34;&#34;Закрепить тему (для модерации)&#34;&#34;&#34;
 
-        token = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/threads/{self.id}/quick-stick&#34;).content, &#39;lxml&#39;).find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+        token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
         self.API.session.post(MAIN_URL + f&#34;/threads/{self.id}/quick-stick&#34;, {&#39;_xfToken&#39;: token})
         return True
     
@@ -187,14 +187,14 @@ class Thread:
     def edit(self, html_message: str):
         &#34;&#34;&#34;Отредактировать тему&#34;&#34;&#34;
 
-        token = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/posts/{self.thread_post_id}/edit&#34;).content, &#39;lxml&#39;).find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+        token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
         self.API.session.post(f&#34;{MAIN_URL}/posts/{self.thread_post_id}/edit&#34;, {&#34;message_html&#34;: html_message, &#34;message&#34;: html_message, &#34;_xfToken&#34;: token})
 
 
     def delete(self, reason: str, hard_delete: int = 0) -&gt; bool:
         &#34;&#34;&#34;Удалить тему&#34;&#34;&#34;
 
-        token = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/threads/{self.id}/delete&#34;).content, &#39;lxml&#39;).find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+        token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
         self.API.session.post(f&#34;{MAIN_URL}/threads/{self.id}/delete&#34;, {&#34;reason&#34;: reason, &#34;hard_delete&#34;: hard_delete, &#34;_xfToken&#34;: token})
         return True
 
@@ -202,7 +202,7 @@ class Thread:
     def make_reaction(self, reaction_id: int) -&gt; bool:
         &#34;&#34;&#34;Поставить реакцию на тему&#34;&#34;&#34;
 
-        token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/posts/{self.thread_post_id}/react?reaction_id={reaction_id}&#34;).content, &#39;lxml&#39;).find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+        token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
         self.API.session.post(f&#39;{MAIN_URL}/posts/{self.thread_post_id}/react?reaction_id={reaction_id}&#39;, {&#39;_xfToken&#39;: token})
         return True
     
@@ -233,7 +233,7 @@ class Thread:
 <pre><code class="python">def answer(self, html_message: str) -&gt; bool:
     &#34;&#34;&#34;Оставить ответ в теме&#34;&#34;&#34;
 
-    token = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/threads/{self.id}&#34;).content, &#39;lxml&#39;).find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+    token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
     self.API.session.post(MAIN_URL + f&#34;/threads/{self.id}/add-reply&#34;, {&#39;_xfToken&#39;: token, &#39;message_html&#39;: html_message})
     return True</code></pre>
 </details>
@@ -250,7 +250,7 @@ class Thread:
 <pre><code class="python">def close(self) -&gt; bool:
     &#34;&#34;&#34;Закрыть тему (для модерации)&#34;&#34;&#34;
 
-    token = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/threads/{self.id}/quick-close&#34;).content, &#39;lxml&#39;).find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+    token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
     self.API.session.post(MAIN_URL + f&#34;/threads/{self.id}/quick-close&#34;, {&#39;_xfToken&#39;: token})
     return True</code></pre>
 </details>
@@ -267,7 +267,7 @@ class Thread:
 <pre><code class="python">def delete(self, reason: str, hard_delete: int = 0) -&gt; bool:
     &#34;&#34;&#34;Удалить тему&#34;&#34;&#34;
 
-    token = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/threads/{self.id}/delete&#34;).content, &#39;lxml&#39;).find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+    token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
     self.API.session.post(f&#34;{MAIN_URL}/threads/{self.id}/delete&#34;, {&#34;reason&#34;: reason, &#34;hard_delete&#34;: hard_delete, &#34;_xfToken&#34;: token})
     return True</code></pre>
 </details>
@@ -284,7 +284,7 @@ class Thread:
 <pre><code class="python">def edit(self, html_message: str):
     &#34;&#34;&#34;Отредактировать тему&#34;&#34;&#34;
 
-    token = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/posts/{self.thread_post_id}/edit&#34;).content, &#39;lxml&#39;).find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+    token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
     self.API.session.post(f&#34;{MAIN_URL}/posts/{self.thread_post_id}/edit&#34;, {&#34;message_html&#34;: html_message, &#34;message&#34;: html_message, &#34;_xfToken&#34;: token})</code></pre>
 </details>
 </dd>
@@ -322,7 +322,7 @@ class Thread:
 <pre><code class="python">def make_reaction(self, reaction_id: int) -&gt; bool:
     &#34;&#34;&#34;Поставить реакцию на тему&#34;&#34;&#34;
 
-    token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/posts/{self.thread_post_id}/react?reaction_id={reaction_id}&#34;).content, &#39;lxml&#39;).find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+    token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
     self.API.session.post(f&#39;{MAIN_URL}/posts/{self.thread_post_id}/react?reaction_id={reaction_id}&#39;, {&#39;_xfToken&#39;: token})
     return True</code></pre>
 </details>
@@ -339,7 +339,7 @@ class Thread:
 <pre><code class="python">def pin(self) -&gt; bool:
     &#34;&#34;&#34;Закрепить тему (для модерации)&#34;&#34;&#34;
 
-    token = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/threads/{self.id}/quick-stick&#34;).content, &#39;lxml&#39;).find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+    token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
     self.API.session.post(MAIN_URL + f&#34;/threads/{self.id}/quick-stick&#34;, {&#39;_xfToken&#39;: token})
     return True</code></pre>
 </details>
@@ -356,7 +356,7 @@ class Thread:
 <pre><code class="python">def watch(self, stop: bool, email_subscribe: bool = False) -&gt; bool:
     &#34;&#34;&#34;Начать отслеживать тему&#34;&#34;&#34;
 
-    token = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/threads/{self.id}/watch&#34;).content, &#39;lxml&#39;).find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+    token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
     self.API.session.post(MAIN_URL + f&#34;/threads/{self.id}/watch&#34;, {&#39;_xfToken&#39;: token, &#39;stop&#39;: int(stop), &#39;email_subscribe&#39;: int(email_subscribe)})
     return True</code></pre>
 </details>

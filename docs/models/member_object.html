@@ -28,6 +28,8 @@
 </summary>
 <pre><code class="python">from typing import TYPE_CHECKING
 from bs4 import BeautifulSoup
+from re import compile
+
 from arz_api.consts import MAIN_URL
 from arz_api.exceptions import ThisIsYouError
 
@@ -63,16 +65,26 @@ class Member:
 
         if self.id == self.API.current_member.id: raise ThisIsYouError(self.id)
 
-        token = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/members/{self.id}/follow&#34;).content, &#39;lxml&#39;).find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+        token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
         self.API.session.post(MAIN_URL + f&#34;/members/{self.id}/follow&#34;, {&#39;_xfToken&#39;: token})
         return True
     
     def add_message(self, message_html: str) -&gt; bool:
         &#34;&#34;&#34;Отправить сообщение на стенку пользователя&#34;&#34;&#34;
 
-        token = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/members/{self.id}/post&#34;).content, &#39;lxml&#39;).find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+        token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
         self.API.session.post(MAIN_URL + f&#34;/members/{self.id}/post&#34;, {&#39;_xfToken&#39;: token, &#39;message_html&#39;: message_html})
         return True
+    
+    def get_profile_messages(self, page: int = 1) -&gt; list:
+        &#34;&#34;&#34;Возвращает ID всех сообщений со стенки пользователя&#34;&#34;&#34;
+
+        soup = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/members/{self.id}/page-{page}&#34;).content, &#34;lxml&#34;)
+        result = []
+        for post in soup.find_all(&#39;article&#39;, {&#39;id&#39;: compile(&#39;js-profilePost-*&#39;)}):
+            result.append(int(post[&#39;id&#39;].strip(&#39;js-profilePost-&#39;)))
+
+        return result
 
 
 class CurrentMember(Member):
@@ -156,6 +168,7 @@ class CurrentMember(Member):
 <li><code><b><a title="arz_api.models.member_object.Member" href="#arz_api.models.member_object.Member">Member</a></b></code>:
 <ul class="hlist">
 <li><code><a title="arz_api.models.member_object.Member.add_message" href="#arz_api.models.member_object.Member.add_message">add_message</a></code></li>
+<li><code><a title="arz_api.models.member_object.Member.get_profile_messages" href="#arz_api.models.member_object.Member.get_profile_messages">get_profile_messages</a></code></li>
 </ul>
 </li>
 </ul>
@@ -198,16 +211,26 @@ class CurrentMember(Member):
 
         if self.id == self.API.current_member.id: raise ThisIsYouError(self.id)
 
-        token = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/members/{self.id}/follow&#34;).content, &#39;lxml&#39;).find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+        token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
         self.API.session.post(MAIN_URL + f&#34;/members/{self.id}/follow&#34;, {&#39;_xfToken&#39;: token})
         return True
     
     def add_message(self, message_html: str) -&gt; bool:
         &#34;&#34;&#34;Отправить сообщение на стенку пользователя&#34;&#34;&#34;
 
-        token = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/members/{self.id}/post&#34;).content, &#39;lxml&#39;).find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+        token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
         self.API.session.post(MAIN_URL + f&#34;/members/{self.id}/post&#34;, {&#39;_xfToken&#39;: token, &#39;message_html&#39;: message_html})
-        return True</code></pre>
+        return True
+    
+    def get_profile_messages(self, page: int = 1) -&gt; list:
+        &#34;&#34;&#34;Возвращает ID всех сообщений со стенки пользователя&#34;&#34;&#34;
+
+        soup = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/members/{self.id}/page-{page}&#34;).content, &#34;lxml&#34;)
+        result = []
+        for post in soup.find_all(&#39;article&#39;, {&#39;id&#39;: compile(&#39;js-profilePost-*&#39;)}):
+            result.append(int(post[&#39;id&#39;].strip(&#39;js-profilePost-&#39;)))
+
+        return result</code></pre>
 </details>
 <h3>Subclasses</h3>
 <ul class="hlist">
@@ -262,7 +285,7 @@ class CurrentMember(Member):
 <pre><code class="python">def add_message(self, message_html: str) -&gt; bool:
     &#34;&#34;&#34;Отправить сообщение на стенку пользователя&#34;&#34;&#34;
 
-    token = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/members/{self.id}/post&#34;).content, &#39;lxml&#39;).find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+    token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
     self.API.session.post(MAIN_URL + f&#34;/members/{self.id}/post&#34;, {&#39;_xfToken&#39;: token, &#39;message_html&#39;: message_html})
     return True</code></pre>
 </details>
@@ -281,9 +304,29 @@ class CurrentMember(Member):
 
     if self.id == self.API.current_member.id: raise ThisIsYouError(self.id)
 
-    token = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/members/{self.id}/follow&#34;).content, &#39;lxml&#39;).find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+    token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
     self.API.session.post(MAIN_URL + f&#34;/members/{self.id}/follow&#34;, {&#39;_xfToken&#39;: token})
     return True</code></pre>
+</details>
+</dd>
+<dt id="arz_api.models.member_object.Member.get_profile_messages"><code class="name flex">
+<span>def <span class="ident">get_profile_messages</span></span>(<span>self, page: int = 1) ‑> list</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Возвращает ID всех сообщений со стенки пользователя</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_profile_messages(self, page: int = 1) -&gt; list:
+    &#34;&#34;&#34;Возвращает ID всех сообщений со стенки пользователя&#34;&#34;&#34;
+
+    soup = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/members/{self.id}/page-{page}&#34;).content, &#34;lxml&#34;)
+    result = []
+    for post in soup.find_all(&#39;article&#39;, {&#39;id&#39;: compile(&#39;js-profilePost-*&#39;)}):
+        result.append(int(post[&#39;id&#39;].strip(&#39;js-profilePost-&#39;)))
+
+    return result</code></pre>
 </details>
 </dd>
 </dl>
@@ -320,11 +363,12 @@ class CurrentMember(Member):
 </li>
 <li>
 <h4><code><a title="arz_api.models.member_object.Member" href="#arz_api.models.member_object.Member">Member</a></code></h4>
-<ul class="two-column">
+<ul class="">
 <li><code><a title="arz_api.models.member_object.Member.API" href="#arz_api.models.member_object.Member.API">API</a></code></li>
 <li><code><a title="arz_api.models.member_object.Member.add_message" href="#arz_api.models.member_object.Member.add_message">add_message</a></code></li>
 <li><code><a title="arz_api.models.member_object.Member.avatar" href="#arz_api.models.member_object.Member.avatar">avatar</a></code></li>
 <li><code><a title="arz_api.models.member_object.Member.follow" href="#arz_api.models.member_object.Member.follow">follow</a></code></li>
+<li><code><a title="arz_api.models.member_object.Member.get_profile_messages" href="#arz_api.models.member_object.Member.get_profile_messages">get_profile_messages</a></code></li>
 <li><code><a title="arz_api.models.member_object.Member.id" href="#arz_api.models.member_object.Member.id">id</a></code></li>
 <li><code><a title="arz_api.models.member_object.Member.messages_count" href="#arz_api.models.member_object.Member.messages_count">messages_count</a></code></li>
 <li><code><a title="arz_api.models.member_object.Member.reactions_count" href="#arz_api.models.member_object.Member.reactions_count">reactions_count</a></code></li>

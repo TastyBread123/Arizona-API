@@ -28,8 +28,8 @@
 </summary>
 <pre><code class="python">from bs4 import BeautifulSoup
 from typing import TYPE_CHECKING
-from arz_api.consts import MAIN_URL
 
+from arz_api.consts import MAIN_URL
 if TYPE_CHECKING:
     from arz_api import ArizonaAPI
     from arz_api.models import Member, Thread
@@ -47,20 +47,20 @@ class Post:
     def make_reaction(self, reaction_id: int) -&gt; bool:
         &#34;&#34;&#34;Поставить реакцию на пост&#34;&#34;&#34;
 
-        token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/posts/{self.id}/react?reaction_id={reaction_id}&#34;).content, &#39;lxml&#39;).find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+        token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
         self.API.session.post(f&#39;{MAIN_URL}/posts/{self.id}/react?reaction_id={reaction_id}&#39;, {&#39;_xfToken&#39;: token})
         return True
     
     def edit(self, html_message: str):
         &#34;&#34;&#34;Отредактировать пост&#34;&#34;&#34;
 
-        token = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/posts/{self.id}/edit&#34;).content, &#39;lxml&#39;).find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+        token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
         self.API.session.post(f&#34;{MAIN_URL}/posts/{self.id}/edit&#34;, {&#34;message_html&#34;: html_message, &#34;message&#34;: html_message, &#34;_xfToken&#34;: token})
 
     def delete(self, reason: str, hard_delete: int = 0) -&gt; bool:
         &#34;&#34;&#34;Удалить пост&#34;&#34;&#34;
 
-        token = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/posts/{self.id}/delete&#34;).content, &#39;lxml&#39;).find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+        token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
         self.API.session.post(f&#34;{MAIN_URL}/posts/{self.id}/delete&#34;, {&#34;reason&#34;: reason, &#34;hard_delete&#34;: hard_delete, &#34;_xfToken&#34;: token})
         return True
 
@@ -77,28 +77,28 @@ class ProfilePost:
     def make_reaction(self, reaction_id: int) -&gt; bool:
         &#34;&#34;&#34;Поставить реакцию на сообщение профиля&#34;&#34;&#34;
 
-        token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/profile-posts/{self.id}/react?reaction_id={reaction_id}&#34;).content, &#39;lxml&#39;).find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+        token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
         self.API.session.post(f&#39;{MAIN_URL}/profile-posts/{self.id}/react?reaction_id={reaction_id}&#39;, {&#39;_xfToken&#39;: token})
         return True
 
     def comment(self, message_html: str) -&gt; bool:
         &#34;&#34;&#34;Поставить комментарий на сообщение профиля&#34;&#34;&#34;
 
-        token = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/profile-posts/{self.id}/add-comment&#34;).content, &#39;lxml&#39;).find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+        token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
         self.API.session.post(f&#34;{MAIN_URL}/profile-posts/{self.id}/add-comment&#34;, {&#34;message_html&#34;: message_html, &#34;_xfToken&#34;: token})
         return True
 
     def delete(self, reason: str, hard_delete: int = 0) -&gt; bool:
         &#34;&#34;&#34;Удалить сообщение профиля&#34;&#34;&#34;
 
-        token = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/profile-posts/{self.id}/delete&#34;).content, &#39;lxml&#39;).find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+        token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
         self.API.session.post(f&#34;{MAIN_URL}/profile-posts/{self.id}/delete&#34;, {&#34;reason&#34;: reason, &#34;hard_delete&#34;: hard_delete, &#34;_xfToken&#34;: token})
         return True
     
     def edit(self, html_message: str):
         &#34;&#34;&#34;Отредактировать пост&#34;&#34;&#34;
 
-        token = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/profile-posts/{self.id}/edit&#34;).content, &#39;lxml&#39;).find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+        token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
         self.API.session.post(f&#34;{MAIN_URL}/profile-posts/{self.id}/edit&#34;, {&#34;message_html&#34;: html_message, &#34;message&#34;: html_message, &#34;_xfToken&#34;: token})</code></pre>
 </details>
 </section>
@@ -133,20 +133,20 @@ class ProfilePost:
     def make_reaction(self, reaction_id: int) -&gt; bool:
         &#34;&#34;&#34;Поставить реакцию на пост&#34;&#34;&#34;
 
-        token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/posts/{self.id}/react?reaction_id={reaction_id}&#34;).content, &#39;lxml&#39;).find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+        token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
         self.API.session.post(f&#39;{MAIN_URL}/posts/{self.id}/react?reaction_id={reaction_id}&#39;, {&#39;_xfToken&#39;: token})
         return True
     
     def edit(self, html_message: str):
         &#34;&#34;&#34;Отредактировать пост&#34;&#34;&#34;
 
-        token = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/posts/{self.id}/edit&#34;).content, &#39;lxml&#39;).find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+        token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
         self.API.session.post(f&#34;{MAIN_URL}/posts/{self.id}/edit&#34;, {&#34;message_html&#34;: html_message, &#34;message&#34;: html_message, &#34;_xfToken&#34;: token})
 
     def delete(self, reason: str, hard_delete: int = 0) -&gt; bool:
         &#34;&#34;&#34;Удалить пост&#34;&#34;&#34;
 
-        token = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/posts/{self.id}/delete&#34;).content, &#39;lxml&#39;).find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+        token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
         self.API.session.post(f&#34;{MAIN_URL}/posts/{self.id}/delete&#34;, {&#34;reason&#34;: reason, &#34;hard_delete&#34;: hard_delete, &#34;_xfToken&#34;: token})
         return True</code></pre>
 </details>
@@ -164,7 +164,7 @@ class ProfilePost:
 <pre><code class="python">def delete(self, reason: str, hard_delete: int = 0) -&gt; bool:
     &#34;&#34;&#34;Удалить пост&#34;&#34;&#34;
 
-    token = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/posts/{self.id}/delete&#34;).content, &#39;lxml&#39;).find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+    token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
     self.API.session.post(f&#34;{MAIN_URL}/posts/{self.id}/delete&#34;, {&#34;reason&#34;: reason, &#34;hard_delete&#34;: hard_delete, &#34;_xfToken&#34;: token})
     return True</code></pre>
 </details>
@@ -181,7 +181,7 @@ class ProfilePost:
 <pre><code class="python">def edit(self, html_message: str):
     &#34;&#34;&#34;Отредактировать пост&#34;&#34;&#34;
 
-    token = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/posts/{self.id}/edit&#34;).content, &#39;lxml&#39;).find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+    token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
     self.API.session.post(f&#34;{MAIN_URL}/posts/{self.id}/edit&#34;, {&#34;message_html&#34;: html_message, &#34;message&#34;: html_message, &#34;_xfToken&#34;: token})</code></pre>
 </details>
 </dd>
@@ -197,7 +197,7 @@ class ProfilePost:
 <pre><code class="python">def make_reaction(self, reaction_id: int) -&gt; bool:
     &#34;&#34;&#34;Поставить реакцию на пост&#34;&#34;&#34;
 
-    token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/posts/{self.id}/react?reaction_id={reaction_id}&#34;).content, &#39;lxml&#39;).find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+    token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
     self.API.session.post(f&#39;{MAIN_URL}/posts/{self.id}/react?reaction_id={reaction_id}&#39;, {&#39;_xfToken&#39;: token})
     return True</code></pre>
 </details>
@@ -226,28 +226,28 @@ class ProfilePost:
     def make_reaction(self, reaction_id: int) -&gt; bool:
         &#34;&#34;&#34;Поставить реакцию на сообщение профиля&#34;&#34;&#34;
 
-        token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/profile-posts/{self.id}/react?reaction_id={reaction_id}&#34;).content, &#39;lxml&#39;).find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+        token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
         self.API.session.post(f&#39;{MAIN_URL}/profile-posts/{self.id}/react?reaction_id={reaction_id}&#39;, {&#39;_xfToken&#39;: token})
         return True
 
     def comment(self, message_html: str) -&gt; bool:
         &#34;&#34;&#34;Поставить комментарий на сообщение профиля&#34;&#34;&#34;
 
-        token = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/profile-posts/{self.id}/add-comment&#34;).content, &#39;lxml&#39;).find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+        token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
         self.API.session.post(f&#34;{MAIN_URL}/profile-posts/{self.id}/add-comment&#34;, {&#34;message_html&#34;: message_html, &#34;_xfToken&#34;: token})
         return True
 
     def delete(self, reason: str, hard_delete: int = 0) -&gt; bool:
         &#34;&#34;&#34;Удалить сообщение профиля&#34;&#34;&#34;
 
-        token = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/profile-posts/{self.id}/delete&#34;).content, &#39;lxml&#39;).find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+        token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
         self.API.session.post(f&#34;{MAIN_URL}/profile-posts/{self.id}/delete&#34;, {&#34;reason&#34;: reason, &#34;hard_delete&#34;: hard_delete, &#34;_xfToken&#34;: token})
         return True
     
     def edit(self, html_message: str):
         &#34;&#34;&#34;Отредактировать пост&#34;&#34;&#34;
 
-        token = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/profile-posts/{self.id}/edit&#34;).content, &#39;lxml&#39;).find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+        token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
         self.API.session.post(f&#34;{MAIN_URL}/profile-posts/{self.id}/edit&#34;, {&#34;message_html&#34;: html_message, &#34;message&#34;: html_message, &#34;_xfToken&#34;: token})</code></pre>
 </details>
 <h3>Methods</h3>
@@ -264,7 +264,7 @@ class ProfilePost:
 <pre><code class="python">def comment(self, message_html: str) -&gt; bool:
     &#34;&#34;&#34;Поставить комментарий на сообщение профиля&#34;&#34;&#34;
 
-    token = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/profile-posts/{self.id}/add-comment&#34;).content, &#39;lxml&#39;).find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+    token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
     self.API.session.post(f&#34;{MAIN_URL}/profile-posts/{self.id}/add-comment&#34;, {&#34;message_html&#34;: message_html, &#34;_xfToken&#34;: token})
     return True</code></pre>
 </details>
@@ -281,7 +281,7 @@ class ProfilePost:
 <pre><code class="python">def delete(self, reason: str, hard_delete: int = 0) -&gt; bool:
     &#34;&#34;&#34;Удалить сообщение профиля&#34;&#34;&#34;
 
-    token = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/profile-posts/{self.id}/delete&#34;).content, &#39;lxml&#39;).find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+    token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
     self.API.session.post(f&#34;{MAIN_URL}/profile-posts/{self.id}/delete&#34;, {&#34;reason&#34;: reason, &#34;hard_delete&#34;: hard_delete, &#34;_xfToken&#34;: token})
     return True</code></pre>
 </details>
@@ -298,7 +298,7 @@ class ProfilePost:
 <pre><code class="python">def edit(self, html_message: str):
     &#34;&#34;&#34;Отредактировать пост&#34;&#34;&#34;
 
-    token = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/profile-posts/{self.id}/edit&#34;).content, &#39;lxml&#39;).find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+    token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
     self.API.session.post(f&#34;{MAIN_URL}/profile-posts/{self.id}/edit&#34;, {&#34;message_html&#34;: html_message, &#34;message&#34;: html_message, &#34;_xfToken&#34;: token})</code></pre>
 </details>
 </dd>
@@ -314,7 +314,7 @@ class ProfilePost:
 <pre><code class="python">def make_reaction(self, reaction_id: int) -&gt; bool:
     &#34;&#34;&#34;Поставить реакцию на сообщение профиля&#34;&#34;&#34;
 
-    token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/profile-posts/{self.id}/react?reaction_id={reaction_id}&#34;).content, &#39;lxml&#39;).find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+    token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
     self.API.session.post(f&#39;{MAIN_URL}/profile-posts/{self.id}/react?reaction_id={reaction_id}&#39;, {&#39;_xfToken&#39;: token})
     return True</code></pre>
 </details>

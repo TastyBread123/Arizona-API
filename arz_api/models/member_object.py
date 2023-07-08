@@ -1,5 +1,7 @@
 from typing import TYPE_CHECKING
 from bs4 import BeautifulSoup
+from re import compile
+
 from arz_api.consts import MAIN_URL
 from arz_api.exceptions import ThisIsYouError
 
@@ -12,8 +14,8 @@ class Member:
 
     id: int
     username: str
-    user_title: str | None
-    avatar: str | None
+    user_title: str
+    avatar: str
     
     messages_count: int
     reactions_count: int
@@ -35,16 +37,26 @@ class Member:
 
         if self.id == self.API.current_member.id: raise ThisIsYouError(self.id)
 
-        token = BeautifulSoup(self.API.session.get(MAIN_URL + f"/members/{self.id}/follow").content, 'lxml').find('input', {'name': '_xfToken'})['value']
+        token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
         self.API.session.post(MAIN_URL + f"/members/{self.id}/follow", {'_xfToken': token})
         return True
     
     def add_message(self, message_html: str) -> bool:
         """Отправить сообщение на стенку пользователя"""
 
-        token = BeautifulSoup(self.API.session.get(MAIN_URL + f"/members/{self.id}/post").content, 'lxml').find('input', {'name': '_xfToken'})['value']
+        token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
         self.API.session.post(MAIN_URL + f"/members/{self.id}/post", {'_xfToken': token, 'message_html': message_html})
         return True
+    
+    def get_profile_messages(self, page: int = 1) -> list:
+        """Возвращает ID всех сообщений со стенки пользователя"""
+
+        soup = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/members/{self.id}/page-{page}").content, "lxml")
+        result = []
+        for post in soup.find_all('article', {'id': compile('js-profilePost-*')}):
+            result.append(int(post['id'].strip('js-profilePost-')))
+
+        return result
 
 
 class CurrentMember(Member):

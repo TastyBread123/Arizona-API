@@ -47,8 +47,7 @@ class Category:
         &#34;&#34;&#34;Создать тему в категории&#34;&#34;&#34;
         # TODO: сделать возврат ID новой темы
 
-        soup = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/forums/{self.id}/post-thread?inline-mode=1&#34;).content, &#39;lxml&#39;)
-        token = soup.find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+        token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
         self.API.session.post(MAIN_URL + f&#34;/forums/{self.id}/post-thread?inline-mode=1&#34;, {&#39;_xfToken&#39;: token, &#39;title&#39;: title, &#39;message_html&#39;: message_html, &#39;discussion_type&#39;: discussion_type, &#39;watch_thread&#39;: watch_thread})
         return True
 
@@ -56,17 +55,16 @@ class Category:
     def set_read(self) -&gt; bool:
         &#34;&#34;&#34;Отметить тему как прочитанную&#34;&#34;&#34;
 
-        soup = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/forums/{self.id}/mark-read&#34;).content, &#39;lxml&#39;)
-        token = soup.find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+        token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
         self.API.session.post(MAIN_URL + f&#34;/forums/{self.id}/mark-read&#34;, {&#39;_xfToken&#39;: token})
         return True
     
 
     def watch(self, notify: str, send_alert: bool = True, send_email: bool = False, stop: bool = False) -&gt; bool:
-        &#34;&#34;&#34;Настроить отслеживание темы
+        &#34;&#34;&#34;Настроить отслеживание темы\n
         :param notify - Возможные варианты: &#34;thread&#34;, &#34;message&#34;, &#34;&#34; &#34;&#34;&#34;
 
-        token = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/forums/{self.id}/watch&#34;).content, &#39;lxml&#39;).find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+        token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
 
         if stop: self.API.session.post(MAIN_URL + f&#34;/forums/{self.id}/watch&#34;, {&#39;_xfToken&#39;: token, &#39;stop&#39;: &#34;1&#34;})
         else: self.API.session.post(MAIN_URL + f&#34;/forums/{self.id}/watch&#34;, {&#39;_xfToken&#39;: token, &#39;send_alert&#39;: int(send_alert), &#39;send_email&#39;: int(send_email), &#39;notify&#39;: notify})
@@ -74,29 +72,28 @@ class Category:
         return True
 
     
-    def get_threads(self, page: int = 1) -&gt; dict:
-        &#34;&#34;&#34;Получить темы из данной категории&#34;&#34;&#34;
+    def get_threads(self, page: int = 1) -&gt; list:
+        &#34;&#34;&#34;Получить темы из раздела&#34;&#34;&#34;
 
-        r = self.API.session.get(MAIN_URL + f&#34;/forums/{self.id}/page-{page}&#34;)
-        soup = BeautifulSoup(r.content, &#34;lxml&#34;)
-        result = {}
+        soup = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/forums/{self.id}/page-{page}&#34;).content, &#34;lxml&#34;)
+        result = []
         for thread in soup.find_all(&#39;div&#39;, compile(&#39;structItem structItem--thread.*&#39;)):
             link = object
             for el in thread.find_all(&#39;div&#39;, &#34;structItem-title&#34;)[0].find_all(&#34;a&#34;): 
                 if &#34;threads&#34; in el[&#39;href&#39;]: link = el
 
-            result.update({int(findall(r&#39;\d+&#39;, link[&#39;href&#39;])[0]): link.text})
+            result.append(int(findall(r&#39;\d+&#39;, link[&#39;href&#39;])[0]))
         
         return result
 
 
-    def get_categories(self) -&gt; dict:
-        &#34;&#34;&#34;Получить дочерние категории из этой категории&#34;&#34;&#34;
+    def get_categories(self) -&gt; list:
+        &#34;&#34;&#34;Получить дочерние категории из этого раздела&#34;&#34;&#34;
 
-        r = self.API.session.get(MAIN_URL + f&#34;/forums/{self.id}&#34;)
-        soup = BeautifulSoup(r.content, &#34;lxml&#34;)
-        result = {}
-        for category in soup.find_all(&#39;div&#39;, compile(&#39;.*node--depth2 node--forum.*&#39;)): result.update({int(findall(r&#39;\d+&#39;, category.find(&#34;a&#34;)[&#39;href&#39;])[0]): category.find(&#34;a&#34;).text})
+        soup = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/forums/{self.id}&#34;).content, &#34;lxml&#34;)
+        result = []
+        for category in soup.find_all(&#39;div&#39;, compile(&#39;.*node--depth2 node--forum.*&#39;)): 
+            result.append(int(findall(r&#39;\d+&#39;, category.find(&#34;a&#34;)[&#39;href&#39;])[0]))
         
         return result</code></pre>
 </details>
@@ -132,8 +129,7 @@ class Category:
         &#34;&#34;&#34;Создать тему в категории&#34;&#34;&#34;
         # TODO: сделать возврат ID новой темы
 
-        soup = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/forums/{self.id}/post-thread?inline-mode=1&#34;).content, &#39;lxml&#39;)
-        token = soup.find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+        token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
         self.API.session.post(MAIN_URL + f&#34;/forums/{self.id}/post-thread?inline-mode=1&#34;, {&#39;_xfToken&#39;: token, &#39;title&#39;: title, &#39;message_html&#39;: message_html, &#39;discussion_type&#39;: discussion_type, &#39;watch_thread&#39;: watch_thread})
         return True
 
@@ -141,17 +137,16 @@ class Category:
     def set_read(self) -&gt; bool:
         &#34;&#34;&#34;Отметить тему как прочитанную&#34;&#34;&#34;
 
-        soup = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/forums/{self.id}/mark-read&#34;).content, &#39;lxml&#39;)
-        token = soup.find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+        token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
         self.API.session.post(MAIN_URL + f&#34;/forums/{self.id}/mark-read&#34;, {&#39;_xfToken&#39;: token})
         return True
     
 
     def watch(self, notify: str, send_alert: bool = True, send_email: bool = False, stop: bool = False) -&gt; bool:
-        &#34;&#34;&#34;Настроить отслеживание темы
+        &#34;&#34;&#34;Настроить отслеживание темы\n
         :param notify - Возможные варианты: &#34;thread&#34;, &#34;message&#34;, &#34;&#34; &#34;&#34;&#34;
 
-        token = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/forums/{self.id}/watch&#34;).content, &#39;lxml&#39;).find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+        token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
 
         if stop: self.API.session.post(MAIN_URL + f&#34;/forums/{self.id}/watch&#34;, {&#39;_xfToken&#39;: token, &#39;stop&#39;: &#34;1&#34;})
         else: self.API.session.post(MAIN_URL + f&#34;/forums/{self.id}/watch&#34;, {&#39;_xfToken&#39;: token, &#39;send_alert&#39;: int(send_alert), &#39;send_email&#39;: int(send_email), &#39;notify&#39;: notify})
@@ -159,29 +154,28 @@ class Category:
         return True
 
     
-    def get_threads(self, page: int = 1) -&gt; dict:
-        &#34;&#34;&#34;Получить темы из данной категории&#34;&#34;&#34;
+    def get_threads(self, page: int = 1) -&gt; list:
+        &#34;&#34;&#34;Получить темы из раздела&#34;&#34;&#34;
 
-        r = self.API.session.get(MAIN_URL + f&#34;/forums/{self.id}/page-{page}&#34;)
-        soup = BeautifulSoup(r.content, &#34;lxml&#34;)
-        result = {}
+        soup = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/forums/{self.id}/page-{page}&#34;).content, &#34;lxml&#34;)
+        result = []
         for thread in soup.find_all(&#39;div&#39;, compile(&#39;structItem structItem--thread.*&#39;)):
             link = object
             for el in thread.find_all(&#39;div&#39;, &#34;structItem-title&#34;)[0].find_all(&#34;a&#34;): 
                 if &#34;threads&#34; in el[&#39;href&#39;]: link = el
 
-            result.update({int(findall(r&#39;\d+&#39;, link[&#39;href&#39;])[0]): link.text})
+            result.append(int(findall(r&#39;\d+&#39;, link[&#39;href&#39;])[0]))
         
         return result
 
 
-    def get_categories(self) -&gt; dict:
-        &#34;&#34;&#34;Получить дочерние категории из этой категории&#34;&#34;&#34;
+    def get_categories(self) -&gt; list:
+        &#34;&#34;&#34;Получить дочерние категории из этого раздела&#34;&#34;&#34;
 
-        r = self.API.session.get(MAIN_URL + f&#34;/forums/{self.id}&#34;)
-        soup = BeautifulSoup(r.content, &#34;lxml&#34;)
-        result = {}
-        for category in soup.find_all(&#39;div&#39;, compile(&#39;.*node--depth2 node--forum.*&#39;)): result.update({int(findall(r&#39;\d+&#39;, category.find(&#34;a&#34;)[&#39;href&#39;])[0]): category.find(&#34;a&#34;).text})
+        soup = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/forums/{self.id}&#34;).content, &#34;lxml&#34;)
+        result = []
+        for category in soup.find_all(&#39;div&#39;, compile(&#39;.*node--depth2 node--forum.*&#39;)): 
+            result.append(int(findall(r&#39;\d+&#39;, category.find(&#34;a&#34;)[&#39;href&#39;])[0]))
         
         return result</code></pre>
 </details>
@@ -200,53 +194,51 @@ class Category:
     &#34;&#34;&#34;Создать тему в категории&#34;&#34;&#34;
     # TODO: сделать возврат ID новой темы
 
-    soup = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/forums/{self.id}/post-thread?inline-mode=1&#34;).content, &#39;lxml&#39;)
-    token = soup.find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+    token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
     self.API.session.post(MAIN_URL + f&#34;/forums/{self.id}/post-thread?inline-mode=1&#34;, {&#39;_xfToken&#39;: token, &#39;title&#39;: title, &#39;message_html&#39;: message_html, &#39;discussion_type&#39;: discussion_type, &#39;watch_thread&#39;: watch_thread})
     return True</code></pre>
 </details>
 </dd>
 <dt id="arz_api.models.category_object.Category.get_categories"><code class="name flex">
-<span>def <span class="ident">get_categories</span></span>(<span>self) ‑> dict</span>
+<span>def <span class="ident">get_categories</span></span>(<span>self) ‑> list</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Получить дочерние категории из этой категории</p></div>
+<div class="desc"><p>Получить дочерние категории из этого раздела</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_categories(self) -&gt; dict:
-    &#34;&#34;&#34;Получить дочерние категории из этой категории&#34;&#34;&#34;
+<pre><code class="python">def get_categories(self) -&gt; list:
+    &#34;&#34;&#34;Получить дочерние категории из этого раздела&#34;&#34;&#34;
 
-    r = self.API.session.get(MAIN_URL + f&#34;/forums/{self.id}&#34;)
-    soup = BeautifulSoup(r.content, &#34;lxml&#34;)
-    result = {}
-    for category in soup.find_all(&#39;div&#39;, compile(&#39;.*node--depth2 node--forum.*&#39;)): result.update({int(findall(r&#39;\d+&#39;, category.find(&#34;a&#34;)[&#39;href&#39;])[0]): category.find(&#34;a&#34;).text})
+    soup = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/forums/{self.id}&#34;).content, &#34;lxml&#34;)
+    result = []
+    for category in soup.find_all(&#39;div&#39;, compile(&#39;.*node--depth2 node--forum.*&#39;)): 
+        result.append(int(findall(r&#39;\d+&#39;, category.find(&#34;a&#34;)[&#39;href&#39;])[0]))
     
     return result</code></pre>
 </details>
 </dd>
 <dt id="arz_api.models.category_object.Category.get_threads"><code class="name flex">
-<span>def <span class="ident">get_threads</span></span>(<span>self, page: int = 1) ‑> dict</span>
+<span>def <span class="ident">get_threads</span></span>(<span>self, page: int = 1) ‑> list</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Получить темы из данной категории</p></div>
+<div class="desc"><p>Получить темы из раздела</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_threads(self, page: int = 1) -&gt; dict:
-    &#34;&#34;&#34;Получить темы из данной категории&#34;&#34;&#34;
+<pre><code class="python">def get_threads(self, page: int = 1) -&gt; list:
+    &#34;&#34;&#34;Получить темы из раздела&#34;&#34;&#34;
 
-    r = self.API.session.get(MAIN_URL + f&#34;/forums/{self.id}/page-{page}&#34;)
-    soup = BeautifulSoup(r.content, &#34;lxml&#34;)
-    result = {}
+    soup = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/forums/{self.id}/page-{page}&#34;).content, &#34;lxml&#34;)
+    result = []
     for thread in soup.find_all(&#39;div&#39;, compile(&#39;structItem structItem--thread.*&#39;)):
         link = object
         for el in thread.find_all(&#39;div&#39;, &#34;structItem-title&#34;)[0].find_all(&#34;a&#34;): 
             if &#34;threads&#34; in el[&#39;href&#39;]: link = el
 
-        result.update({int(findall(r&#39;\d+&#39;, link[&#39;href&#39;])[0]): link.text})
+        result.append(int(findall(r&#39;\d+&#39;, link[&#39;href&#39;])[0]))
     
     return result</code></pre>
 </details>
@@ -263,8 +255,7 @@ class Category:
 <pre><code class="python">def set_read(self) -&gt; bool:
     &#34;&#34;&#34;Отметить тему как прочитанную&#34;&#34;&#34;
 
-    soup = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/forums/{self.id}/mark-read&#34;).content, &#39;lxml&#39;)
-    token = soup.find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+    token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
     self.API.session.post(MAIN_URL + f&#34;/forums/{self.id}/mark-read&#34;, {&#39;_xfToken&#39;: token})
     return True</code></pre>
 </details>
@@ -273,17 +264,17 @@ class Category:
 <span>def <span class="ident">watch</span></span>(<span>self, notify: str, send_alert: bool = True, send_email: bool = False, stop: bool = False) ‑> bool</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Настроить отслеживание темы
-:param notify - Возможные варианты: "thread", "message", ""</p></div>
+<div class="desc"><p>Настроить отслеживание темы</p>
+<p>:param notify - Возможные варианты: "thread", "message", ""</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def watch(self, notify: str, send_alert: bool = True, send_email: bool = False, stop: bool = False) -&gt; bool:
-    &#34;&#34;&#34;Настроить отслеживание темы
+    &#34;&#34;&#34;Настроить отслеживание темы\n
     :param notify - Возможные варианты: &#34;thread&#34;, &#34;message&#34;, &#34;&#34; &#34;&#34;&#34;
 
-    token = BeautifulSoup(self.API.session.get(MAIN_URL + f&#34;/forums/{self.id}/watch&#34;).content, &#39;lxml&#39;).find(&#39;input&#39;, {&#39;name&#39;: &#39;_xfToken&#39;})[&#39;value&#39;]
+    token = BeautifulSoup(self.API.session.get(f&#34;{MAIN_URL}/help/terms/&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-csrf&#39;]
 
     if stop: self.API.session.post(MAIN_URL + f&#34;/forums/{self.id}/watch&#34;, {&#39;_xfToken&#39;: token, &#39;stop&#39;: &#34;1&#34;})
     else: self.API.session.post(MAIN_URL + f&#34;/forums/{self.id}/watch&#34;, {&#39;_xfToken&#39;: token, &#39;send_alert&#39;: int(send_alert), &#39;send_email&#39;: int(send_email), &#39;notify&#39;: notify})

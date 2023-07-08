@@ -30,6 +30,8 @@ class ArizonaAPI:
 
     
     def logout(self) -> None:
+        """Закрыть сессию"""
+
         self.session.close()
 
     
@@ -44,7 +46,9 @@ class ArizonaAPI:
         return CurrentMember(self, user_id, member_info.username, member_info.user_title, member_info.avatar, member_info.messages_count, member_info.reactions_count, member_info.trophies_count)
 
     
-    def get_category(self, category_id: int) -> Category | None:
+    def get_category(self, category_id: int) -> Category:
+        """Найти раздел по ID"""
+
         content = BeautifulSoup(self.session.get(f"{MAIN_URL}/forums/{category_id}").content, 'lxml')
         title = content.find('h1', {'class': 'p-title-value'}).text
 
@@ -60,7 +64,9 @@ class ArizonaAPI:
         return Category(self, category_id, title, pages_count)
     
     
-    def get_member(self, user_id: int) -> Member | None:
+    def get_member(self, user_id: int) -> Member:
+        """Найти пользователя по ID"""
+
         content = BeautifulSoup(self.session.get(f"{MAIN_URL}/members/{user_id}").content, 'lxml')
         username = content.find('span', {'class': 'username'}).text
         
@@ -76,17 +82,23 @@ class ArizonaAPI:
         return Member(self, user_id, username, user_title, avatar, messages_count, reactions_count, trophies_count)
 
     
-    def get_thread(self, thread_id: int | str) -> Thread | None:
+    def get_thread(self, thread_id: int) -> Thread:
+        """Найти тему по ID"""
+
         content = BeautifulSoup(self.session.get(f"{MAIN_URL}/threads/{thread_id}/page-1").content, 'lxml')
+        
         try: creator = self.get_member(int(content.find('a', {'class': 'username'})['data-user-id']))
         except: creator = Member(self, int(content.find('a', {'class': 'username'})['data-user-id']), content.find('a', {'class': 'username'}).text, None, None, None, None, None)
+        
         category = self.get_category(int(content.find('html')['data-container-key'].strip('node-')))
         create_date = int(content.find('time')['data-time'])
         title = content.find('h1', {'class': 'p-title-value'}).text
         thread_content_html = content.find('div', {'class': 'bbWrapper'})
         thread_content = thread_content_html.text
+
         try: pages_count = int(content.find_all('li', {'class': 'pageNav-page'})[-1].text)
         except IndexError: pages_count = 1
+
         is_closed = False
         if content.find('dl', {'class': 'blockStatus'}): is_closed = True
         thread_post_id = content.find('article', {'id': compile('js-post-*')})['id'].strip('js-post-')
@@ -94,9 +106,12 @@ class ArizonaAPI:
         return Thread(self, thread_id, creator, category, create_date, title, thread_content, thread_content_html, pages_count, thread_post_id, is_closed)
     
 
-    def get_post(self, post_id: int) -> Post | None:
+    def get_post(self, post_id: int) -> Post:
+        """Найти пост по ID"""
+
         content = BeautifulSoup(self.session.get(f"{MAIN_URL}/posts/{post_id}").content, 'lxml')
         post = content.find('article', {'id': f'js-post-{post_id}'})
+        
         try: creator = self.get_member(int(post.find('a', {'data-xf-init': 'member-tooltip'})['data-user-id']))
         except:
             user_info = post.find('a', {'data-xf-init': 'member-tooltip'})
@@ -105,21 +120,26 @@ class ArizonaAPI:
         thread = self.get_thread(int(content.find('html')['data-content-key'].strip('thread-')))
         create_date = int(post.find('time', {'class': 'u-dt'})['data-time'])
         bb_content = post.find('div', {'class': 'bbWrapper'})
-        
-        return Post(self, post_id, creator, thread, create_date, bb_content)
+        text_content = bb_content.text
+        return Post(self, post_id, creator, thread, create_date, bb_content, text_content)
 
 
-    def get_profile_post(self, post_id) -> ProfilePost | None:
+    def get_profile_post(self, post_id) -> ProfilePost:
+        """Найти сообщение профиля по ID"""
+
         content = BeautifulSoup(self.session.get(f"{MAIN_URL}/profile-posts/{post_id}").content, 'lxml')
         post = content.find('article', {'id': f'js-profilePost-{post_id}'})
         creator = self.get_member(int(post.find('a', {'class': 'username'})['data-user-id']))
-        bb_content = post.find('div', {'class': 'bbWrapper'})
-        create_date = int(post.find('time')['data-time'])
         profile = self.get_member(int(content.find('span', {'class': 'username'})['data-user-id']))
+        create_date = int(post.find('time')['data-time'])
+        bb_content = post.find('div', {'class': 'bbWrapper'})
+        text_content = bb_content.text
 
-        return ProfilePost(self, post_id, creator, profile, create_date, bb_content)
+        return ProfilePost(self, post_id, creator, profile, create_date, bb_content, text_content)
 
     def get_forum_statistic(self) -> Statistic:
+        """Получить статистику форума"""
+
         content = BeautifulSoup(self.session.get(MAIN_URL).content, 'lxml')
         threads_count = int(content.find('dl', {'class': 'pairs pairs--justified count--threads'}).find('dd').text.replace(',', ''))
         posts_count = int(content.find('dl', {'class': 'pairs pairs--justified count--messages'}).find('dd').text.replace(',', ''))
