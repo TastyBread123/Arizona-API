@@ -1,0 +1,510 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>arz_api.api API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>arz_api.api</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">from requests import session
+from bs4 import BeautifulSoup
+from re import compile
+
+from arz_api.bypass_antibot import bypass
+from arz_api.consts import MAIN_URL
+from arz_api.models.category_object import Category
+from arz_api.models.member_object import Member, CurrentMember
+from arz_api.models.thread_object import Thread
+from arz_api.models.other import Statistic
+from arz_api.models.post_object import Post, ProfilePost
+from arz_api.exceptions import IncorrectLoginData
+
+
+
+class ArizonaAPI:
+    def __init__(self, user_agent: str, cookie: dict, do_bypass: bool = True) -&gt; None:
+        self.user_agent = user_agent
+        self.cookie = cookie
+        self.session = session()
+        self.session.headers = {&#34;user-agent&#34;: user_agent}
+        self.session.cookies.update(cookie)
+
+        if do_bypass:
+            name, code = str(bypass(user_agent)).split(&#39;=&#39;)
+            self.session.cookies.set(name, code)
+
+        if BeautifulSoup(self.session.get(f&#34;{MAIN_URL}&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-logged-in&#39;] == &#34;false&#34;:
+            raise IncorrectLoginData
+
+    
+    def logout(self) -&gt; None:
+        self.session.close()
+
+    
+    @property
+    def current_member(self) -&gt; CurrentMember:
+        &#34;&#34;&#34;Объект текущего пользователя&#34;&#34;&#34;
+
+        content = BeautifulSoup(self.session.get(f&#34;{MAIN_URL}/account&#34;).content, &#39;lxml&#39;)
+        user_id = int(content.find(&#39;span&#39;, {&#39;class&#39;: &#39;avatar avatar--xxs&#39;})[&#39;data-user-id&#39;])
+        member_info = self.get_member(user_id)
+
+        return CurrentMember(self, user_id, member_info.username, member_info.user_title, member_info.avatar, member_info.messages_count, member_info.reactions_count, member_info.trophies_count)
+
+    
+    def get_category(self, category_id: int) -&gt; Category:
+        content = BeautifulSoup(self.session.get(f&#34;{MAIN_URL}/forums/{category_id}&#34;).content, &#39;lxml&#39;)
+        title = content.find(&#39;h1&#39;, {&#39;class&#39;: &#39;p-title-value&#39;}).text
+
+        try: pages_count = int(content.find_all(&#39;li&#39;, {&#39;class&#39;: &#39;pageNav-page&#39;})[-1].text)
+        except IndexError: pages_count = 1
+        try: parent_category_id = int(content.find(&#39;html&#39;)[&#39;data-container-key&#39;].strip(&#39;node-&#39;))
+        except: parent_category_id = None
+
+        temp_url = &#39;&#39;
+        if parent_category_id is not None: temp_url = f&#39;forums/{parent_category_id}/&#39;
+        content = BeautifulSoup(self.session.get(f&#34;{MAIN_URL}/{temp_url}&#34;).content, &#39;lxml&#39;)
+        
+        return Category(self, category_id, title, pages_count)
+    
+    
+    def get_member(self, user_id: int) -&gt; Member:
+        content = BeautifulSoup(self.session.get(f&#34;{MAIN_URL}/members/{user_id}&#34;).content, &#39;lxml&#39;)
+        username = content.find(&#39;span&#39;, {&#39;class&#39;: &#39;username&#39;}).text
+        
+        try: user_title = content.find(&#39;span&#39;, {&#39;class&#39;: &#39;userTitle&#39;}).text
+        except AttributeError: user_title = None
+        try: avatar = content.find(&#39;a&#39;, {&#39;class&#39;: &#39;avatar avatar--l&#39;})[&#39;href&#39;]
+        except TypeError: avatar = None
+
+        messages_count = int(content.find(&#39;a&#39;, {&#39;href&#39;: f&#39;/search/member?user_id={user_id}&#39;}).text.strip().replace(&#39;,&#39;, &#39;&#39;))
+        reactions_count = int(content.find(&#39;dl&#39;, {&#39;class&#39;: &#39;pairs pairs--rows pairs--rows--centered&#39;}).find(&#39;dd&#39;).text.strip().replace(&#39;,&#39;, &#39;&#39;))
+        trophies_count = int(content.find(&#39;a&#39;, {&#39;href&#39;: f&#39;/members/{user_id}/trophies&#39;}).text.strip().replace(&#39;,&#39;, &#39;&#39;))
+        
+        return Member(self, user_id, username, user_title, avatar, messages_count, reactions_count, trophies_count)
+
+    
+    def get_thread(self, thread_id: int) -&gt; Thread:
+        content = BeautifulSoup(self.session.get(f&#34;{MAIN_URL}/threads/{thread_id}/page-1&#34;).content, &#39;lxml&#39;)
+        try: creator = self.get_member(int(content.find(&#39;a&#39;, {&#39;class&#39;: &#39;username&#39;})[&#39;data-user-id&#39;]))
+        except: creator = Member(self, int(content.find(&#39;a&#39;, {&#39;class&#39;: &#39;username&#39;})[&#39;data-user-id&#39;]), content.find(&#39;a&#39;, {&#39;class&#39;: &#39;username&#39;}).text, None, None, None, None, None)
+        category = self.get_category(int(content.find(&#39;html&#39;)[&#39;data-container-key&#39;].strip(&#39;node-&#39;)))
+        create_date = int(content.find(&#39;time&#39;)[&#39;data-time&#39;])
+        title = content.find(&#39;h1&#39;, {&#39;class&#39;: &#39;p-title-value&#39;}).text
+        thread_content_html = content.find(&#39;div&#39;, {&#39;class&#39;: &#39;bbWrapper&#39;})
+        thread_content = thread_content_html.text
+        try: pages_count = int(content.find_all(&#39;li&#39;, {&#39;class&#39;: &#39;pageNav-page&#39;})[-1].text)
+        except IndexError: pages_count = 1
+        is_closed = False
+        if content.find(&#39;dl&#39;, {&#39;class&#39;: &#39;blockStatus&#39;}): is_closed = True
+        thread_post_id = content.find(&#39;article&#39;, {&#39;id&#39;: compile(&#39;js-post-*&#39;)})[&#39;id&#39;].strip(&#39;js-post-&#39;)
+
+        return Thread(self, thread_id, creator, category, create_date, title, thread_content, thread_content_html, pages_count, thread_post_id, is_closed)
+    
+
+    def get_post(self, post_id: int) -&gt; Post:
+        content = BeautifulSoup(self.session.get(f&#34;{MAIN_URL}/posts/{post_id}&#34;).content, &#39;lxml&#39;)
+        post = content.find(&#39;article&#39;, {&#39;id&#39;: f&#39;js-post-{post_id}&#39;})
+        try: creator = self.get_member(int(post.find(&#39;a&#39;, {&#39;data-xf-init&#39;: &#39;member-tooltip&#39;})[&#39;data-user-id&#39;]))
+        except:
+            user_info = post.find(&#39;a&#39;, {&#39;data-xf-init&#39;: &#39;member-tooltip&#39;})
+            creator = Member(self, int(user_info[&#39;data-user-id&#39;]), user_info.text, None, None, None, None, None)
+
+        thread = self.get_thread(int(content.find(&#39;html&#39;)[&#39;data-content-key&#39;].strip(&#39;thread-&#39;)))
+        create_date = int(post.find(&#39;time&#39;, {&#39;class&#39;: &#39;u-dt&#39;})[&#39;data-time&#39;])
+        bb_content = post.find(&#39;div&#39;, {&#39;class&#39;: &#39;bbWrapper&#39;})
+        
+        return Post(self, post_id, creator, thread, create_date, bb_content)
+
+
+    def get_profile_post(self, post_id) -&gt; ProfilePost:
+        content = BeautifulSoup(self.session.get(f&#34;{MAIN_URL}/profile-posts/{post_id}&#34;).content, &#39;lxml&#39;)
+        post = content.find(&#39;article&#39;, {&#39;id&#39;: f&#39;js-profilePost-{post_id}&#39;})
+        creator = self.get_member(int(post.find(&#39;a&#39;, {&#39;class&#39;: &#39;username&#39;})[&#39;data-user-id&#39;]))
+        bb_content = post.find(&#39;div&#39;, {&#39;class&#39;: &#39;bbWrapper&#39;})
+        create_date = int(post.find(&#39;time&#39;)[&#39;data-time&#39;])
+        profile = self.get_member(int(content.find(&#39;span&#39;, {&#39;class&#39;: &#39;username&#39;})[&#39;data-user-id&#39;]))
+
+        return ProfilePost(self, post_id, creator, profile, create_date, bb_content)
+
+    def get_forum_statistic(self) -&gt; Statistic:
+        content = BeautifulSoup(self.session.get(MAIN_URL).content, &#39;lxml&#39;)
+        threads_count = int(content.find(&#39;dl&#39;, {&#39;class&#39;: &#39;pairs pairs--justified count--threads&#39;}).find(&#39;dd&#39;).text.replace(&#39;,&#39;, &#39;&#39;))
+        posts_count = int(content.find(&#39;dl&#39;, {&#39;class&#39;: &#39;pairs pairs--justified count--messages&#39;}).find(&#39;dd&#39;).text.replace(&#39;,&#39;, &#39;&#39;))
+        users_count = int(content.find(&#39;dl&#39;, {&#39;class&#39;: &#39;pairs pairs--justified count--users&#39;}).find(&#39;dd&#39;).text.replace(&#39;,&#39;, &#39;&#39;))
+        last_register_member = self.get_member(int(content.find(&#39;dl&#39;, {&#39;class&#39;: &#39;pairs pairs--justified&#39;}).find(&#39;a&#39;)[&#39;data-user-id&#39;]))
+
+        return Statistic(self, threads_count, posts_count, users_count, last_register_member)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="arz_api.api.ArizonaAPI"><code class="flex name class">
+<span>class <span class="ident">ArizonaAPI</span></span>
+<span>(</span><span>user_agent: str, cookie: dict, do_bypass: bool = True)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ArizonaAPI:
+    def __init__(self, user_agent: str, cookie: dict, do_bypass: bool = True) -&gt; None:
+        self.user_agent = user_agent
+        self.cookie = cookie
+        self.session = session()
+        self.session.headers = {&#34;user-agent&#34;: user_agent}
+        self.session.cookies.update(cookie)
+
+        if do_bypass:
+            name, code = str(bypass(user_agent)).split(&#39;=&#39;)
+            self.session.cookies.set(name, code)
+
+        if BeautifulSoup(self.session.get(f&#34;{MAIN_URL}&#34;).content, &#39;lxml&#39;).find(&#39;html&#39;)[&#39;data-logged-in&#39;] == &#34;false&#34;:
+            raise IncorrectLoginData
+
+    
+    def logout(self) -&gt; None:
+        self.session.close()
+
+    
+    @property
+    def current_member(self) -&gt; CurrentMember:
+        &#34;&#34;&#34;Объект текущего пользователя&#34;&#34;&#34;
+
+        content = BeautifulSoup(self.session.get(f&#34;{MAIN_URL}/account&#34;).content, &#39;lxml&#39;)
+        user_id = int(content.find(&#39;span&#39;, {&#39;class&#39;: &#39;avatar avatar--xxs&#39;})[&#39;data-user-id&#39;])
+        member_info = self.get_member(user_id)
+
+        return CurrentMember(self, user_id, member_info.username, member_info.user_title, member_info.avatar, member_info.messages_count, member_info.reactions_count, member_info.trophies_count)
+
+    
+    def get_category(self, category_id: int) -&gt; Category:
+        content = BeautifulSoup(self.session.get(f&#34;{MAIN_URL}/forums/{category_id}&#34;).content, &#39;lxml&#39;)
+        title = content.find(&#39;h1&#39;, {&#39;class&#39;: &#39;p-title-value&#39;}).text
+
+        try: pages_count = int(content.find_all(&#39;li&#39;, {&#39;class&#39;: &#39;pageNav-page&#39;})[-1].text)
+        except IndexError: pages_count = 1
+        try: parent_category_id = int(content.find(&#39;html&#39;)[&#39;data-container-key&#39;].strip(&#39;node-&#39;))
+        except: parent_category_id = None
+
+        temp_url = &#39;&#39;
+        if parent_category_id is not None: temp_url = f&#39;forums/{parent_category_id}/&#39;
+        content = BeautifulSoup(self.session.get(f&#34;{MAIN_URL}/{temp_url}&#34;).content, &#39;lxml&#39;)
+        
+        return Category(self, category_id, title, pages_count)
+    
+    
+    def get_member(self, user_id: int) -&gt; Member:
+        content = BeautifulSoup(self.session.get(f&#34;{MAIN_URL}/members/{user_id}&#34;).content, &#39;lxml&#39;)
+        username = content.find(&#39;span&#39;, {&#39;class&#39;: &#39;username&#39;}).text
+        
+        try: user_title = content.find(&#39;span&#39;, {&#39;class&#39;: &#39;userTitle&#39;}).text
+        except AttributeError: user_title = None
+        try: avatar = content.find(&#39;a&#39;, {&#39;class&#39;: &#39;avatar avatar--l&#39;})[&#39;href&#39;]
+        except TypeError: avatar = None
+
+        messages_count = int(content.find(&#39;a&#39;, {&#39;href&#39;: f&#39;/search/member?user_id={user_id}&#39;}).text.strip().replace(&#39;,&#39;, &#39;&#39;))
+        reactions_count = int(content.find(&#39;dl&#39;, {&#39;class&#39;: &#39;pairs pairs--rows pairs--rows--centered&#39;}).find(&#39;dd&#39;).text.strip().replace(&#39;,&#39;, &#39;&#39;))
+        trophies_count = int(content.find(&#39;a&#39;, {&#39;href&#39;: f&#39;/members/{user_id}/trophies&#39;}).text.strip().replace(&#39;,&#39;, &#39;&#39;))
+        
+        return Member(self, user_id, username, user_title, avatar, messages_count, reactions_count, trophies_count)
+
+    
+    def get_thread(self, thread_id: int) -&gt; Thread:
+        content = BeautifulSoup(self.session.get(f&#34;{MAIN_URL}/threads/{thread_id}/page-1&#34;).content, &#39;lxml&#39;)
+        try: creator = self.get_member(int(content.find(&#39;a&#39;, {&#39;class&#39;: &#39;username&#39;})[&#39;data-user-id&#39;]))
+        except: creator = Member(self, int(content.find(&#39;a&#39;, {&#39;class&#39;: &#39;username&#39;})[&#39;data-user-id&#39;]), content.find(&#39;a&#39;, {&#39;class&#39;: &#39;username&#39;}).text, None, None, None, None, None)
+        category = self.get_category(int(content.find(&#39;html&#39;)[&#39;data-container-key&#39;].strip(&#39;node-&#39;)))
+        create_date = int(content.find(&#39;time&#39;)[&#39;data-time&#39;])
+        title = content.find(&#39;h1&#39;, {&#39;class&#39;: &#39;p-title-value&#39;}).text
+        thread_content_html = content.find(&#39;div&#39;, {&#39;class&#39;: &#39;bbWrapper&#39;})
+        thread_content = thread_content_html.text
+        try: pages_count = int(content.find_all(&#39;li&#39;, {&#39;class&#39;: &#39;pageNav-page&#39;})[-1].text)
+        except IndexError: pages_count = 1
+        is_closed = False
+        if content.find(&#39;dl&#39;, {&#39;class&#39;: &#39;blockStatus&#39;}): is_closed = True
+        thread_post_id = content.find(&#39;article&#39;, {&#39;id&#39;: compile(&#39;js-post-*&#39;)})[&#39;id&#39;].strip(&#39;js-post-&#39;)
+
+        return Thread(self, thread_id, creator, category, create_date, title, thread_content, thread_content_html, pages_count, thread_post_id, is_closed)
+    
+
+    def get_post(self, post_id: int) -&gt; Post:
+        content = BeautifulSoup(self.session.get(f&#34;{MAIN_URL}/posts/{post_id}&#34;).content, &#39;lxml&#39;)
+        post = content.find(&#39;article&#39;, {&#39;id&#39;: f&#39;js-post-{post_id}&#39;})
+        try: creator = self.get_member(int(post.find(&#39;a&#39;, {&#39;data-xf-init&#39;: &#39;member-tooltip&#39;})[&#39;data-user-id&#39;]))
+        except:
+            user_info = post.find(&#39;a&#39;, {&#39;data-xf-init&#39;: &#39;member-tooltip&#39;})
+            creator = Member(self, int(user_info[&#39;data-user-id&#39;]), user_info.text, None, None, None, None, None)
+
+        thread = self.get_thread(int(content.find(&#39;html&#39;)[&#39;data-content-key&#39;].strip(&#39;thread-&#39;)))
+        create_date = int(post.find(&#39;time&#39;, {&#39;class&#39;: &#39;u-dt&#39;})[&#39;data-time&#39;])
+        bb_content = post.find(&#39;div&#39;, {&#39;class&#39;: &#39;bbWrapper&#39;})
+        
+        return Post(self, post_id, creator, thread, create_date, bb_content)
+
+
+    def get_profile_post(self, post_id) -&gt; ProfilePost:
+        content = BeautifulSoup(self.session.get(f&#34;{MAIN_URL}/profile-posts/{post_id}&#34;).content, &#39;lxml&#39;)
+        post = content.find(&#39;article&#39;, {&#39;id&#39;: f&#39;js-profilePost-{post_id}&#39;})
+        creator = self.get_member(int(post.find(&#39;a&#39;, {&#39;class&#39;: &#39;username&#39;})[&#39;data-user-id&#39;]))
+        bb_content = post.find(&#39;div&#39;, {&#39;class&#39;: &#39;bbWrapper&#39;})
+        create_date = int(post.find(&#39;time&#39;)[&#39;data-time&#39;])
+        profile = self.get_member(int(content.find(&#39;span&#39;, {&#39;class&#39;: &#39;username&#39;})[&#39;data-user-id&#39;]))
+
+        return ProfilePost(self, post_id, creator, profile, create_date, bb_content)
+
+    def get_forum_statistic(self) -&gt; Statistic:
+        content = BeautifulSoup(self.session.get(MAIN_URL).content, &#39;lxml&#39;)
+        threads_count = int(content.find(&#39;dl&#39;, {&#39;class&#39;: &#39;pairs pairs--justified count--threads&#39;}).find(&#39;dd&#39;).text.replace(&#39;,&#39;, &#39;&#39;))
+        posts_count = int(content.find(&#39;dl&#39;, {&#39;class&#39;: &#39;pairs pairs--justified count--messages&#39;}).find(&#39;dd&#39;).text.replace(&#39;,&#39;, &#39;&#39;))
+        users_count = int(content.find(&#39;dl&#39;, {&#39;class&#39;: &#39;pairs pairs--justified count--users&#39;}).find(&#39;dd&#39;).text.replace(&#39;,&#39;, &#39;&#39;))
+        last_register_member = self.get_member(int(content.find(&#39;dl&#39;, {&#39;class&#39;: &#39;pairs pairs--justified&#39;}).find(&#39;a&#39;)[&#39;data-user-id&#39;]))
+
+        return Statistic(self, threads_count, posts_count, users_count, last_register_member)</code></pre>
+</details>
+<h3>Instance variables</h3>
+<dl>
+<dt id="arz_api.api.ArizonaAPI.current_member"><code class="name">var <span class="ident">current_member</span> : <a title="arz_api.models.member_object.CurrentMember" href="models/member_object.html#arz_api.models.member_object.CurrentMember">CurrentMember</a></code></dt>
+<dd>
+<div class="desc"><p>Объект текущего пользователя</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def current_member(self) -&gt; CurrentMember:
+    &#34;&#34;&#34;Объект текущего пользователя&#34;&#34;&#34;
+
+    content = BeautifulSoup(self.session.get(f&#34;{MAIN_URL}/account&#34;).content, &#39;lxml&#39;)
+    user_id = int(content.find(&#39;span&#39;, {&#39;class&#39;: &#39;avatar avatar--xxs&#39;})[&#39;data-user-id&#39;])
+    member_info = self.get_member(user_id)
+
+    return CurrentMember(self, user_id, member_info.username, member_info.user_title, member_info.avatar, member_info.messages_count, member_info.reactions_count, member_info.trophies_count)</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="arz_api.api.ArizonaAPI.get_category"><code class="name flex">
+<span>def <span class="ident">get_category</span></span>(<span>self, category_id: int) ‑> <a title="arz_api.models.category_object.Category" href="models/category_object.html#arz_api.models.category_object.Category">Category</a></span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_category(self, category_id: int) -&gt; Category:
+    content = BeautifulSoup(self.session.get(f&#34;{MAIN_URL}/forums/{category_id}&#34;).content, &#39;lxml&#39;)
+    title = content.find(&#39;h1&#39;, {&#39;class&#39;: &#39;p-title-value&#39;}).text
+
+    try: pages_count = int(content.find_all(&#39;li&#39;, {&#39;class&#39;: &#39;pageNav-page&#39;})[-1].text)
+    except IndexError: pages_count = 1
+    try: parent_category_id = int(content.find(&#39;html&#39;)[&#39;data-container-key&#39;].strip(&#39;node-&#39;))
+    except: parent_category_id = None
+
+    temp_url = &#39;&#39;
+    if parent_category_id is not None: temp_url = f&#39;forums/{parent_category_id}/&#39;
+    content = BeautifulSoup(self.session.get(f&#34;{MAIN_URL}/{temp_url}&#34;).content, &#39;lxml&#39;)
+    
+    return Category(self, category_id, title, pages_count)</code></pre>
+</details>
+</dd>
+<dt id="arz_api.api.ArizonaAPI.get_forum_statistic"><code class="name flex">
+<span>def <span class="ident">get_forum_statistic</span></span>(<span>self) ‑> <a title="arz_api.models.other.Statistic" href="models/other.html#arz_api.models.other.Statistic">Statistic</a></span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_forum_statistic(self) -&gt; Statistic:
+    content = BeautifulSoup(self.session.get(MAIN_URL).content, &#39;lxml&#39;)
+    threads_count = int(content.find(&#39;dl&#39;, {&#39;class&#39;: &#39;pairs pairs--justified count--threads&#39;}).find(&#39;dd&#39;).text.replace(&#39;,&#39;, &#39;&#39;))
+    posts_count = int(content.find(&#39;dl&#39;, {&#39;class&#39;: &#39;pairs pairs--justified count--messages&#39;}).find(&#39;dd&#39;).text.replace(&#39;,&#39;, &#39;&#39;))
+    users_count = int(content.find(&#39;dl&#39;, {&#39;class&#39;: &#39;pairs pairs--justified count--users&#39;}).find(&#39;dd&#39;).text.replace(&#39;,&#39;, &#39;&#39;))
+    last_register_member = self.get_member(int(content.find(&#39;dl&#39;, {&#39;class&#39;: &#39;pairs pairs--justified&#39;}).find(&#39;a&#39;)[&#39;data-user-id&#39;]))
+
+    return Statistic(self, threads_count, posts_count, users_count, last_register_member)</code></pre>
+</details>
+</dd>
+<dt id="arz_api.api.ArizonaAPI.get_member"><code class="name flex">
+<span>def <span class="ident">get_member</span></span>(<span>self, user_id: int) ‑> <a title="arz_api.models.member_object.Member" href="models/member_object.html#arz_api.models.member_object.Member">Member</a></span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_member(self, user_id: int) -&gt; Member:
+    content = BeautifulSoup(self.session.get(f&#34;{MAIN_URL}/members/{user_id}&#34;).content, &#39;lxml&#39;)
+    username = content.find(&#39;span&#39;, {&#39;class&#39;: &#39;username&#39;}).text
+    
+    try: user_title = content.find(&#39;span&#39;, {&#39;class&#39;: &#39;userTitle&#39;}).text
+    except AttributeError: user_title = None
+    try: avatar = content.find(&#39;a&#39;, {&#39;class&#39;: &#39;avatar avatar--l&#39;})[&#39;href&#39;]
+    except TypeError: avatar = None
+
+    messages_count = int(content.find(&#39;a&#39;, {&#39;href&#39;: f&#39;/search/member?user_id={user_id}&#39;}).text.strip().replace(&#39;,&#39;, &#39;&#39;))
+    reactions_count = int(content.find(&#39;dl&#39;, {&#39;class&#39;: &#39;pairs pairs--rows pairs--rows--centered&#39;}).find(&#39;dd&#39;).text.strip().replace(&#39;,&#39;, &#39;&#39;))
+    trophies_count = int(content.find(&#39;a&#39;, {&#39;href&#39;: f&#39;/members/{user_id}/trophies&#39;}).text.strip().replace(&#39;,&#39;, &#39;&#39;))
+    
+    return Member(self, user_id, username, user_title, avatar, messages_count, reactions_count, trophies_count)</code></pre>
+</details>
+</dd>
+<dt id="arz_api.api.ArizonaAPI.get_post"><code class="name flex">
+<span>def <span class="ident">get_post</span></span>(<span>self, post_id: int) ‑> <a title="arz_api.models.post_object.Post" href="models/post_object.html#arz_api.models.post_object.Post">Post</a></span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_post(self, post_id: int) -&gt; Post:
+    content = BeautifulSoup(self.session.get(f&#34;{MAIN_URL}/posts/{post_id}&#34;).content, &#39;lxml&#39;)
+    post = content.find(&#39;article&#39;, {&#39;id&#39;: f&#39;js-post-{post_id}&#39;})
+    try: creator = self.get_member(int(post.find(&#39;a&#39;, {&#39;data-xf-init&#39;: &#39;member-tooltip&#39;})[&#39;data-user-id&#39;]))
+    except:
+        user_info = post.find(&#39;a&#39;, {&#39;data-xf-init&#39;: &#39;member-tooltip&#39;})
+        creator = Member(self, int(user_info[&#39;data-user-id&#39;]), user_info.text, None, None, None, None, None)
+
+    thread = self.get_thread(int(content.find(&#39;html&#39;)[&#39;data-content-key&#39;].strip(&#39;thread-&#39;)))
+    create_date = int(post.find(&#39;time&#39;, {&#39;class&#39;: &#39;u-dt&#39;})[&#39;data-time&#39;])
+    bb_content = post.find(&#39;div&#39;, {&#39;class&#39;: &#39;bbWrapper&#39;})
+    
+    return Post(self, post_id, creator, thread, create_date, bb_content)</code></pre>
+</details>
+</dd>
+<dt id="arz_api.api.ArizonaAPI.get_profile_post"><code class="name flex">
+<span>def <span class="ident">get_profile_post</span></span>(<span>self, post_id) ‑> <a title="arz_api.models.post_object.ProfilePost" href="models/post_object.html#arz_api.models.post_object.ProfilePost">ProfilePost</a></span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_profile_post(self, post_id) -&gt; ProfilePost:
+    content = BeautifulSoup(self.session.get(f&#34;{MAIN_URL}/profile-posts/{post_id}&#34;).content, &#39;lxml&#39;)
+    post = content.find(&#39;article&#39;, {&#39;id&#39;: f&#39;js-profilePost-{post_id}&#39;})
+    creator = self.get_member(int(post.find(&#39;a&#39;, {&#39;class&#39;: &#39;username&#39;})[&#39;data-user-id&#39;]))
+    bb_content = post.find(&#39;div&#39;, {&#39;class&#39;: &#39;bbWrapper&#39;})
+    create_date = int(post.find(&#39;time&#39;)[&#39;data-time&#39;])
+    profile = self.get_member(int(content.find(&#39;span&#39;, {&#39;class&#39;: &#39;username&#39;})[&#39;data-user-id&#39;]))
+
+    return ProfilePost(self, post_id, creator, profile, create_date, bb_content)</code></pre>
+</details>
+</dd>
+<dt id="arz_api.api.ArizonaAPI.get_thread"><code class="name flex">
+<span>def <span class="ident">get_thread</span></span>(<span>self, thread_id: int) ‑> <a title="arz_api.models.thread_object.Thread" href="models/thread_object.html#arz_api.models.thread_object.Thread">Thread</a></span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_thread(self, thread_id: int) -&gt; Thread:
+    content = BeautifulSoup(self.session.get(f&#34;{MAIN_URL}/threads/{thread_id}/page-1&#34;).content, &#39;lxml&#39;)
+    try: creator = self.get_member(int(content.find(&#39;a&#39;, {&#39;class&#39;: &#39;username&#39;})[&#39;data-user-id&#39;]))
+    except: creator = Member(self, int(content.find(&#39;a&#39;, {&#39;class&#39;: &#39;username&#39;})[&#39;data-user-id&#39;]), content.find(&#39;a&#39;, {&#39;class&#39;: &#39;username&#39;}).text, None, None, None, None, None)
+    category = self.get_category(int(content.find(&#39;html&#39;)[&#39;data-container-key&#39;].strip(&#39;node-&#39;)))
+    create_date = int(content.find(&#39;time&#39;)[&#39;data-time&#39;])
+    title = content.find(&#39;h1&#39;, {&#39;class&#39;: &#39;p-title-value&#39;}).text
+    thread_content_html = content.find(&#39;div&#39;, {&#39;class&#39;: &#39;bbWrapper&#39;})
+    thread_content = thread_content_html.text
+    try: pages_count = int(content.find_all(&#39;li&#39;, {&#39;class&#39;: &#39;pageNav-page&#39;})[-1].text)
+    except IndexError: pages_count = 1
+    is_closed = False
+    if content.find(&#39;dl&#39;, {&#39;class&#39;: &#39;blockStatus&#39;}): is_closed = True
+    thread_post_id = content.find(&#39;article&#39;, {&#39;id&#39;: compile(&#39;js-post-*&#39;)})[&#39;id&#39;].strip(&#39;js-post-&#39;)
+
+    return Thread(self, thread_id, creator, category, create_date, title, thread_content, thread_content_html, pages_count, thread_post_id, is_closed)</code></pre>
+</details>
+</dd>
+<dt id="arz_api.api.ArizonaAPI.logout"><code class="name flex">
+<span>def <span class="ident">logout</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def logout(self) -&gt; None:
+    self.session.close()</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="arz_api" href="index.html">arz_api</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="arz_api.api.ArizonaAPI" href="#arz_api.api.ArizonaAPI">ArizonaAPI</a></code></h4>
+<ul class="two-column">
+<li><code><a title="arz_api.api.ArizonaAPI.current_member" href="#arz_api.api.ArizonaAPI.current_member">current_member</a></code></li>
+<li><code><a title="arz_api.api.ArizonaAPI.get_category" href="#arz_api.api.ArizonaAPI.get_category">get_category</a></code></li>
+<li><code><a title="arz_api.api.ArizonaAPI.get_forum_statistic" href="#arz_api.api.ArizonaAPI.get_forum_statistic">get_forum_statistic</a></code></li>
+<li><code><a title="arz_api.api.ArizonaAPI.get_member" href="#arz_api.api.ArizonaAPI.get_member">get_member</a></code></li>
+<li><code><a title="arz_api.api.ArizonaAPI.get_post" href="#arz_api.api.ArizonaAPI.get_post">get_post</a></code></li>
+<li><code><a title="arz_api.api.ArizonaAPI.get_profile_post" href="#arz_api.api.ArizonaAPI.get_profile_post">get_profile_post</a></code></li>
+<li><code><a title="arz_api.api.ArizonaAPI.get_thread" href="#arz_api.api.ArizonaAPI.get_thread">get_thread</a></code></li>
+<li><code><a title="arz_api.api.ArizonaAPI.logout" href="#arz_api.api.ArizonaAPI.logout">logout</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>
