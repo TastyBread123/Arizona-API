@@ -1,7 +1,8 @@
 from requests import session
 from bs4 import BeautifulSoup
-from re import compile
+from re import compile, findall
 
+from arz_api.exceptions import ThisIsYouError
 from arz_api.bypass_antibot import bypass
 from arz_api.consts import MAIN_URL
 from arz_api.models.category_object import Category
@@ -147,3 +148,200 @@ class ArizonaAPI:
         last_register_member = self.get_member(int(content.find('dl', {'class': 'pairs pairs--justified'}).find('a')['data-user-id']))
 
         return Statistic(self, threads_count, posts_count, users_count, last_register_member)
+    
+
+    # -------------================ МЕТОДЫ ОБЪЕКТОВ ====================--------------------
+
+
+    # CATEGORY
+    def create_thread(self, category_id: int, title: str, message_html: str, discussion_type: str = 'discussion', watch_thread: int = 1) -> bool:
+        """Создать тему в категории"""
+        # TODO: сделать возврат ID новой темы
+
+        token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
+        self.session.post(f"{MAIN_URL}/forums/{category_id}/post-thread?inline-mode=1", {'_xfToken': token, 'title': title, 'message_html': message_html, 'discussion_type': discussion_type, 'watch_thread': watch_thread})
+        return True
+    
+
+    def set_read_category(self, category_id: int) -> bool:
+        """Отметить тему как прочитанную"""
+
+        token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
+        self.session.post(f"{MAIN_URL}/forums/{category_id}/mark-read", {'_xfToken': token})
+        return True
+    
+
+    def watch_category(self, category_id: int, notify: str, send_alert: bool = True, send_email: bool = False, stop: bool = False) -> bool:
+        """Настроить отслеживание темы\n
+        :param notify - Возможные варианты: "thread", "message", "" """
+
+        token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
+
+        if stop: self.session.post(f"{MAIN_URL}/forums/{category_id}/watch", {'_xfToken': token, 'stop': "1"})
+        else: self.session.post(f"{MAIN_URL}/forums/{category_id}/watch", {'_xfToken': token, 'send_alert': int(send_alert), 'send_email': int(send_email), 'notify': notify})
+
+        return True
+
+
+    def get_threads(self, category_id: int, page: int = 1) -> list:
+        """Получить темы из раздела"""
+
+        soup = BeautifulSoup(self.session.get(f"{MAIN_URL}/forums/{category_id}/page-{page}").content, "lxml")
+        result = []
+        for thread in soup.find_all('div', compile('structItem structItem--thread.*')):
+            link = object
+            for el in thread.find_all('div', "structItem-title")[0].find_all("a"): 
+                if "threads" in el['href']: link = el
+
+            result.append(int(findall(r'\d+', link['href'])[0]))
+        
+        return result
+
+
+    def get_categories(self, category_id: int) -> list:
+        """Получить дочерние категории из раздела"""
+
+        soup = BeautifulSoup(self.session.get(f"{MAIN_URL}/forums/{category_id}").content, "lxml")
+        result = []
+        for category in soup.find_all('div', compile('.*node--depth2 node--forum.*')): 
+            result.append(int(findall(r'\d+', category.find("a")['href'])[0]))
+        
+        return result
+    
+    # MEMBER
+    def follow_member(self, member_id: int) -> bool:
+        """Подписаться на пользователя"""
+
+        if member_id == self.current_member.id: raise ThisIsYouError(member_id)
+
+        token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
+        self.session.post(f"{MAIN_URL}/members/{member_id}/follow", {'_xfToken': token})
+        return True
+    
+
+    def add_profile_message(self, member_id: int, message_html: str) -> bool:
+        """Отправить сообщение на стенку пользователя"""
+
+        token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
+        self.session.post(f"{MAIN_URL}/members/{member_id}/post", {'_xfToken': token, 'message_html': message_html})
+        return True
+    
+
+    def get_profile_messages(self, member_id: int, page: int = 1) -> list:
+        """Возвращает ID всех сообщений со стенки пользователя"""
+
+        soup = BeautifulSoup(self.session.get(f"{MAIN_URL}/members/{member_id}/page-{page}").content, "lxml")
+        result = []
+        for post in soup.find_all('article', {'id': compile('js-profilePost-*')}):
+            result.append(int(post['id'].strip('js-profilePost-')))
+
+        return result
+
+    # POST
+    def react_post(self, post_id: int, reaction_id: int) -> bool:
+        """Поставить реакцию на пост"""
+
+        token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
+        self.session.post(f'{MAIN_URL}/posts/{post_id}/react?reaction_id={reaction_id}', {'_xfToken': token})
+        return True
+    
+
+    def edit_post(self, post_id: int, html_message: str):
+        """Отредактировать пост"""
+
+        token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
+        self.session.post(f"{MAIN_URL}/posts/{post_id}/edit", {"message_html": html_message, "message": html_message, "_xfToken": token})
+
+
+    def delete_post(self, post_id: int, reason: str, hard_delete: int = 0) -> bool:
+        """Удалить пост"""
+
+        token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
+        self.session.post(f"{MAIN_URL}/posts/{post_id}/delete", {"reason": reason, "hard_delete": hard_delete, "_xfToken": token})
+        return True
+    
+
+    # PROFILE POST
+    def react_profile_post(self, post_id: int, reaction_id: int) -> bool:
+        """Поставить реакцию на сообщение профиля"""
+
+        token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
+        self.session.post(f'{MAIN_URL}/profile-posts/{post_id}/react?reaction_id={reaction_id}', {'_xfToken': token})
+        return True
+
+
+    def comment_profile_post(self, post_id: int, message_html: str) -> bool:
+        """Поставить комментарий на сообщение профиля"""
+
+        token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
+        self.session.post(f"{MAIN_URL}/profile-posts/{post_id}/add-comment", {"message_html": message_html, "_xfToken": token})
+        return True
+
+
+    def delete_profile_post(self, post_id: int, reason: str, hard_delete: int = 0) -> bool:
+        """Удалить сообщение профиля"""
+
+        token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
+        self.session.post(f"{MAIN_URL}/profile-posts/{post_id}/delete", {"reason": reason, "hard_delete": hard_delete, "_xfToken": token})
+        return True
+    
+
+    def edit_profile_post(self, post_id: int, html_message: str):
+        """Отредактировать сообщение профиля"""
+
+        token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
+        self.session.post(f"{MAIN_URL}/profile-posts/{post_id}/edit", {"message_html": html_message, "message": html_message, "_xfToken": token})
+
+
+    # THREAD
+    def get_thread_posts(self, thread_id: int, page: int = 1) -> list:
+        """Получить все посты из темы"""
+
+        soup = BeautifulSoup(self.session.get(MAIN_URL + f"/threads/{thread_id}/page-{page}").content, 'lxml')
+
+        return_data = []
+        for i in soup.find_all('article', {'id': compile('js-post-*')}):
+            if i['id'].startswith('js-post-') == False: continue
+            return_data.append(i['id'].strip('js-post-'))
+
+        return return_data
+    
+
+    def answer_thread(self, thread_id: int, html_message: str) -> bool:
+        """Оставить ответ в теме"""
+
+        token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
+        self.session.post(MAIN_URL + f"/threads/{thread_id}/add-reply", {'_xfToken': token, 'message_html': html_message})
+        return True
+
+
+    def watch_thread(self, thread_id: int, stop: bool, email_subscribe: bool = False) -> bool:
+        """Отслеживание темы"""
+
+        token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
+        self.session.post(MAIN_URL + f"/threads/{thread_id}/watch", {'_xfToken': token, 'stop': int(stop), 'email_subscribe': int(email_subscribe)})
+        return True
+    
+
+    def delete_thread(self, thread_id: int, reason: str, hard_delete: int = 0) -> bool:
+        """Удалить тему"""
+
+        token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
+        self.session.post(f"{MAIN_URL}/threads/{thread_id}/delete", {"reason": reason, "hard_delete": hard_delete, "_xfToken": token})
+        return True
+    
+
+    def close_thread(self, thread_id: int) -> bool:
+        """Закрыть тему (для модерации)"""
+
+        token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
+        self.session.post(MAIN_URL + f"/threads/{thread_id}/quick-close", {'_xfToken': token})
+        return True
+
+
+    def pin_thread(self, thread_id: int) -> bool:
+        """Закрепить тему (для модерации)"""
+
+        token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
+        self.session.post(MAIN_URL + f"/threads/{thread_id}/quick-stick", {'_xfToken': token})
+        return True

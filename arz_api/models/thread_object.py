@@ -32,7 +32,7 @@ class Thread:
 
 
     def watch(self, stop: bool, email_subscribe: bool = False) -> bool:
-        """Начать отслеживать тему"""
+        """Отслеживание темы"""
 
         token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
         self.API.session.post(MAIN_URL + f"/threads/{self.id}/watch", {'_xfToken': token, 'stop': int(stop), 'email_subscribe': int(email_subscribe)})
@@ -70,7 +70,7 @@ class Thread:
         return True
 
 
-    def make_reaction(self, reaction_id: int) -> bool:
+    def react(self, reaction_id: int) -> bool:
         """Поставить реакцию на тему"""
 
         token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
@@ -78,7 +78,7 @@ class Thread:
         return True
     
 
-    def get_posts(self, page: int) -> list:
+    def get_posts(self, page: int = 1) -> list:
         """Получить все посты из темы"""
 
         soup = BeautifulSoup(self.API.session.get(MAIN_URL + f"/threads/{self.id}/page-{page}").content, 'lxml')

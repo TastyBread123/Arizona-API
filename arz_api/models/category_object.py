@@ -20,7 +20,7 @@ class Category:
         # TODO: сделать возврат ID новой темы
 
         token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        self.API.session.post(MAIN_URL + f"/forums/{self.id}/post-thread?inline-mode=1", {'_xfToken': token, 'title': title, 'message_html': message_html, 'discussion_type': discussion_type, 'watch_thread': watch_thread})
+        self.API.session.post(f"{MAIN_URL}/forums/{self.id}/post-thread?inline-mode=1", {'_xfToken': token, 'title': title, 'message_html': message_html, 'discussion_type': discussion_type, 'watch_thread': watch_thread})
         return True
 
 
@@ -28,7 +28,7 @@ class Category:
         """Отметить тему как прочитанную"""
 
         token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        self.API.session.post(MAIN_URL + f"/forums/{self.id}/mark-read", {'_xfToken': token})
+        self.API.session.post(f"{MAIN_URL}/forums/{self.id}/mark-read", {'_xfToken': token})
         return True
     
 
@@ -38,8 +38,8 @@ class Category:
 
         token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
 
-        if stop: self.API.session.post(MAIN_URL + f"/forums/{self.id}/watch", {'_xfToken': token, 'stop': "1"})
-        else: self.API.session.post(MAIN_URL + f"/forums/{self.id}/watch", {'_xfToken': token, 'send_alert': int(send_alert), 'send_email': int(send_email), 'notify': notify})
+        if stop: self.API.session.post(f"{MAIN_URL}/forums/{self.id}/watch", {'_xfToken': token, 'stop': "1"})
+        else: self.API.session.post(f"{MAIN_URL}/forums/{self.id}/watch", {'_xfToken': token, 'send_alert': int(send_alert), 'send_email': int(send_email), 'notify': notify})
 
         return True
 
@@ -47,7 +47,7 @@ class Category:
     def get_threads(self, page: int = 1) -> list:
         """Получить темы из раздела"""
 
-        soup = BeautifulSoup(self.API.session.get(MAIN_URL + f"/forums/{self.id}/page-{page}").content, "lxml")
+        soup = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/forums/{self.id}/page-{page}").content, "lxml")
         result = []
         for thread in soup.find_all('div', compile('structItem structItem--thread.*')):
             link = object
@@ -60,9 +60,9 @@ class Category:
 
 
     def get_categories(self) -> list:
-        """Получить дочерние категории из этого раздела"""
+        """Получить дочерние категории из раздела"""
 
-        soup = BeautifulSoup(self.API.session.get(MAIN_URL + f"/forums/{self.id}").content, "lxml")
+        soup = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/forums/{self.id}/page-1").content, "lxml")
         result = []
         for category in soup.find_all('div', compile('.*node--depth2 node--forum.*')): 
             result.append(int(findall(r'\d+', category.find("a")['href'])[0]))

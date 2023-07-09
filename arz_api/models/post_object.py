@@ -16,7 +16,7 @@ class Post:
         self.create_date = create_date
         self.bb_content = bb_content
 
-    def make_reaction(self, reaction_id: int) -> bool:
+    def react(self, reaction_id: int) -> bool:
         """Поставить реакцию на пост"""
 
         token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
@@ -47,7 +47,7 @@ class ProfilePost:
         self.bb_content = bb_content
         self.text_content = text_content
 
-    def make_reaction(self, reaction_id: int) -> bool:
+    def react(self, reaction_id: int) -> bool:
         """Поставить реакцию на сообщение профиля"""
 
         token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
@@ -69,7 +69,7 @@ class ProfilePost:
         return True
     
     def edit(self, html_message: str):
-        """Отредактировать пост"""
+        """Отредактировать сообщение профиля"""
 
         token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
         self.API.session.post(f"{MAIN_URL}/profile-posts/{self.id}/edit", {"message_html": html_message, "message": html_message, "_xfToken": token})
