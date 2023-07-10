@@ -297,7 +297,7 @@ class ArizonaAPI:
     def get_thread_posts(self, thread_id: int, page: int = 1) -> list:
         """Получить все посты из темы"""
 
-        soup = BeautifulSoup(self.session.get(MAIN_URL + f"/threads/{thread_id}/page-{page}").content, 'lxml')
+        soup = BeautifulSoup(self.session.get(f"{MAIN_URL}/threads/{thread_id}/page-{page}").content, 'lxml')
 
         return_data = []
         for i in soup.find_all('article', {'id': compile('js-post-*')}):
@@ -311,7 +311,7 @@ class ArizonaAPI:
         """Оставить ответ в теме"""
 
         token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        self.session.post(MAIN_URL + f"/threads/{thread_id}/add-reply", {'_xfToken': token, 'message_html': html_message})
+        self.session.post(f"{MAIN_URL}/threads/{thread_id}/add-reply", {'_xfToken': token, 'message_html': html_message})
         return True
 
 
@@ -319,7 +319,7 @@ class ArizonaAPI:
         """Отслеживание темы"""
 
         token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        self.session.post(MAIN_URL + f"/threads/{thread_id}/watch", {'_xfToken': token, 'stop': int(stop), 'email_subscribe': int(email_subscribe)})
+        self.session.post(f"{MAIN_URL}/threads/{thread_id}/watch", {'_xfToken': token, 'stop': int(stop), 'email_subscribe': int(email_subscribe)})
         return True
     
 
@@ -331,11 +331,24 @@ class ArizonaAPI:
         return True
     
 
+    def edit_thread_info(self, thread_id: int, title: str = None, prefix_id: int = None) -> bool:
+        """Изменить заголовок и префикс темы"""
+
+        token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
+        data = {"_xfToken": token}
+
+        if title is not None: data.update({'title': title})
+        if prefix_id is not None: data.update({'prefix_id[]', prefix_id})
+
+        self.session.post(f"{MAIN_URL}/threads/{thread_id}/edit", data)
+        return True
+    
+
     def close_thread(self, thread_id: int) -> bool:
         """Закрыть тему (для модерации)"""
 
         token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        self.session.post(MAIN_URL + f"/threads/{thread_id}/quick-close", {'_xfToken': token})
+        self.session.post(f"{MAIN_URL}/threads/{thread_id}/quick-close", {'_xfToken': token})
         return True
 
 
@@ -343,5 +356,15 @@ class ArizonaAPI:
         """Закрепить тему (для модерации)"""
 
         token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        self.session.post(MAIN_URL + f"/threads/{thread_id}/quick-stick", {'_xfToken': token})
+        self.session.post(f"{MAIN_URL}/threads/{thread_id}/quick-stick", {'_xfToken': token})
         return True
+
+
+    # OTHER
+
+    def send_form(self, form_id: int, data: dict) -> str:
+        token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
+        data.update({'_xfToken': token})
+        response = self.session.post(f"{MAIN_URL}/form/{form_id}/submit", data)
+
+        return response.text
