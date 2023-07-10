@@ -11,7 +11,7 @@ api = arz_api.ArizonaAPI(user_agent="your", cookie=cookies)
 
 # ПРИМЕР ДЛЯ PAYSON
 jb = api.send_form(45, {
-                   'question[531]': '1',  # Тип жалобы (1 - на адм / 2 - на красных)
+                   'question[531]': '1',  # Тип жалобы (1 - на адм / 2 - на красных), в этом примере на адм (в жб на красных id полей различаются)
                    'question[532]': "Your_Nick",  # Ваш ник
                    'question[533]': "Admin_Nick",  # Ник администратора
                    'question[534]': "ДМ ЗЗ",  # Причина наказания
