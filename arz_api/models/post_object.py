@@ -15,6 +15,7 @@ class Post:
         self.thread = thread
         self.create_date = create_date
         self.bb_content = bb_content
+        self.text_content = text_content
 
     def react(self, reaction_id: int) -> bool:
         """Поставить реакцию на пост"""
