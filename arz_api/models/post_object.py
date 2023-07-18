@@ -8,7 +8,7 @@ if TYPE_CHECKING:
 
 
 class Post:
-    def __init__(self, API: 'ArizonaAPI', id: int, creator: 'Member', thread: 'Thread', create_date: int, bb_content: str) -> None:
+    def __init__(self, API: 'ArizonaAPI', id: int, creator: 'Member', thread: 'Thread', create_date: int, bb_content: str, text_content: str) -> None:
         self.API = API
         self.id = id
         self.creator = creator
