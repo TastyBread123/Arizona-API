@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 
 class Member:
-    API: 'ArizonaAPI'  # объект ArizonaAPI
+    API: 'ArizonaAPI'  # Объект ArizonaAPI
 
     id: int
     username: str
