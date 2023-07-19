@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup
+from requests import Response
 from re import compile, findall
 from typing import TYPE_CHECKING
 
@@ -15,35 +16,31 @@ class Category:
         self.pages_count = pages_count
 
 
-    def create_thread(self, title: str, message_html: str, discussion_type: str = 'discussion', watch_thread: int = 1) -> bool:
+    def create_thread(self, title: str, message_html: str, discussion_type: str = 'discussion', watch_thread: int = 1) -> Response:
         """Создать тему в категории"""
         # TODO: сделать возврат ID новой темы
 
         token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        self.API.session.post(f"{MAIN_URL}/forums/{self.id}/post-thread?inline-mode=1", {'_xfToken': token, 'title': title, 'message_html': message_html, 'discussion_type': discussion_type, 'watch_thread': watch_thread})
-        return True
+        return self.API.session.post(f"{MAIN_URL}/forums/{self.id}/post-thread?inline-mode=1", {'_xfToken': token, 'title': title, 'message_html': message_html, 'discussion_type': discussion_type, 'watch_thread': watch_thread})
 
 
-    def set_read(self) -> bool:
+    def set_read(self) -> Response:
         """Отметить тему как прочитанную"""
 
         token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        self.API.session.post(f"{MAIN_URL}/forums/{self.id}/mark-read", {'_xfToken': token})
-        return True
+        return self.API.session.post(f"{MAIN_URL}/forums/{self.id}/mark-read", {'_xfToken': token})
     
 
-    def watch(self, notify: str, send_alert: bool = True, send_email: bool = False, stop: bool = False) -> bool:
+    def watch(self, notify: str, send_alert: bool = True, send_email: bool = False, stop: bool = False) -> Response:
         """Настроить отслеживание темы\n
         :param notify - Возможные варианты: "thread", "message", "" """
 
         token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
 
-        if stop: self.API.session.post(f"{MAIN_URL}/forums/{self.id}/watch", {'_xfToken': token, 'stop': "1"})
-        else: self.API.session.post(f"{MAIN_URL}/forums/{self.id}/watch", {'_xfToken': token, 'send_alert': int(send_alert), 'send_email': int(send_email), 'notify': notify})
-
-        return True
-
+        if stop: return self.API.session.post(f"{MAIN_URL}/forums/{self.id}/watch", {'_xfToken': token, 'stop': "1"})
+        else: return self.API.session.post(f"{MAIN_URL}/forums/{self.id}/watch", {'_xfToken': token, 'send_alert': int(send_alert), 'send_email': int(send_email), 'notify': notify})
     
+
     def get_threads(self, page: int = 1) -> list:
         """Получить темы из раздела"""
 
