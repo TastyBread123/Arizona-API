@@ -73,7 +73,7 @@ class ArizonaAPI:
         
         try: user_title = content.find('span', {'class': 'userTitle'}).text
         except AttributeError: user_title = None
-        try: avatar = content.find('a', {'class': 'avatar avatar--l'})['href']
+        try: avatar = MAIN_URL + content.find('a', {'class': 'avatar avatar--l'})['href']
         except TypeError: avatar = None
 
         messages_count = int(content.find('a', {'href': f'/search/member?user_id={user_id}'}).text.strip().replace(',', ''))
@@ -187,13 +187,13 @@ class ArizonaAPI:
         """Получить темы из раздела"""
 
         soup = BeautifulSoup(self.session.get(f"{MAIN_URL}/forums/{category_id}/page-{page}").content, "lxml")
-        result = []
+        result = {'pins': [], 'unpins': []}
         for thread in soup.find_all('div', compile('structItem structItem--thread.*')):
-            link = object
-            for el in thread.find_all('div', "structItem-title")[0].find_all("a"): 
-                if "threads" in el['href']: link = el
+            link = thread.find_all('div', "structItem-title")[0].find_all("a")[-1]
+            if len(findall(r'\d+', link['href'])) < 1: continue
 
-            result.append(int(findall(r'\d+', link['href'])[0]))
+            if len(thread.find_all('i', {'title': 'Закреплено'})) > 0: result['pins'].append(int(findall(r'\d+', link['href'])[0]))
+            else: result['unpins'].append(int(findall(r'\d+', link['href'])[0]))
         
         return result
 
@@ -202,11 +202,7 @@ class ArizonaAPI:
         """Получить дочерние категории из раздела"""
 
         soup = BeautifulSoup(self.session.get(f"{MAIN_URL}/forums/{category_id}").content, "lxml")
-        result = []
-        for category in soup.find_all('div', compile('.*node--depth2 node--forum.*')): 
-            result.append(int(findall(r'\d+', category.find("a")['href'])[0]))
-        
-        return result
+        return [int(findall(r'\d+', category.find("a")['href'])[0]) for category in soup.find_all('div', compile('.*node--depth2 node--forum.*'))]
     
     # MEMBER
     def follow_member(self, member_id: int) -> Response:
@@ -238,11 +234,8 @@ class ArizonaAPI:
         """Возвращает ID всех сообщений со стенки пользователя"""
 
         soup = BeautifulSoup(self.session.get(f"{MAIN_URL}/members/{member_id}/page-{page}").content, "lxml")
-        result = []
-        for post in soup.find_all('article', {'id': compile('js-profilePost-*')}):
-            result.append(int(post['id'].strip('js-profilePost-')))
+        return [int(post['id'].strip('js-profilePost-')) for post in soup.find_all('article', {'id': compile('js-profilePost-*')})]
 
-        return result
 
     # POST
     def react_post(self, post_id: int, reaction_id: int) -> Response:
@@ -330,14 +323,14 @@ class ArizonaAPI:
     
 
     def close_thread(self, thread_id: int) -> Response:
-        """Закрыть тему (для модерации)"""
+        """Закрыть/открыть тему (для модерации)"""
 
         token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
         return self.session.post(f"{MAIN_URL}/threads/{thread_id}/quick-close", {'_xfToken': token})
 
 
     def pin_thread(self, thread_id: int) -> Response:
-        """Закрепить тему (для модерации)"""
+        """Закрепить/открепить тему (для модерации)"""
 
         token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
         return self.session.post(f"{MAIN_URL}/threads/{thread_id}/quick-stick", {'_xfToken': token})
@@ -347,13 +340,7 @@ class ArizonaAPI:
         """Получить все посты из темы"""
 
         soup = BeautifulSoup(self.session.get(f"{MAIN_URL}/threads/{thread_id}/page-{page}").content, 'lxml')
-
-        return_data = []
-        for i in soup.find_all('article', {'id': compile('js-post-*')}):
-            if i['id'].startswith('js-post-') == False: continue
-            return_data.append(i['id'].strip('js-post-'))
-
-        return return_data
+        return [i['id'].strip('js-post-') for i in soup.find_all('article', {'id': compile('js-post-*')})]
 
 
     # OTHER

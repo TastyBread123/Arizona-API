@@ -90,10 +90,4 @@ class Thread:
         """Получить все посты из темы"""
 
         soup = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/threads/{self.id}/page-{page}").content, 'lxml')
-
-        return_data = []
-        for i in soup.find_all('article', {'id': compile('js-post-*')}):
-            if i['id'].startswith('js-post-') == False: continue
-            return_data.append(i['id'].strip('js-post-'))
-
-        return return_data
+        return [i['id'].strip('js-post-') for i in soup.find_all('article', {'id': compile('js-post-*')})]

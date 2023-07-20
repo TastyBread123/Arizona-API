@@ -59,17 +59,13 @@ class Member:
         """Возвращает ID всех сообщений со стенки пользователя"""
 
         soup = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/members/{self.id}/page-{page}").content, "lxml")
-        result = []
-        for post in soup.find_all('article', {'id': compile('js-profilePost-*')}):
-            result.append(int(post['id'].strip('js-profilePost-')))
-
-        return result
+        return [int(post['id'].strip('js-profilePost-')) for post in soup.find_all('article', {'id': compile('js-profilePost-*')})]
 
 
 class CurrentMember(Member):
     follow = property(doc='Forbidden method for Current Member object')
     ignore = property(doc='Forbidden method for Current Member object')
 
+
     # TODO:
-    #def get_last_notifications(self, time_offset: int = 86400, limit: int = 100) -> bool:
-    #    return False
+    #def get_last_notifications(self, time_offset: int = 86400, limit: int = 100), change_avatar(), change_banner()

@@ -41,17 +41,17 @@ class Category:
         else: return self.API.session.post(f"{MAIN_URL}/forums/{self.id}/watch", {'_xfToken': token, 'send_alert': int(send_alert), 'send_email': int(send_email), 'notify': notify})
     
 
-    def get_threads(self, page: int = 1) -> list:
+    def get_threads(self, page: int = 1) -> dict:
         """Получить темы из раздела"""
 
         soup = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/forums/{self.id}/page-{page}").content, "lxml")
-        result = []
+        result = {'pins': [], 'unpins': []}
         for thread in soup.find_all('div', compile('structItem structItem--thread.*')):
-            link = object
-            for el in thread.find_all('div', "structItem-title")[0].find_all("a"): 
-                if "threads" in el['href']: link = el
+            link = thread.find_all('div', "structItem-title")[0].find_all("a")[-1]
+            if len(findall(r'\d+', link['href'])) < 1: continue
 
-            result.append(int(findall(r'\d+', link['href'])[0]))
+            if len(thread.find_all('i', {'title': 'Закреплено'})) > 0: result['pins'].append(int(findall(r'\d+', link['href'])[0]))
+            else: result['unpins'].append(int(findall(r'\d+', link['href'])[0]))
         
         return result
 
@@ -60,8 +60,4 @@ class Category:
         """Получить дочерние категории из раздела"""
 
         soup = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/forums/{self.id}/page-1").content, "lxml")
-        result = []
-        for category in soup.find_all('div', compile('.*node--depth2 node--forum.*')): 
-            result.append(int(findall(r'\d+', category.find("a")['href'])[0]))
-        
-        return result
+        return [int(findall(r'\d+', category.find("a")['href'])[0]) for category in soup.find_all('div', compile('.*node--depth2 node--forum.*'))]
