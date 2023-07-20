@@ -8,7 +8,6 @@ cookies = {"xf_user": "your",
 api = arz_api.ArizonaAPI(user_agent="your", cookie=cookies)
 
 threads = api.get_threads(354)
-
 print('Закрепленные темы:')
 for i in threads["pins"]:
     thread = api.get_thread(i)
