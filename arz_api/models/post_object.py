@@ -9,13 +9,14 @@ if TYPE_CHECKING:
 
 
 class Post:
-    def __init__(self, API: 'ArizonaAPI', id: int, creator: 'Member', thread: 'Thread', create_date: int, bb_content: str) -> None:
+    def __init__(self, API: 'ArizonaAPI', id: int, creator: 'Member', thread: 'Thread', create_date: int, bb_content: str, text_content: str) -> None:
         self.API = API
         self.id = id
         self.creator = creator
         self.thread = thread
         self.create_date = create_date
         self.bb_content = bb_content
+        self.text_content = text_content
 
     def react(self, reaction_id: int) -> Response:
         """Поставить реакцию на пост"""
