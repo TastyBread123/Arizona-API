@@ -18,23 +18,27 @@ class Post:
         self.bb_content = bb_content
         self.text_content = text_content
 
-    def react(self, reaction_id: int) -> Response:
-        """Поставить реакцию на пост"""
+    def react(self, reaction_id: int = 1) -> Response:
+        """Поставить реакцию на пост
+        :param reaction_id - (необяз.) ID реакции. По умолчанию 1"""
 
         token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
         return self.API.session.post(f'{MAIN_URL}/posts/{self.id}/react?reaction_id={reaction_id}', {'_xfToken': token})
     
     def edit(self, html_message: str) -> Response:
-        """Отредактировать пост"""
+        """Отредактировать пост
+        :param html_message - новое содержание темы. Рекомендуется использование HTML"""
 
         token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
         return self.API.session.post(f"{MAIN_URL}/posts/{self.id}/edit", {"message_html": html_message, "message": html_message, "_xfToken": token})
 
-    def delete(self, reason: str, hard_delete: int = 0) -> Response:
-        """Удалить пост"""
+    def delete(self, reason: str, hard_delete: bool = False) -> Response:
+        """Удалить пост
+        :param reason - причина для удаления
+        :param hard_delete - (необяз.) полное удаление сообщения. По умолчанию False"""
 
         token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        return self.API.session.post(f"{MAIN_URL}/posts/{self.id}/delete", {"reason": reason, "hard_delete": hard_delete, "_xfToken": token})
+        return self.API.session.post(f"{MAIN_URL}/posts/{self.id}/delete", {"reason": reason, "hard_delete": int(hard_delete), "_xfToken": token})
 
 
 class ProfilePost:
@@ -47,26 +51,31 @@ class ProfilePost:
         self.bb_content = bb_content
         self.text_content = text_content
 
-    def react(self, reaction_id: int) -> Response:
-        """Поставить реакцию на сообщение профиля"""
+    def react(self, reaction_id: int = 1) -> Response:
+        """Поставить реакцию на сообщение профиля
+        :param reaction_id - (необяз.) ID реакции. По умолчанию 1"""
 
         token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
         return self.API.session.post(f'{MAIN_URL}/profile-posts/{self.id}/react?reaction_id={reaction_id}', {'_xfToken': token})
 
     def comment(self, message_html: str) -> Response:
-        """Поставить комментарий на сообщение профиля"""
+        """Поставить комментарий на сообщение профиля
+        :param html_message - содержание комментария. Рекомендуется использование HTML"""
 
         token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
         return self.API.session.post(f"{MAIN_URL}/profile-posts/{self.id}/add-comment", {"message_html": message_html, "_xfToken": token})
 
-    def delete(self, reason: str, hard_delete: int = 0) -> Response:
-        """Удалить сообщение профиля"""
+    def delete(self, reason: str, hard_delete: bool = False) -> Response:
+        """Удалить сообщение профиля
+        :param reason - причина для удаления
+        :param hard_delete - (необяз.) полное удаление сообщения. По умолчанию False"""
 
         token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        return self.API.session.post(f"{MAIN_URL}/profile-posts/{self.id}/delete", {"reason": reason, "hard_delete": hard_delete, "_xfToken": token})
+        return self.API.session.post(f"{MAIN_URL}/profile-posts/{self.id}/delete", {"reason": reason, "hard_delete": int(hard_delete), "_xfToken": token})
     
     def edit(self, html_message: str) -> Response:
-        """Отредактировать сообщение профиля"""
+        """Отредактировать сообщение профиля
+        :param html_message - новое содержание сообщения. Рекомендуется использование HTML"""
 
         token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
         return self.API.session.post(f"{MAIN_URL}/profile-posts/{self.id}/edit", {"message_html": html_message, "message": html_message, "_xfToken": token})

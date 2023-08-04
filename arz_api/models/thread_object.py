@@ -25,19 +25,6 @@ class Thread:
         self.is_closed = is_closed
         self.thread_post_id = thread_post_id
 
-    def answer(self, html_message: str) -> Response:
-        """Оставить ответ в теме"""
-
-        token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        return self.API.session.post(f"{MAIN_URL}/threads/{self.id}/add-reply", {'_xfToken': token, 'message_html': html_message})
-
-
-    def watch(self, stop: bool, email_subscribe: bool = False) -> Response:
-        """Изменить статус отслеживания темы"""
-
-        token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        return self.API.session.post(f"{MAIN_URL}/threads/{self.id}/watch", {'_xfToken': token, 'stop': int(stop), 'email_subscribe': int(email_subscribe)})
-    
 
     def close(self) -> Response:
         """Закрыть/открыть тему (для модерации)"""
@@ -53,15 +40,35 @@ class Thread:
         return self.API.session.post(f"{MAIN_URL}/threads/{self.id}/quick-stick", {'_xfToken': token})
     
 
+    def answer(self, html_message: str) -> Response:
+        """Оставить ответ в теме
+        :param html_message - содержание ответа. Рекомендуется использование HTML"""
+
+        token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
+        return self.API.session.post(f"{MAIN_URL}/threads/{self.id}/add-reply", {'_xfToken': token, 'message_html': html_message})
+
+
+    def watch(self, email_subscribe: bool = False, stop: bool = False) -> Response:
+        """Изменить статус отслеживания темы
+        :param email_subscribe - (необяз.) отправлять ли уведомления на почту. По умолчанию False
+        :param stop - (необяз.) принудительно прекратить отслеживание. По умолчанию False"""
+
+        token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
+        return self.API.session.post(f"{MAIN_URL}/threads/{self.id}/watch", {'_xfToken': token, 'stop': int(stop), 'email_subscribe': int(email_subscribe)})
+    
+
     def edit(self, html_message: str) -> Response:
-        """Отредактировать тему"""
+        """Отредактировать тему
+        :param html_message - содержание ответа. Рекомендуется использование HTML"""
 
         token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
         return self.API.session.post(f"{MAIN_URL}/posts/{self.thread_post_id}/edit", {"message_html": html_message, "message": html_message, "_xfToken": token})
 
 
     def edit_info(self, title: str = None, prefix_id: int = None) -> Response:
-        """Изменить заголовок и префикс темы"""
+        """Изменить заголовок и префикс темы
+        :param title - новое название
+        :param prefix_id - новый ID префикса"""
 
         token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
         data = {"_xfToken": token}
@@ -72,22 +79,26 @@ class Thread:
         return self.API.session.post(f"{MAIN_URL}/threads/{self.id}/edit", data)
 
 
-    def delete(self, reason: str, hard_delete: int = 0) -> Response:
-        """Удалить тему"""
+    def delete(self, reason: str, hard_delete: bool = False) -> Response:
+        """Удалить тему
+        :param reason - причина для удаления
+        :param hard_delete - (необяз.) полное удаление темы. По умолчанию False"""
 
         token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        return self.API.session.post(f"{MAIN_URL}/threads/{self.id}/delete", {"reason": reason, "hard_delete": hard_delete, "_xfToken": token})
-
-
-    def react(self, reaction_id: int) -> Response:
-        """Поставить реакцию на тему"""
-
-        token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        return self.API.session.post(f'{MAIN_URL}/posts/{self.thread_post_id}/react?reaction_id={reaction_id}', {'_xfToken': token})
+        return self.API.session.post(f"{MAIN_URL}/threads/{self.id}/delete", {"reason": reason, "hard_delete": int(hard_delete), "_xfToken": token})
     
 
     def get_posts(self, page: int = 1) -> list:
-        """Получить все посты из темы"""
+        """Получить все посты из темы
+        :param page - (необяз.) страница для поиска. По умолчанию 1"""
 
         soup = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/threads/{self.id}/page-{page}").content, 'lxml')
         return [i['id'].strip('js-post-') for i in soup.find_all('article', {'id': compile('js-post-*')})]
+
+
+    def react(self, reaction_id: int = 1) -> Response:
+        """Поставить реакцию на тему
+        :param reaction_id - (необяз.) ID реакции. По умолчанию 1"""
+
+        token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
+        return self.API.session.post(f'{MAIN_URL}/posts/{self.thread_post_id}/react?reaction_id={reaction_id}', {'_xfToken': token})

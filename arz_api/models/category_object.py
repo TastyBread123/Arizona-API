@@ -17,7 +17,11 @@ class Category:
 
 
     def create_thread(self, title: str, message_html: str, discussion_type: str = 'discussion', watch_thread: int = 1) -> Response:
-        """Создать тему в категории"""
+        """Создать тему в категории
+        :param title - название темы
+        :param message_html - содержание темы. Рекомендуется использование HTML
+        :param discussion_type - (необяз.) тип темы. Возможные варианты: 'discussion' - обсуждение (по умолчанию), 'article' - статья, 'poll' - опрос
+        :param watch_thread - (необяз.) отслеживать ли тему. По умолчанию True"""
         # TODO: сделать возврат ID новой темы
 
         token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
@@ -25,15 +29,18 @@ class Category:
 
 
     def set_read(self) -> Response:
-        """Отметить тему как прочитанную"""
+        """Отметить категорию как прочитанную"""
 
         token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
         return self.API.session.post(f"{MAIN_URL}/forums/{self.id}/mark-read", {'_xfToken': token})
     
 
     def watch(self, notify: str, send_alert: bool = True, send_email: bool = False, stop: bool = False) -> Response:
-        """Настроить отслеживание темы\n
-        :param notify - Возможные варианты: "thread", "message", "" """
+        """Настроить отслеживание темы
+        :param notify - Объект отслеживания. Возможные варианты: "thread", "message", ""
+        :param send_alert - (необяз.) отправлять ли уведомления на форуме. По умолчанию True
+        :param send_email - (необяз.) отправлять ли уведомления на почту. По умолчанию False
+        :param stop - (необяз.) принудительно прекратить отслеживание. По умолчанию False"""
 
         token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
 
@@ -42,7 +49,8 @@ class Category:
     
 
     def get_threads(self, page: int = 1) -> dict:
-        """Получить темы из раздела"""
+        """Получить темы из раздела
+        :param page - (необяз.)  страница для поиска. По умолчанию 1"""
 
         soup = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/forums/{self.id}/page-{page}").content, "lxml")
         result = {'pins': [], 'unpins': []}
