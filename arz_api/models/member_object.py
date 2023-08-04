@@ -25,16 +25,27 @@ class Member:
     def __init__(self, API, id: int, username: str, user_title: str, avatar: str, messages_count: int, reactions_count: int, trophies_count: int) -> None:
         self.API = API
         self.id = id
+        """**ID пользователя**"""
         self.username = username
+        """**Имя пользователя**"""
         self.user_title = user_title
+        """**Звание пользователя**"""
         self.avatar = avatar
+        """**Ссылка на аватарку пользователя**"""
 
         self.messages_count = messages_count
+        """**Количество сообщений в счетчике**"""
         self.reactions_count = reactions_count
+        """**Количество реакций в счетчике**"""
         self.trophies_count = trophies_count
+        """**Количество баллов в счетчике**"""
 
     def follow(self) -> Response:
-        """Изменить статус подписки на пользователя"""
+        """Изменить статус подписки на пользователя
+        
+        Returns:
+            Объект Response модуля requests
+        """
 
         if self.id == self.API.current_member.id: raise ThisIsYouError(self.id)
 
@@ -42,7 +53,11 @@ class Member:
         return self.API.session.post(f"{MAIN_URL}/members/{self.id}/follow", {'_xfToken': token})
     
     def ignore(self) -> Response:
-        """Изменить статус игнора пользователя"""
+        """Изменить статус игнорирования пользователя
+        
+        Returns:
+            Объект Response модуля requests
+        """
 
         if self.id == self.API.current_member.id: raise ThisIsYouError(self.id)
 
@@ -51,14 +66,26 @@ class Member:
     
     def add_message(self, message_html: str) -> Response:
         """Отправить сообщение на стенку пользователя
-        :param message_html - текст сообщения. Рекомендуется использование HTML"""
+
+        Attributes:
+            message_html (str): Текст сообщения. Рекомендуется использование HTML
+            
+        Returns:
+            Объект Response модуля requests
+        """
 
         token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
         return self.API.session.post(f"{MAIN_URL}/members/{self.id}/post", {'_xfToken': token, 'message_html': message_html})
     
     def get_profile_messages(self, page: int = 1) -> list:
-        """Возвращает ID всех сообщений со стенки пользователя
-        :param page - (необяз.) страница для поиска. По умолчанию 1"""
+        """Возвращает ID всех сообщений со стенки пользователя на странице
+
+        Attributes:
+            page (int): Страница для поиска. По умолчанию 1 (необяз.)
+            
+        Returns:
+            Cписок (list) с ID всех сообщений профиля
+        """
 
         soup = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/members/{self.id}/page-{page}").content, "lxml")
         return [int(post['id'].strip('js-profilePost-')) for post in soup.find_all('article', {'id': compile('js-profilePost-*')})]
@@ -68,9 +95,15 @@ class CurrentMember(Member):
     follow = property(doc='Forbidden method for Current Member object')
     ignore = property(doc='Forbidden method for Current Member object')
 
-    def edit_avatar(self, upload_photo: str):
+    def edit_avatar(self, upload_photo: str) -> Response:
         """Изменить аватарку пользователя
-        :param upload_photo - относительный или полный путь до фото"""
+
+        Attributes:
+            upload_photo (str): Относительный или полный путь до изображения
+        
+        Returns:
+            Объект Response модуля requests
+        """
 
         with open(upload_photo, 'rb') as image:
             file_dict = {'upload': (upload_photo, image.read())}
@@ -85,8 +118,12 @@ class CurrentMember(Member):
         return self.API.session.post(f"{MAIN_URL}/account/avatar", files=file_dict, data=data)
     
 
-    def delete_avatar(self):
-        """Удалить автарку пользователя"""
+    def delete_avatar(self) -> Response:
+        """Удалить автарку пользователя
+        
+        Returns:
+            Объект Response модуля requests
+        """
         token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
         file_dict = {'upload': ("", "")}
         data = {

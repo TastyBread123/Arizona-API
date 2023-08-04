@@ -160,12 +160,20 @@ class ArizonaAPI:
     # CATEGORY
     def create_thread(self, category_id: int, title: str, message_html: str, discussion_type: str = 'discussion', watch_thread: bool = True) -> Response:
         """Создать тему в категории
-        :param category_id - ID категории
-        :param title - название темы
-        :param message_html - содержание темы. Рекомендуется использование HTML
-        :param discussion_type - (необяз.) тип темы. Возможные варианты: 'discussion' - обсуждение (по умолчанию), 'article' - статья, 'poll' - опрос
-        :param watch_thread - (необяз.) отслеживать ли тему. По умолчанию True"""
-        # TODO: сделать возврат ID новой темы
+
+        Attributes:
+            category_id (int): ID категории
+            title (str): Название темы
+            message_html (str): Содержание темы. Рекомендуется использование HTML
+            discussion_type (str): - Тип темы | Возможные варианты: 'discussion' - обсуждение (по умолчанию), 'article' - статья, 'poll' - опрос (необяз.)
+            watch_thread (str): - Отслеживать ли тему. По умолчанию True (необяз.)
+        
+        Returns:
+            Объект Response модуля requests
+
+        Todo:
+            Cделать возврат ID новой темы
+        """
 
         token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
         return self.session.post(f"{MAIN_URL}/forums/{category_id}/post-thread?inline-mode=1", {'_xfToken': token, 'title': title, 'message_html': message_html, 'discussion_type': discussion_type, 'watch_thread': int(watch_thread)})
@@ -173,19 +181,31 @@ class ArizonaAPI:
 
     def set_read_category(self, category_id: int) -> Response:
         """Отметить категорию как прочитанную
-        :param category_id - ID категории"""
+
+        Attributes:
+            category_id (int): ID категории
+        
+        Returns:
+            Объект Response модуля requests
+        """
 
         token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
         return self.session.post(f"{MAIN_URL}/forums/{category_id}/mark-read", {'_xfToken': token})
     
 
     def watch_category(self, category_id: int, notify: str, send_alert: bool = True, send_email: bool = False, stop: bool = False) -> Response:
-        """Настроить отслеживание темы
-        :param category_id - ID категории
-        :param notify - Объект отслеживания. Возможные варианты: "thread", "message", ""
-        :param send_alert - (необяз.) отправлять ли уведомления на форуме. По умолчанию True
-        :param send_email - (необяз.) отправлять ли уведомления на почту. По умолчанию False
-        :param stop - (необяз.) принудительно прекратить отслеживание. По умолчанию False"""
+        """Настроить отслеживание категории
+
+        Attributes:
+            category_id (int): ID категории
+            notify (str): Объект отслеживания. Возможные варианты: "thread", "message", ""
+            send_alert (bool): - Отправлять ли уведомления на форуме. По умолчанию True (необяз.)
+            send_email (bool): - Отправлять ли уведомления на почту. По умолчанию False (необяз.)
+            stop (bool): - Принудительное завершение отслеживания. По умолчанию False (необяз.)
+
+        Returns:
+            Объект Response модуля requests    
+        """
 
         token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
 
@@ -193,10 +213,16 @@ class ArizonaAPI:
         else: return self.session.post(f"{MAIN_URL}/forums/{category_id}/watch", {'_xfToken': token, 'send_alert': int(send_alert), 'send_email': int(send_email), 'notify': notify})
 
 
-    def get_threads(self, category_id: int, page: int = 1) -> list:
-        """Получить все темы из раздела на странице
-        :param category_id - ID категории
-        :param page - (необяз.)  страница для поиска. По умолчанию 1"""
+    def get_threads(self, category_id: int, page: int = 1) -> dict:
+        """Получить темы из раздела
+
+        Attributes:
+            category_id (int): ID категории
+            page (int): Cтраница для поиска. По умолчанию 1 (необяз.)
+            
+        Returns:
+            Словарь (dict), состоящий из списков закрепленных ('pins') и незакрепленных ('unpins') тем
+        """
 
         soup = BeautifulSoup(self.session.get(f"{MAIN_URL}/forums/{category_id}/page-{page}").content, "lxml")
         result = {'pins': [], 'unpins': []}
@@ -211,16 +237,29 @@ class ArizonaAPI:
 
 
     def get_categories(self, category_id: int) -> list:
-        """Получить дочерние категории из раздела"
-        :param category_id - ID категории"""
+        """Получить дочерние категории из раздела
+        
+        Attributes:
+            category_id (int): ID категории
+        
+        Returns:
+            Список (list), состоящий из ID дочерних категорий раздела
+        """
 
         soup = BeautifulSoup(self.session.get(f"{MAIN_URL}/forums/{category_id}").content, "lxml")
         return [int(findall(r'\d+', category.find("a")['href'])[0]) for category in soup.find_all('div', compile('.*node--depth2 node--forum.*'))]
     
+
     # MEMBER
     def follow_member(self, member_id: int) -> Response:
         """Изменить статус подписки на пользователя
-        :param member_id - ID пользователя"""
+        
+        Attributes:
+            member_id (int): ID пользователя
+        
+        Returns:
+            Объект Response модуля requests
+        """
 
         if member_id == self.current_member.id: raise ThisIsYouError(member_id)
 
@@ -229,8 +268,14 @@ class ArizonaAPI:
     
 
     def ignore_member(self, member_id: int) -> Response:
-        """Изменить статус игнора пользователя
-        :param member_id - ID пользователя"""
+        """Изменить статус игнорирования пользователя
+
+        Attributes:
+            member_id (int): ID пользователя
+        
+        Returns:
+            Объект Response модуля requests
+        """
 
         if member_id == self.current_member.id: raise ThisIsYouError(member_id)
 
@@ -240,17 +285,29 @@ class ArizonaAPI:
 
     def add_profile_message(self, member_id: int, message_html: str) -> Response:
         """Отправить сообщение на стенку пользователя
-        :param member_id - ID пользователя
-        :param message_html - текст сообщения. Рекомендуется использование HTML"""
+
+        Attributes:
+            member_id (int): ID пользователя
+            message_html (str): Текст сообщения. Рекомендуется использование HTML
+            
+        Returns:
+            Объект Response модуля requests
+        """
 
         token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
         return self.session.post(f"{MAIN_URL}/members/{member_id}/post", {'_xfToken': token, 'message_html': message_html})
     
 
     def get_profile_messages(self, member_id: int, page: int = 1) -> list:
-        """Возвращает ID всех сообщений со стенки пользователя
-        :param member_id - ID пользователя
-        :param page - (необяз.) страница для поиска. По умолчанию 1"""
+        """Возвращает ID всех сообщений со стенки пользователя на странице
+
+        Attributes:
+            member_id (int): ID пользователя
+            page (int): Страница для поиска. По умолчанию 1 (необяз.)
+            
+        Returns:
+            Cписок (list) с ID всех сообщений профиля
+        """
 
         soup = BeautifulSoup(self.session.get(f"{MAIN_URL}/members/{member_id}/page-{page}").content, "lxml")
         return [int(post['id'].strip('js-profilePost-')) for post in soup.find_all('article', {'id': compile('js-profilePost-*')})]
@@ -259,27 +316,45 @@ class ArizonaAPI:
     # POST
     def react_post(self, post_id: int, reaction_id: int = 1) -> Response:
         """Поставить реакцию на сообщение
-        :param post_id - ID сообщения
-        :param reaction_id - (необяз.) ID реакции. По умолчанию 1"""
+
+        Attributes:
+            post_id (int): ID сообщения
+            reaction_id (int): ID реакции. По умолчанию 1 (необяз.)
+            
+        Returns:
+            Объект Response модуля requests
+        """
 
         token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
         return self.session.post(f'{MAIN_URL}/posts/{post_id}/react?reaction_id={reaction_id}', {'_xfToken': token})
     
 
-    def edit_post(self, post_id: int, html_message: str) -> Response:
+    def edit_post(self, post_id: int, message_html: str) -> Response:
         """Отредактировать сообщение
-        :param post_id - ID сообщения
-        :param html_message - новое содержание темы. Рекомендуется использование HTML"""
+
+        Attributes:
+            post_id (int): ID сообщения
+            message_html (str): Новый текст сообщения. Рекомендуется использование HTML
+            
+        Returns:
+            Объект Response модуля requests
+        """
 
         token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        return self.session.post(f"{MAIN_URL}/posts/{post_id}/edit", {"message_html": html_message, "message": html_message, "_xfToken": token})
+        return self.session.post(f"{MAIN_URL}/posts/{post_id}/edit", {"message_html": message_html, "message": message_html, "_xfToken": token})
 
 
     def delete_post(self, post_id: int, reason: str, hard_delete: bool = False) -> Response:
         """Удалить сообщение
-        :param post_id - ID сообщения
-        :param reason - причина для удаления
-        :param hard_delete - (необяз.) полное удаление сообщения. По умолчанию False"""
+
+        Attributes:
+            post_id (int): ID сообщения
+            reason (str): Причина для удаления
+            hard_delete (bool): Полное удаление сообщения. По умолчанию False (необяз.)
+        
+        Returns:
+            Объект Response модуля requests
+        """
 
         token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
         return self.session.post(f"{MAIN_URL}/posts/{post_id}/delete", {"reason": reason, "hard_delete": int(hard_delete), "_xfToken": token})
@@ -288,17 +363,29 @@ class ArizonaAPI:
     # PROFILE POST
     def react_profile_post(self, post_id: int, reaction_id: int = 1) -> Response:
         """Поставить реакцию на сообщение профиля
-        :param post_id - ID сообщения профиля
-        :param reaction_id - (необяз.) ID реакции. По умолчанию 1"""
+
+        Attributes:
+            post_id (int): ID сообщения профиля
+            reaction_id (int): ID реакции. По умолчанию 1 (необяз.)
+            
+        Returns:
+            Объект Response модуля requests
+        """
 
         token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
         return self.session.post(f'{MAIN_URL}/profile-posts/{post_id}/react?reaction_id={reaction_id}', {'_xfToken': token})
 
 
     def comment_profile_post(self, post_id: int, message_html: str) -> Response:
-        """Написать комментарий под сообщением профиля
-        :param post_id - ID сообщения профиля
-        :param html_message - содержание комментария. Рекомендуется использование HTML"""
+        """Прокомментировать сообщение профиля
+
+        Attributes:
+            post_id (int): ID сообщения
+            message_html (str): Текст комментария. Рекомендуется использование HTML
+            
+        Returns:
+            Объект Response модуля requests
+        """
 
         token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
         return self.session.post(f"{MAIN_URL}/profile-posts/{post_id}/add-comment", {"message_html": message_html, "_xfToken": token})
@@ -306,27 +393,45 @@ class ArizonaAPI:
 
     def delete_profile_post(self, post_id: int, reason: str, hard_delete: bool = False) -> Response:
         """Удалить сообщение профиля
-        :param post_id - ID сообщения профиля
-        :param reason - причина для удаления
-        :param hard_delete - (необяз.) полное удаление сообщения. По умолчанию False"""
+
+        Attributes:
+            post_id (int): ID сообщения профиля
+            reason (str): Причина для удаления
+            hard_delete (bool): Полное удаление сообщения. По умолчанию False (необяз.)
+        
+        Returns:
+            Объект Response модуля requests
+        """
 
         token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
         return self.session.post(f"{MAIN_URL}/profile-posts/{post_id}/delete", {"reason": reason, "hard_delete": int(hard_delete), "_xfToken": token})
     
 
-    def edit_profile_post(self, post_id: int, html_message: str) -> Response:
+    def edit_profile_post(self, post_id: int, message_html: str) -> Response:
         """Отредактировать сообщение профиля
-        :param post_id - ID сообщения
-        :param html_message - новое содержание сообщения. Рекомендуется использование HTML"""
+        
+        Attributes:
+            post_id (int): ID сообщения
+            message_html (str): Новый текст сообщения. Рекомендуется использование HTML
+            
+        Returns:
+            Объект Response модуля requests
+        """
 
         token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        return self.session.post(f"{MAIN_URL}/profile-posts/{post_id}/edit", {"message_html": html_message, "message": html_message, "_xfToken": token})
+        return self.session.post(f"{MAIN_URL}/profile-posts/{post_id}/edit", {"message_html": message_html, "message": message_html, "_xfToken": token})
 
 
     # THREAD
     def close_thread(self, thread_id: int) -> Response:
         """Закрыть/открыть тему (для модерации)
-        :param thread_id - ID темы"""
+        
+        Attributes:
+            thread_id (int): ID темы
+        
+        Returns:
+            Объект Response модуля requests
+        """
 
         token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
         return self.session.post(f"{MAIN_URL}/threads/{thread_id}/quick-close", {'_xfToken': token})
@@ -334,26 +439,44 @@ class ArizonaAPI:
 
     def pin_thread(self, thread_id: int) -> Response:
         """Закрепить/открепить тему (для модерации)
-        :param thread_id - ID темы"""
+        
+        Attributes:
+            thread_id (int): ID темы
+        
+        Returns:
+            Объект Response модуля requests
+        """
 
         token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
         return self.session.post(f"{MAIN_URL}/threads/{thread_id}/quick-stick", {'_xfToken': token})
     
 
-    def answer_thread(self, thread_id: int, html_message: str) -> Response:
-        """Оставить ответ в теме
-        :param thread_id - ID темы
-        :param html_message - содержание ответа. Рекомендуется использование HTML"""
+    def answer_thread(self, thread_id: int, message_html: str) -> Response:
+        """Оставить сообщенме в теме
+
+        Attributes:
+            thread_id (int): ID темы
+            message_html (str): Текст сообщения. Рекомендуется использование HTML
+            
+        Returns:
+            Объект Response модуля requests
+        """
 
         token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        return self.session.post(f"{MAIN_URL}/threads/{thread_id}/add-reply", {'_xfToken': token, 'message_html': html_message})
+        return self.session.post(f"{MAIN_URL}/threads/{thread_id}/add-reply", {'_xfToken': token, 'message_html': message_html})
 
 
     def watch_thread(self, thread_id: int, email_subscribe: bool = False, stop: bool = False) -> Response:
-        """Настроить отслеживание темы
-        :param thread_id - ID темы
-        :param email_subscribe - (необяз.) отправлять ли уведомления на почту. По умолчанию False
-        :param stop - (необяз.) принудительно прекратить отслеживание. По умолчанию False"""
+        """Изменить статус отслеживания темы
+
+        Attributes:
+            thread_id (int): ID темы
+            email_subscribe (bool): Отправлять ли уведомления на почту. По умолчанию False (необяз.)
+            stop (bool): - Принудительно прекратить отслеживание. По умолчанию False (необяз.)
+        
+        Returns:
+            Объект Response модуля requests
+        """
 
         token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
         return self.session.post(f"{MAIN_URL}/threads/{thread_id}/watch", {'_xfToken': token, 'stop': int(stop), 'email_subscribe': int(email_subscribe)})
@@ -361,19 +484,48 @@ class ArizonaAPI:
 
     def delete_thread(self, thread_id: int, reason: str, hard_delete: bool = False) -> Response:
         """Удалить тему
-        :param thread_id - ID темы
-        :param reason - причина для удаления
-        :param hard_delete - (необяз.) полное удаление темы. По умолчанию False"""
+
+        Attributes:
+            thread_id (int): ID темы
+            reason (str): Причина для удаления
+            hard_delete (bool): Полное удаление сообщения. По умолчанию False (необяз.)
+            
+        Returns:
+            Объект Response модуля requests
+        """
 
         token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
         return self.session.post(f"{MAIN_URL}/threads/{thread_id}/delete", {"reason": reason, "hard_delete": int(hard_delete), "_xfToken": token})
     
 
+    def edit_thread(self, thread_id: int, message_html: str) -> Response:
+        """Отредактировать содержимое темы
+
+        Attributes:
+            thread_id (int): ID темы
+            message_html (str): Новое содержимое ответа. Рекомендуется использование HTML
+        
+        Returns:
+            Объект Response модуля requests
+        """
+
+        content = BeautifulSoup(self.session.get(f"{MAIN_URL}/threads/{thread_id}/page-1").content, 'lxml')
+        token = content.find('html')['data-csrf']
+        thread_post_id = content.find('article', {'id': compile('js-post-*')})['id'].strip('js-post-')
+        return self.session.post(f"{MAIN_URL}/posts/{thread_post_id}/edit", {"message_html": message_html, "message": message_html, "_xfToken": token})
+    
+
     def edit_thread_info(self, thread_id: int, title: str = None, prefix_id: int = None) -> Response:
         """Изменить заголовок и/или префикс темы
-        :param thread_id - ID темы
-        :param title - новое название
-        :param prefix_id - новый ID префикса"""
+
+        Attributes:
+            thread_id (int): ID темы
+            title (str): Новое название
+            prefix_id (int): Новый ID префикса
+        
+        Returns:
+            Объект Response модуля requests
+        """
 
         token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
         data = {"_xfToken": token}
@@ -386,8 +538,14 @@ class ArizonaAPI:
 
     def get_thread_posts(self, thread_id: int, page: int = 1) -> list:
         """Получить все сообщения из темы на странице
-        :param thread_id - ID темы
-        :param page - (необяз.) страница для поиска. По умолчанию 1"""
+        
+        Attributes:
+            thread_id (int): ID темы
+            page (int): Cтраница для поиска. По умолчанию 1 (необяз.)
+        
+        Returns:
+            Список (list), состоящий из ID всех сообщений на странице
+        """
 
         soup = BeautifulSoup(self.session.get(f"{MAIN_URL}/threads/{thread_id}/page-{page}").content, 'lxml')
         return [i['id'].strip('js-post-') for i in soup.find_all('article', {'id': compile('js-post-*')})]
@@ -395,8 +553,14 @@ class ArizonaAPI:
 
     def react_thread(self, thread_id: int, reaction_id: int = 1) -> Response:
         """Поставить реакцию на тему
-        :param thread_id - ID темы
-        :param reaction_id - (необяз.) ID реакции. По умолчанию 1"""
+
+        Attributes:
+            thread_id (int): ID темы
+            reaction_id (int): ID реакции. По умолчанию 1 (необяз.)
+            
+        Returns:
+            Объект Response модуля requests
+        """
 
         content = BeautifulSoup(self.session.get(f"{MAIN_URL}/threads/{thread_id}/page-1").content, 'lxml')
         token = content.find('html')['data-csrf']
@@ -405,13 +569,19 @@ class ArizonaAPI:
 
 
     # OTHER
-    def send_form(self, form_id: int, data: dict) -> str:
+    def send_form(self, form_id: int, data: dict) -> Response:
         """Заполнить форму
-        :param form_id - ID формы
-        :param data - информация для запонения в виде словаря. Форма словаря: {'question[id вопроса]' = 'необходимая информация'} | Пример: {'question[531]' = '1'}"""
+
+        Attributes:
+            form_id (int): ID формы
+            data (dict): Информация для запонения в виде словаря. Форма словаря: {'question[id вопроса]' = 'необходимая информация'} | Пример: {'question[531]' = '1'}
+        
+        Returns:
+            Объект Response модуля requests
+        """
 
         token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
         data.update({'_xfToken': token})
         response = self.session.post(f"{MAIN_URL}/form/{form_id}/submit", data)
 
-        return response.text
+        return response
