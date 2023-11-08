@@ -1,8 +1,6 @@
-from bs4 import BeautifulSoup
 from requests import Response
 from typing import TYPE_CHECKING
 
-from arz_api.consts import MAIN_URL
 if TYPE_CHECKING:
     from arz_api import ArizonaAPI
     from arz_api.models import Member, Thread
@@ -24,6 +22,7 @@ class Post:
         self.text_content = text_content
         """**Текст из сообщения**"""
 
+
     def react(self, reaction_id: int = 1) -> Response:
         """Поставить реакцию на сообщение
 
@@ -34,9 +33,9 @@ class Post:
             Объект Response модуля requests
         """
 
-        token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        return self.API.session.post(f'{MAIN_URL}/posts/{self.id}/react?reaction_id={reaction_id}', {'_xfToken': token})
+        return self.API.react_post(self.id, reaction_id)
     
+
     def edit(self, message_html: str) -> Response:
         """Отредактировать сообщение
 
@@ -47,8 +46,8 @@ class Post:
             Объект Response модуля requests
         """
 
-        token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        return self.API.session.post(f"{MAIN_URL}/posts/{self.id}/edit", {"message_html": message_html, "message": message_html, "_xfToken": token})
+        return self.API.edit_post(self.id, message_html)
+
 
     def delete(self, reason: str, hard_delete: bool = False) -> Response:
         """Удалить сообщение
@@ -61,8 +60,7 @@ class Post:
             Объект Response модуля requests
         """
 
-        token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        return self.API.session.post(f"{MAIN_URL}/posts/{self.id}/delete", {"reason": reason, "hard_delete": int(hard_delete), "_xfToken": token})
+        return self.API.delete_post(self.id, reason, hard_delete)
 
 
 class ProfilePost:
@@ -81,6 +79,7 @@ class ProfilePost:
         self.text_content = text_content
         """**Текст из сообщения**"""
 
+
     def react(self, reaction_id: int = 1) -> Response:
         """Поставить реакцию на сообщение профиля
 
@@ -91,8 +90,8 @@ class ProfilePost:
             Объект Response модуля requests
         """
 
-        token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        return self.API.session.post(f'{MAIN_URL}/profile-posts/{self.id}/react?reaction_id={reaction_id}', {'_xfToken': token})
+        return self.API.react_profile_post(self.id, reaction_id)
+
 
     def comment(self, message_html: str) -> Response:
         """Прокомментировать сообщение профиля
@@ -104,8 +103,8 @@ class ProfilePost:
             Объект Response модуля requests
         """
 
-        token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        return self.API.session.post(f"{MAIN_URL}/profile-posts/{self.id}/add-comment", {"message_html": message_html, "_xfToken": token})
+        return self.API.comment_profile_post(self.id, message_html)
+
 
     def delete(self, reason: str, hard_delete: bool = False) -> Response:
         """Удалить сообщение
@@ -118,9 +117,9 @@ class ProfilePost:
             Объект Response модуля requests
         """
 
-        token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        return self.API.session.post(f"{MAIN_URL}/profile-posts/{self.id}/delete", {"reason": reason, "hard_delete": int(hard_delete), "_xfToken": token})
+        return self.API.delete_profile_post(self.id, reason, hard_delete)
     
+
     def edit(self, message_html: str) -> Response:
         """Отредактировать сообщение профиля
 
@@ -131,5 +130,4 @@ class ProfilePost:
             Объект Response модуля requests
         """
 
-        token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        return self.API.session.post(f"{MAIN_URL}/profile-posts/{self.id}/edit", {"message_html": message_html, "message": message_html, "_xfToken": token})
+        return self.API.edit_profile_post(self.id, message_html)

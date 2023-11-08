@@ -1,9 +1,6 @@
-from bs4 import BeautifulSoup
 from requests import Response
-from re import compile, findall
 from typing import TYPE_CHECKING
 
-from arz_api.consts import MAIN_URL
 if TYPE_CHECKING:
     from arz_api import ArizonaAPI
 
@@ -35,8 +32,7 @@ class Category:
             Cделать возврат ID новой темы
         """
 
-        token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        return self.API.session.post(f"{MAIN_URL}/forums/{self.id}/post-thread?inline-mode=1", {'_xfToken': token, 'title': title, 'message_html': message_html, 'discussion_type': discussion_type, 'watch_thread': watch_thread})
+        return self.API.create_thread(self.id, title, message_html, discussion_type, watch_thread)
 
 
     def set_read(self) -> Response:
@@ -46,8 +42,7 @@ class Category:
             Объект Response модуля requests
         """
 
-        token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        return self.API.session.post(f"{MAIN_URL}/forums/{self.id}/mark-read", {'_xfToken': token})
+        return self.API.set_read_category(self.id)
     
 
     def watch(self, notify: str, send_alert: bool = True, send_email: bool = False, stop: bool = False) -> Response:
@@ -63,10 +58,7 @@ class Category:
             Объект Response модуля requests    
         """
 
-        token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-
-        if stop: return self.API.session.post(f"{MAIN_URL}/forums/{self.id}/watch", {'_xfToken': token, 'stop': "1"})
-        else: return self.API.session.post(f"{MAIN_URL}/forums/{self.id}/watch", {'_xfToken': token, 'send_alert': int(send_alert), 'send_email': int(send_email), 'notify': notify})
+        return self.API.watch_category(self.id, notify, send_alert, send_email, stop)
     
 
     def get_threads(self, page: int = 1) -> dict:
@@ -79,16 +71,7 @@ class Category:
             Словарь (dict), состоящий из списков закрепленных ('pins') и незакрепленных ('unpins') тем
         """
 
-        soup = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/forums/{self.id}/page-{page}").content, "lxml")
-        result = {'pins': [], 'unpins': []}
-        for thread in soup.find_all('div', compile('structItem structItem--thread.*')):
-            link = thread.find_all('div', "structItem-title")[0].find_all("a")[-1]
-            if len(findall(r'\d+', link['href'])) < 1: continue
-
-            if len(thread.find_all('i', {'title': 'Закреплено'})) > 0: result['pins'].append(int(findall(r'\d+', link['href'])[0]))
-            else: result['unpins'].append(int(findall(r'\d+', link['href'])[0]))
-        
-        return result
+        return self.API.get_threads(self.id, page)
 
 
     def get_categories(self) -> list:
@@ -98,5 +81,4 @@ class Category:
             Список (list), состоящий из ID дочерних категорий раздела
         """
 
-        soup = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/forums/{self.id}/page-1").content, "lxml")
-        return [int(findall(r'\d+', category.find("a")['href'])[0]) for category in soup.find_all('div', compile('.*node--depth2 node--forum.*'))]
+        return self.API.get_categories(self.id)

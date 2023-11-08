@@ -41,7 +41,7 @@ class ArizonaAPI:
         """Объект текущего пользователя"""
 
         content = BeautifulSoup(self.session.get(f"{MAIN_URL}/account").content, 'lxml')
-        user_id = int(content.find('span', {'class': 'avatar avatar--xxs'})['data-user-id'])
+        user_id = int(content.find('span', {'class': 'avatar--xxs'})['data-user-id'])
         member_info = self.get_member(user_id)
 
         return CurrentMember(self, user_id, member_info.username, member_info.user_title, member_info.avatar, member_info.messages_count, member_info.reactions_count, member_info.trophies_count)

@@ -4,7 +4,6 @@ from re import compile
 from typing import TYPE_CHECKING
 
 from arz_api.consts import MAIN_URL
-from arz_api.exceptions import ThisIsYouError
 
 if TYPE_CHECKING:
     from arz_api.api import ArizonaAPI
@@ -47,10 +46,7 @@ class Member:
             Объект Response модуля requests
         """
 
-        if self.id == self.API.current_member.id: raise ThisIsYouError(self.id)
-
-        token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        return self.API.session.post(f"{MAIN_URL}/members/{self.id}/follow", {'_xfToken': token})
+        return self.API.follow_member(self.id)
     
     def ignore(self) -> Response:
         """Изменить статус игнорирования пользователя
@@ -59,10 +55,7 @@ class Member:
             Объект Response модуля requests
         """
 
-        if self.id == self.API.current_member.id: raise ThisIsYouError(self.id)
-
-        token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        return self.API.session.post(f"{MAIN_URL}/members/{self.id}/ignore", {'_xfToken': token})
+        return self.API.ignore_member(self.id)
     
     def add_message(self, message_html: str) -> Response:
         """Отправить сообщение на стенку пользователя
@@ -74,8 +67,7 @@ class Member:
             Объект Response модуля requests
         """
 
-        token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        return self.API.session.post(f"{MAIN_URL}/members/{self.id}/post", {'_xfToken': token, 'message_html': message_html})
+        return self.API.answer_thread(self.id, message_html)
     
     def get_profile_messages(self, page: int = 1) -> list:
         """Возвращает ID всех сообщений со стенки пользователя на странице
@@ -87,8 +79,7 @@ class Member:
             Cписок (list) с ID всех сообщений профиля
         """
 
-        soup = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/members/{self.id}/page-{page}").content, "lxml")
-        return [int(post['id'].strip('js-profilePost-')) for post in soup.find_all('article', {'id': compile('js-profilePost-*')})]
+        return self.API.get_profile_messages(self.id, page)
 
 
 class CurrentMember(Member):
@@ -133,8 +124,8 @@ class CurrentMember(Member):
             "use_custom": 1,
             "delete_avatar": 1
         }
-        return self.API.session.post(f"{MAIN_URL}/account/avatar", files=file_dict, data=data)
 
+        return self.API.session.post(f"{MAIN_URL}/account/avatar", files=file_dict, data=data)
 
     # TODO:
     #def get_last_notifications(self, time_offset: int = 86400, limit: int = 100), change_avatar(), change_banner()

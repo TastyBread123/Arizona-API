@@ -1,9 +1,6 @@
-from bs4 import BeautifulSoup
 from requests import Response
-from re import compile
 from typing import TYPE_CHECKING
 
-from arz_api.consts import MAIN_URL
 if TYPE_CHECKING:
     from arz_api.models.member_object import Member
     from arz_api.models.category_object import Category
@@ -44,8 +41,7 @@ class Thread:
             Объект Response модуля requests
         """
 
-        token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        return self.API.session.post(f"{MAIN_URL}/threads/{self.id}/quick-close", {'_xfToken': token})
+        return self.API.close_thread(self.id)
 
 
     def pin(self) -> Response:
@@ -55,8 +51,7 @@ class Thread:
             Объект Response модуля requests
         """
 
-        token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        return self.API.session.post(f"{MAIN_URL}/threads/{self.id}/quick-stick", {'_xfToken': token})
+        return self.API.pin_thread(self.id)
     
 
     def answer(self, message_html: str) -> Response:
@@ -69,8 +64,7 @@ class Thread:
             Объект Response модуля requests
         """
 
-        token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        return self.API.session.post(f"{MAIN_URL}/threads/{self.id}/add-reply", {'_xfToken': token, 'message_html': message_html})
+        return self.API.answer_thread(self.id, message_html)
 
 
     def watch(self, email_subscribe: bool = False, stop: bool = False) -> Response:
@@ -84,8 +78,7 @@ class Thread:
             Объект Response модуля requests
         """
 
-        token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        return self.API.session.post(f"{MAIN_URL}/threads/{self.id}/watch", {'_xfToken': token, 'stop': int(stop), 'email_subscribe': int(email_subscribe)})
+        return self.API.watch_thread(self.id, email_subscribe, stop)
     
 
     def delete(self, reason: str, hard_delete: bool = False) -> Response:
@@ -99,8 +92,7 @@ class Thread:
             Объект Response модуля requests
         """
 
-        token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        return self.API.session.post(f"{MAIN_URL}/threads/{self.id}/delete", {"reason": reason, "hard_delete": int(hard_delete), "_xfToken": token})
+        return self.API.delete_thread(self.id, reason, hard_delete)
     
 
     def edit(self, message_html: str) -> Response:
@@ -113,8 +105,7 @@ class Thread:
             Объект Response модуля requests
         """
 
-        token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        return self.API.session.post(f"{MAIN_URL}/posts/{self.thread_post_id}/edit", {"message_html": message_html, "message": message_html, "_xfToken": token})
+        return self.API.edit_thread(self.id, message_html)
 
 
     def edit_info(self, title: str = None, prefix_id: int = None) -> Response:
@@ -128,13 +119,7 @@ class Thread:
             Объект Response модуля requests
         """
 
-        token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        data = {"_xfToken": token}
-
-        if title is not None: data.update({'title': title})
-        if prefix_id is not None: data.update({'prefix_id[]', prefix_id})
-
-        return self.API.session.post(f"{MAIN_URL}/threads/{self.id}/edit", data)
+        return self.API.edit_thread_info(self.id, title, prefix_id)
     
 
     def get_posts(self, page: int = 1) -> list:
@@ -147,8 +132,7 @@ class Thread:
             Список (list), состоящий из ID всех сообщений на странице
         """
 
-        soup = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/threads/{self.id}/page-{page}").content, 'lxml')
-        return [i['id'].strip('js-post-') for i in soup.find_all('article', {'id': compile('js-post-*')})]
+        return self.API.get_thread_posts(self.id, page)
 
 
     def react(self, reaction_id: int = 1) -> Response:
@@ -161,5 +145,4 @@ class Thread:
             Объект Response модуля requests
         """
 
-        token = BeautifulSoup(self.API.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        return self.API.session.post(f'{MAIN_URL}/posts/{self.thread_post_id}/react?reaction_id={reaction_id}', {'_xfToken': token})
+        return self.API.react_thread(self.id, reaction_id)
