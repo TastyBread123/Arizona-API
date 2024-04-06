@@ -531,7 +531,7 @@ class ArizonaAPI:
         data = {"_xfToken": token}
 
         if title is not None: data.update({'title': title})
-        if prefix_id is not None: data.update({'prefix_id[]', prefix_id})
+        if prefix_id is not None: data.update({'prefix_id[]': prefix_id})
 
         return self.session.post(f"{MAIN_URL}/threads/{thread_id}/edit", data)
     
