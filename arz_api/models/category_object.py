@@ -6,7 +6,7 @@ if TYPE_CHECKING:
 
 
 class Category:
-    def __init__(self, API: 'ArizonaAPI', id: int, title: str, pages_count: int) -> None:
+    def __init__(self, API: 'ArizonaAPI', id: int, title: str, pages_count: int, parent_category_id: int) -> None:
         self.API = API
         self.id = id
         """**ID категории**"""
@@ -14,6 +14,8 @@ class Category:
         """**Название категории**"""
         self.pages_count = pages_count
         """**Количество страниц в категории**"""
+        self.parent_category_id = parent_category_id
+        """**ID предыдуще категории (родительская). Если нет - None**"""
 
 
     def create_thread(self, title: str, message_html: str, discussion_type: str = 'discussion', watch_thread: int = 1) -> Response:
@@ -82,3 +84,12 @@ class Category:
         """
 
         return self.API.get_categories(self.id)
+    
+
+    def get_url(self) -> str:
+        """Получить ссылку на объект
+        
+        Returns:
+            Ссылку в формате https://forum.arizona-rp.com/forums/x/"""
+        
+        return f"https://forum.arizona-rp.com/forums/{self.id}/"

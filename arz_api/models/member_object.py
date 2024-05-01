@@ -16,12 +16,13 @@ class Member:
     username: str
     user_title: str
     avatar: str
+    roles: list
     
     messages_count: int
     reactions_count: int
     trophies_count: int
 
-    def __init__(self, API, id: int, username: str, user_title: str, avatar: str, messages_count: int, reactions_count: int, trophies_count: int) -> None:
+    def __init__(self, API, id: int, username: str, user_title: str, avatar: str, roles: list, messages_count: int, reactions_count: int, trophies_count: int) -> None:
         self.API = API
         self.id = id
         """**ID пользователя**"""
@@ -31,6 +32,8 @@ class Member:
         """**Звание пользователя**"""
         self.avatar = avatar
         """**Ссылка на аватарку пользователя**"""
+        self.roles = roles
+        """Роль пользователя на форуме ('покраска')"""
 
         self.messages_count = messages_count
         """**Количество сообщений в счетчике**"""
@@ -80,6 +83,14 @@ class Member:
         """
 
         return self.API.get_profile_messages(self.id, page)
+    
+    def get_url(self) -> str:
+        """Получить ссылку на объект
+        
+        Returns:
+            Ссылку в формате https://forum.arizona-rp.com/members/x/"""
+        
+        return f"https://forum.arizona-rp.com/members/{self.id}/"
 
 
 class CurrentMember(Member):

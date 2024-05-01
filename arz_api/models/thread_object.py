@@ -146,3 +146,12 @@ class Thread:
         """
 
         return self.API.react_thread(self.id, reaction_id)
+    
+
+    def get_url(self) -> str:
+        """Получить ссылку на объект
+        
+        Returns:
+            Ссылку в формате https://forum.arizona-rp.com/threads/x/"""
+        
+        return f"https://forum.arizona-rp.com/threads/{self.id}/"

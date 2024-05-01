@@ -61,6 +61,23 @@ class Post:
         """
 
         return self.API.delete_post(self.id, reason, hard_delete)
+    
+    
+    def bookmark(self) -> Response:
+        """Добавить сообщение в закладки
+        
+        Returns:
+            Объект Response модуля requests"""
+        return self.API.bookmark_post(self.id)
+    
+
+    def get_url(self) -> str:
+        """Получить ссылку на объект
+        
+        Returns:
+            Ссылку в формате https://forum.arizona-rp.com/posts/x/"""
+        
+        return f"https://forum.arizona-rp.com/posts/{self.id}/"
 
 
 class ProfilePost:
@@ -131,3 +148,12 @@ class ProfilePost:
         """
 
         return self.API.edit_profile_post(self.id, message_html)
+
+
+    def get_url(self) -> str:
+        """Получить ссылку на объект
+        
+        Returns:
+            Ссылку в формате https://forum.arizona-rp.com/profile-posts/x/"""
+        
+        return f"https://forum.arizona-rp.com/profile-posts/{self.id}/"

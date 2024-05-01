@@ -44,7 +44,7 @@ class ArizonaAPI:
         user_id = int(content.find('span', {'class': 'avatar--xxs'})['data-user-id'])
         member_info = self.get_member(user_id)
 
-        return CurrentMember(self, user_id, member_info.username, member_info.user_title, member_info.avatar, member_info.messages_count, member_info.reactions_count, member_info.trophies_count)
+        return CurrentMember(self, user_id, member_info.username, member_info.user_title, member_info.avatar, member_info.roles, member_info.messages_count, member_info.reactions_count, member_info.trophies_count)
 
     
     def get_category(self, category_id: int) -> Category:
@@ -52,6 +52,8 @@ class ArizonaAPI:
 
         content = BeautifulSoup(self.session.get(f"{MAIN_URL}/forums/{category_id}").content, 'lxml')
         title = content.find('h1', {'class': 'p-title-value'}).text
+        if "Упс! Мы столкнулись с некоторыми проблемами." in title:
+            return None
 
         try: pages_count = int(content.find_all('li', {'class': 'pageNav-page'})[-1].text)
         except IndexError: pages_count = 1
@@ -62,15 +64,23 @@ class ArizonaAPI:
         if parent_category_id is not None: temp_url = f'forums/{parent_category_id}/'
         content = BeautifulSoup(self.session.get(f"{MAIN_URL}/{temp_url}").content, 'lxml')
         
-        return Category(self, category_id, title, pages_count)
+        return Category(self, category_id, title, pages_count, parent_category_id)
     
     
     def get_member(self, user_id: int) -> Member:
-        """Найти пользователя по ID"""
+        """Найти пользователя по ID (возвращает либо Member, либо None (если профиль закрыт / не существует))"""
 
         content = BeautifulSoup(self.session.get(f"{MAIN_URL}/members/{user_id}").content, 'lxml')
-        username = content.find('span', {'class': 'username'}).text
-        
+
+        username = content.find('span', {'class': 'username'})
+        if username is None:
+            return None
+        username = username.text
+
+        roles = []
+        for i in content.find('div', {'class': 'memberHeader-banners'}).children:
+            if i.text != '\n': roles.append(i.text)
+
         try: user_title = content.find('span', {'class': 'userTitle'}).text
         except AttributeError: user_title = None
         try: avatar = MAIN_URL + content.find('a', {'class': 'avatar avatar--l'})['href']
@@ -80,16 +90,20 @@ class ArizonaAPI:
         reactions_count = int(content.find('dl', {'class': 'pairs pairs--rows pairs--rows--centered'}).find('dd').text.strip().replace(',', ''))
         trophies_count = int(content.find('a', {'href': f'/members/{user_id}/trophies'}).text.strip().replace(',', ''))
         
-        return Member(self, user_id, username, user_title, avatar, messages_count, reactions_count, trophies_count)
+        return Member(self, user_id, username, user_title, avatar, roles, messages_count, reactions_count, trophies_count)
 
     
     def get_thread(self, thread_id: int) -> Thread:
-        """Найти тему по ID"""
+        """Найти тему по ID (Thread если тема существует, None если недоступна / не существует)"""
 
         content = BeautifulSoup(self.session.get(f"{MAIN_URL}/threads/{thread_id}/page-1").content, 'lxml')
         
-        try: creator = self.get_member(int(content.find('a', {'class': 'username'})['data-user-id']))
-        except: creator = Member(self, int(content.find('a', {'class': 'username'})['data-user-id']), content.find('a', {'class': 'username'}).text, None, None, None, None, None)
+        creator_id = content.find('a', {'class': 'username'})
+        if creator_id is None:
+            return None
+
+        try: creator = self.get_member(int(creator_id['data-user-id']))
+        except: creator = Member(self, int(creator_id['data-user-id']), content.find('a', {'class': 'username'}).text, None, None, None, None, None, None)
         
         category = self.get_category(int(content.find('html')['data-container-key'].strip('node-')))
         create_date = int(content.find('time')['data-time'])
@@ -112,11 +126,13 @@ class ArizonaAPI:
     
 
     def get_post(self, post_id: int) -> Post:
-        """Найти пост по ID"""
+        """Найти пост по ID (Post если существует, None - удален / нет доступа)"""
 
         content = BeautifulSoup(self.session.get(f"{MAIN_URL}/posts/{post_id}").content, 'lxml')
         post = content.find('article', {'id': f'js-post-{post_id}'})
-        
+        if post is None:
+            return None
+
         try: creator = self.get_member(int(post.find('a', {'data-xf-init': 'member-tooltip'})['data-user-id']))
         except:
             user_info = post.find('a', {'data-xf-init': 'member-tooltip'})
@@ -134,6 +150,9 @@ class ArizonaAPI:
 
         content = BeautifulSoup(self.session.get(f"{MAIN_URL}/profile-posts/{post_id}").content, 'lxml')
         post = content.find('article', {'id': f'js-profilePost-{post_id}'})
+        if post is None:
+            return None
+
         creator = self.get_member(int(post.find('a', {'class': 'username'})['data-user-id']))
         profile = self.get_member(int(content.find('span', {'class': 'username'})['data-user-id']))
         create_date = int(post.find('time')['data-time'])
@@ -359,6 +378,20 @@ class ArizonaAPI:
         token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
         return self.session.post(f"{MAIN_URL}/posts/{post_id}/delete", {"reason": reason, "hard_delete": int(hard_delete), "_xfToken": token})
     
+
+    def bookmark_post(self, post_id: int) -> Response:
+        """Добавить сообщение в закладки
+
+        Attributes:
+            post_id (int): ID сообщения
+        
+        Returns:
+            Объект Response модуля requests
+        """
+
+        token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
+        return self.session.post(f"{MAIN_URL}/posts/{post_id}/bookmark", {"_xfToken": token})
+
 
     # PROFILE POST
     def react_profile_post(self, post_id: int, reaction_id: int = 1) -> Response:
