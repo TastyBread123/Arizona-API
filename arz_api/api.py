@@ -136,7 +136,7 @@ class ArizonaAPI:
         try: creator = self.get_member(int(post.find('a', {'data-xf-init': 'member-tooltip'})['data-user-id']))
         except:
             user_info = post.find('a', {'data-xf-init': 'member-tooltip'})
-            creator = Member(self, int(user_info['data-user-id']), user_info.text, None, None, None, None, None)
+            creator = Member(self, int(user_info['data-user-id']), user_info.text, None, None, None, None, None, None)
 
         thread = self.get_thread(int(content.find('html')['data-content-key'].strip('thread-')))
         create_date = int(post.find('time', {'class': 'u-dt'})['data-time'])
