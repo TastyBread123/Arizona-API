@@ -108,18 +108,20 @@ class Thread:
         return self.API.edit_thread(self.id, message_html)
 
 
-    def edit_info(self, title: str = None, prefix_id: int = None) -> Response:
+    def edit_info(self, title: str = None, prefix_id: int = None, sticky: bool = True, opened: bool = True) -> Response:
         """Изменить заголовок и/или префикс темы
 
         Attributes:
             title (str): Новое название
             prefix_id (int): Новый ID префикса
+            sticky (bool): Закрепить (True - закреп / False - не закреп)
+            opened (bool): Открыть/закрыть тему (True - открыть / False - закрыть)
         
         Returns:
             Объект Response модуля requests
         """
 
-        return self.API.edit_thread_info(self.id, title, prefix_id)
+        return self.API.edit_thread_info(self.id, title, prefix_id, sticky, opened)
     
 
     def get_posts(self, page: int = 1) -> list:

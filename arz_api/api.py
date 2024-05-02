@@ -548,20 +548,22 @@ class ArizonaAPI:
         return self.session.post(f"{MAIN_URL}/posts/{thread_post_id}/edit", {"message_html": message_html, "message": message_html, "_xfToken": token})
     
 
-    def edit_thread_info(self, thread_id: int, title: str = None, prefix_id: int = None) -> Response:
+    def edit_thread_info(self, thread_id: int, title: str = None, prefix_id: int = None, sticky: bool = True, opened: bool = True) -> Response:
         """Изменить заголовок и/или префикс темы
 
         Attributes:
             thread_id (int): ID темы
             title (str): Новое название
             prefix_id (int): Новый ID префикса
+            sticky (bool): Закрепить (True - закреп / False - не закреп)
+            opened (bool): Открыть/закрыть тему (True - открыть / False - закрыть)
         
         Returns:
             Объект Response модуля requests
         """
-
+        
         token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        data = {"_xfToken": token}
+        data = {"_xfToken": token, "sticky": sticky, "discussion_open": opened}
 
         if title is not None: data.update({'title': title})
         if prefix_id is not None: data.update({'prefix_id[]': prefix_id})
