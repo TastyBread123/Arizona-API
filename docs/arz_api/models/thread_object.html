@@ -236,53 +236,55 @@
 </span><span id="L-108"><a href="#L-108"><span class="linenos">108</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">edit_thread</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">message_html</span><span class="p">)</span>
 </span><span id="L-109"><a href="#L-109"><span class="linenos">109</span></a>
 </span><span id="L-110"><a href="#L-110"><span class="linenos">110</span></a>
-</span><span id="L-111"><a href="#L-111"><span class="linenos">111</span></a>    <span class="k">def</span> <span class="nf">edit_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">prefix_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
+</span><span id="L-111"><a href="#L-111"><span class="linenos">111</span></a>    <span class="k">def</span> <span class="nf">edit_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">prefix_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">sticky</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">opened</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
 </span><span id="L-112"><a href="#L-112"><span class="linenos">112</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Изменить заголовок и/или префикс темы</span>
 </span><span id="L-113"><a href="#L-113"><span class="linenos">113</span></a>
 </span><span id="L-114"><a href="#L-114"><span class="linenos">114</span></a><span class="sd">        Attributes:</span>
 </span><span id="L-115"><a href="#L-115"><span class="linenos">115</span></a><span class="sd">            title (str): Новое название</span>
 </span><span id="L-116"><a href="#L-116"><span class="linenos">116</span></a><span class="sd">            prefix_id (int): Новый ID префикса</span>
-</span><span id="L-117"><a href="#L-117"><span class="linenos">117</span></a><span class="sd">        </span>
-</span><span id="L-118"><a href="#L-118"><span class="linenos">118</span></a><span class="sd">        Returns:</span>
-</span><span id="L-119"><a href="#L-119"><span class="linenos">119</span></a><span class="sd">            Объект Response модуля requests</span>
-</span><span id="L-120"><a href="#L-120"><span class="linenos">120</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="L-121"><a href="#L-121"><span class="linenos">121</span></a>
-</span><span id="L-122"><a href="#L-122"><span class="linenos">122</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">edit_thread_info</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">prefix_id</span><span class="p">)</span>
-</span><span id="L-123"><a href="#L-123"><span class="linenos">123</span></a>    
-</span><span id="L-124"><a href="#L-124"><span class="linenos">124</span></a>
-</span><span id="L-125"><a href="#L-125"><span class="linenos">125</span></a>    <span class="k">def</span> <span class="nf">get_posts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">page</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
-</span><span id="L-126"><a href="#L-126"><span class="linenos">126</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Получить все ID сообщений из темы на странице</span>
-</span><span id="L-127"><a href="#L-127"><span class="linenos">127</span></a>
-</span><span id="L-128"><a href="#L-128"><span class="linenos">128</span></a><span class="sd">        Attributes:</span>
-</span><span id="L-129"><a href="#L-129"><span class="linenos">129</span></a><span class="sd">            page (int): Cтраница для поиска. По умолчанию 1 (необяз.)</span>
-</span><span id="L-130"><a href="#L-130"><span class="linenos">130</span></a><span class="sd">        </span>
-</span><span id="L-131"><a href="#L-131"><span class="linenos">131</span></a><span class="sd">        Returns:</span>
-</span><span id="L-132"><a href="#L-132"><span class="linenos">132</span></a><span class="sd">            Список (list), состоящий из ID всех сообщений на странице</span>
-</span><span id="L-133"><a href="#L-133"><span class="linenos">133</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="L-134"><a href="#L-134"><span class="linenos">134</span></a>
-</span><span id="L-135"><a href="#L-135"><span class="linenos">135</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">get_thread_posts</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">page</span><span class="p">)</span>
+</span><span id="L-117"><a href="#L-117"><span class="linenos">117</span></a><span class="sd">            sticky (bool): Закрепить (True - закреп / False - не закреп)</span>
+</span><span id="L-118"><a href="#L-118"><span class="linenos">118</span></a><span class="sd">            opened (bool): Открыть/закрыть тему (True - открыть / False - закрыть)</span>
+</span><span id="L-119"><a href="#L-119"><span class="linenos">119</span></a><span class="sd">        </span>
+</span><span id="L-120"><a href="#L-120"><span class="linenos">120</span></a><span class="sd">        Returns:</span>
+</span><span id="L-121"><a href="#L-121"><span class="linenos">121</span></a><span class="sd">            Объект Response модуля requests</span>
+</span><span id="L-122"><a href="#L-122"><span class="linenos">122</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="L-123"><a href="#L-123"><span class="linenos">123</span></a>
+</span><span id="L-124"><a href="#L-124"><span class="linenos">124</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">edit_thread_info</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">prefix_id</span><span class="p">,</span> <span class="n">sticky</span><span class="p">,</span> <span class="n">opened</span><span class="p">)</span>
+</span><span id="L-125"><a href="#L-125"><span class="linenos">125</span></a>    
+</span><span id="L-126"><a href="#L-126"><span class="linenos">126</span></a>
+</span><span id="L-127"><a href="#L-127"><span class="linenos">127</span></a>    <span class="k">def</span> <span class="nf">get_posts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">page</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+</span><span id="L-128"><a href="#L-128"><span class="linenos">128</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Получить все ID сообщений из темы на странице</span>
+</span><span id="L-129"><a href="#L-129"><span class="linenos">129</span></a>
+</span><span id="L-130"><a href="#L-130"><span class="linenos">130</span></a><span class="sd">        Attributes:</span>
+</span><span id="L-131"><a href="#L-131"><span class="linenos">131</span></a><span class="sd">            page (int): Cтраница для поиска. По умолчанию 1 (необяз.)</span>
+</span><span id="L-132"><a href="#L-132"><span class="linenos">132</span></a><span class="sd">        </span>
+</span><span id="L-133"><a href="#L-133"><span class="linenos">133</span></a><span class="sd">        Returns:</span>
+</span><span id="L-134"><a href="#L-134"><span class="linenos">134</span></a><span class="sd">            Список (list), состоящий из ID всех сообщений на странице</span>
+</span><span id="L-135"><a href="#L-135"><span class="linenos">135</span></a><span class="sd">        &quot;&quot;&quot;</span>
 </span><span id="L-136"><a href="#L-136"><span class="linenos">136</span></a>
-</span><span id="L-137"><a href="#L-137"><span class="linenos">137</span></a>
-</span><span id="L-138"><a href="#L-138"><span class="linenos">138</span></a>    <span class="k">def</span> <span class="nf">react</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reaction_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
-</span><span id="L-139"><a href="#L-139"><span class="linenos">139</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Поставить реакцию на тему</span>
-</span><span id="L-140"><a href="#L-140"><span class="linenos">140</span></a>
-</span><span id="L-141"><a href="#L-141"><span class="linenos">141</span></a><span class="sd">        Attributes:</span>
-</span><span id="L-142"><a href="#L-142"><span class="linenos">142</span></a><span class="sd">            reaction_id (int): ID реакции. По умолчанию 1 (необяз.)</span>
-</span><span id="L-143"><a href="#L-143"><span class="linenos">143</span></a><span class="sd">            </span>
-</span><span id="L-144"><a href="#L-144"><span class="linenos">144</span></a><span class="sd">        Returns:</span>
-</span><span id="L-145"><a href="#L-145"><span class="linenos">145</span></a><span class="sd">            Объект Response модуля requests</span>
-</span><span id="L-146"><a href="#L-146"><span class="linenos">146</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="L-147"><a href="#L-147"><span class="linenos">147</span></a>
-</span><span id="L-148"><a href="#L-148"><span class="linenos">148</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">react_thread</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">reaction_id</span><span class="p">)</span>
-</span><span id="L-149"><a href="#L-149"><span class="linenos">149</span></a>    
-</span><span id="L-150"><a href="#L-150"><span class="linenos">150</span></a>
-</span><span id="L-151"><a href="#L-151"><span class="linenos">151</span></a>    <span class="k">def</span> <span class="nf">get_url</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span id="L-152"><a href="#L-152"><span class="linenos">152</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Получить ссылку на объект</span>
-</span><span id="L-153"><a href="#L-153"><span class="linenos">153</span></a><span class="sd">        </span>
-</span><span id="L-154"><a href="#L-154"><span class="linenos">154</span></a><span class="sd">        Returns:</span>
-</span><span id="L-155"><a href="#L-155"><span class="linenos">155</span></a><span class="sd">            Ссылку в формате https://forum.arizona-rp.com/threads/x/&quot;&quot;&quot;</span>
-</span><span id="L-156"><a href="#L-156"><span class="linenos">156</span></a>        
-</span><span id="L-157"><a href="#L-157"><span class="linenos">157</span></a>        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;https://forum.arizona-rp.com/threads/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/&quot;</span>
+</span><span id="L-137"><a href="#L-137"><span class="linenos">137</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">get_thread_posts</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">page</span><span class="p">)</span>
+</span><span id="L-138"><a href="#L-138"><span class="linenos">138</span></a>
+</span><span id="L-139"><a href="#L-139"><span class="linenos">139</span></a>
+</span><span id="L-140"><a href="#L-140"><span class="linenos">140</span></a>    <span class="k">def</span> <span class="nf">react</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reaction_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
+</span><span id="L-141"><a href="#L-141"><span class="linenos">141</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Поставить реакцию на тему</span>
+</span><span id="L-142"><a href="#L-142"><span class="linenos">142</span></a>
+</span><span id="L-143"><a href="#L-143"><span class="linenos">143</span></a><span class="sd">        Attributes:</span>
+</span><span id="L-144"><a href="#L-144"><span class="linenos">144</span></a><span class="sd">            reaction_id (int): ID реакции. По умолчанию 1 (необяз.)</span>
+</span><span id="L-145"><a href="#L-145"><span class="linenos">145</span></a><span class="sd">            </span>
+</span><span id="L-146"><a href="#L-146"><span class="linenos">146</span></a><span class="sd">        Returns:</span>
+</span><span id="L-147"><a href="#L-147"><span class="linenos">147</span></a><span class="sd">            Объект Response модуля requests</span>
+</span><span id="L-148"><a href="#L-148"><span class="linenos">148</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="L-149"><a href="#L-149"><span class="linenos">149</span></a>
+</span><span id="L-150"><a href="#L-150"><span class="linenos">150</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">react_thread</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">reaction_id</span><span class="p">)</span>
+</span><span id="L-151"><a href="#L-151"><span class="linenos">151</span></a>    
+</span><span id="L-152"><a href="#L-152"><span class="linenos">152</span></a>
+</span><span id="L-153"><a href="#L-153"><span class="linenos">153</span></a>    <span class="k">def</span> <span class="nf">get_url</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span id="L-154"><a href="#L-154"><span class="linenos">154</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Получить ссылку на объект</span>
+</span><span id="L-155"><a href="#L-155"><span class="linenos">155</span></a><span class="sd">        </span>
+</span><span id="L-156"><a href="#L-156"><span class="linenos">156</span></a><span class="sd">        Returns:</span>
+</span><span id="L-157"><a href="#L-157"><span class="linenos">157</span></a><span class="sd">            Ссылку в формате https://forum.arizona-rp.com/threads/x/&quot;&quot;&quot;</span>
+</span><span id="L-158"><a href="#L-158"><span class="linenos">158</span></a>        
+</span><span id="L-159"><a href="#L-159"><span class="linenos">159</span></a>        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;https://forum.arizona-rp.com/threads/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/&quot;</span>
 </span></pre></div>
 
 
@@ -399,53 +401,55 @@
 </span><span id="Thread-109"><a href="#Thread-109"><span class="linenos">109</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">edit_thread</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">message_html</span><span class="p">)</span>
 </span><span id="Thread-110"><a href="#Thread-110"><span class="linenos">110</span></a>
 </span><span id="Thread-111"><a href="#Thread-111"><span class="linenos">111</span></a>
-</span><span id="Thread-112"><a href="#Thread-112"><span class="linenos">112</span></a>    <span class="k">def</span> <span class="nf">edit_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">prefix_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
+</span><span id="Thread-112"><a href="#Thread-112"><span class="linenos">112</span></a>    <span class="k">def</span> <span class="nf">edit_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">prefix_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">sticky</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">opened</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
 </span><span id="Thread-113"><a href="#Thread-113"><span class="linenos">113</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Изменить заголовок и/или префикс темы</span>
 </span><span id="Thread-114"><a href="#Thread-114"><span class="linenos">114</span></a>
 </span><span id="Thread-115"><a href="#Thread-115"><span class="linenos">115</span></a><span class="sd">        Attributes:</span>
 </span><span id="Thread-116"><a href="#Thread-116"><span class="linenos">116</span></a><span class="sd">            title (str): Новое название</span>
 </span><span id="Thread-117"><a href="#Thread-117"><span class="linenos">117</span></a><span class="sd">            prefix_id (int): Новый ID префикса</span>
-</span><span id="Thread-118"><a href="#Thread-118"><span class="linenos">118</span></a><span class="sd">        </span>
-</span><span id="Thread-119"><a href="#Thread-119"><span class="linenos">119</span></a><span class="sd">        Returns:</span>
-</span><span id="Thread-120"><a href="#Thread-120"><span class="linenos">120</span></a><span class="sd">            Объект Response модуля requests</span>
-</span><span id="Thread-121"><a href="#Thread-121"><span class="linenos">121</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="Thread-122"><a href="#Thread-122"><span class="linenos">122</span></a>
-</span><span id="Thread-123"><a href="#Thread-123"><span class="linenos">123</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">edit_thread_info</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">prefix_id</span><span class="p">)</span>
-</span><span id="Thread-124"><a href="#Thread-124"><span class="linenos">124</span></a>    
-</span><span id="Thread-125"><a href="#Thread-125"><span class="linenos">125</span></a>
-</span><span id="Thread-126"><a href="#Thread-126"><span class="linenos">126</span></a>    <span class="k">def</span> <span class="nf">get_posts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">page</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
-</span><span id="Thread-127"><a href="#Thread-127"><span class="linenos">127</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Получить все ID сообщений из темы на странице</span>
-</span><span id="Thread-128"><a href="#Thread-128"><span class="linenos">128</span></a>
-</span><span id="Thread-129"><a href="#Thread-129"><span class="linenos">129</span></a><span class="sd">        Attributes:</span>
-</span><span id="Thread-130"><a href="#Thread-130"><span class="linenos">130</span></a><span class="sd">            page (int): Cтраница для поиска. По умолчанию 1 (необяз.)</span>
-</span><span id="Thread-131"><a href="#Thread-131"><span class="linenos">131</span></a><span class="sd">        </span>
-</span><span id="Thread-132"><a href="#Thread-132"><span class="linenos">132</span></a><span class="sd">        Returns:</span>
-</span><span id="Thread-133"><a href="#Thread-133"><span class="linenos">133</span></a><span class="sd">            Список (list), состоящий из ID всех сообщений на странице</span>
-</span><span id="Thread-134"><a href="#Thread-134"><span class="linenos">134</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="Thread-135"><a href="#Thread-135"><span class="linenos">135</span></a>
-</span><span id="Thread-136"><a href="#Thread-136"><span class="linenos">136</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">get_thread_posts</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">page</span><span class="p">)</span>
+</span><span id="Thread-118"><a href="#Thread-118"><span class="linenos">118</span></a><span class="sd">            sticky (bool): Закрепить (True - закреп / False - не закреп)</span>
+</span><span id="Thread-119"><a href="#Thread-119"><span class="linenos">119</span></a><span class="sd">            opened (bool): Открыть/закрыть тему (True - открыть / False - закрыть)</span>
+</span><span id="Thread-120"><a href="#Thread-120"><span class="linenos">120</span></a><span class="sd">        </span>
+</span><span id="Thread-121"><a href="#Thread-121"><span class="linenos">121</span></a><span class="sd">        Returns:</span>
+</span><span id="Thread-122"><a href="#Thread-122"><span class="linenos">122</span></a><span class="sd">            Объект Response модуля requests</span>
+</span><span id="Thread-123"><a href="#Thread-123"><span class="linenos">123</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="Thread-124"><a href="#Thread-124"><span class="linenos">124</span></a>
+</span><span id="Thread-125"><a href="#Thread-125"><span class="linenos">125</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">edit_thread_info</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">prefix_id</span><span class="p">,</span> <span class="n">sticky</span><span class="p">,</span> <span class="n">opened</span><span class="p">)</span>
+</span><span id="Thread-126"><a href="#Thread-126"><span class="linenos">126</span></a>    
+</span><span id="Thread-127"><a href="#Thread-127"><span class="linenos">127</span></a>
+</span><span id="Thread-128"><a href="#Thread-128"><span class="linenos">128</span></a>    <span class="k">def</span> <span class="nf">get_posts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">page</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+</span><span id="Thread-129"><a href="#Thread-129"><span class="linenos">129</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Получить все ID сообщений из темы на странице</span>
+</span><span id="Thread-130"><a href="#Thread-130"><span class="linenos">130</span></a>
+</span><span id="Thread-131"><a href="#Thread-131"><span class="linenos">131</span></a><span class="sd">        Attributes:</span>
+</span><span id="Thread-132"><a href="#Thread-132"><span class="linenos">132</span></a><span class="sd">            page (int): Cтраница для поиска. По умолчанию 1 (необяз.)</span>
+</span><span id="Thread-133"><a href="#Thread-133"><span class="linenos">133</span></a><span class="sd">        </span>
+</span><span id="Thread-134"><a href="#Thread-134"><span class="linenos">134</span></a><span class="sd">        Returns:</span>
+</span><span id="Thread-135"><a href="#Thread-135"><span class="linenos">135</span></a><span class="sd">            Список (list), состоящий из ID всех сообщений на странице</span>
+</span><span id="Thread-136"><a href="#Thread-136"><span class="linenos">136</span></a><span class="sd">        &quot;&quot;&quot;</span>
 </span><span id="Thread-137"><a href="#Thread-137"><span class="linenos">137</span></a>
-</span><span id="Thread-138"><a href="#Thread-138"><span class="linenos">138</span></a>
-</span><span id="Thread-139"><a href="#Thread-139"><span class="linenos">139</span></a>    <span class="k">def</span> <span class="nf">react</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reaction_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
-</span><span id="Thread-140"><a href="#Thread-140"><span class="linenos">140</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Поставить реакцию на тему</span>
-</span><span id="Thread-141"><a href="#Thread-141"><span class="linenos">141</span></a>
-</span><span id="Thread-142"><a href="#Thread-142"><span class="linenos">142</span></a><span class="sd">        Attributes:</span>
-</span><span id="Thread-143"><a href="#Thread-143"><span class="linenos">143</span></a><span class="sd">            reaction_id (int): ID реакции. По умолчанию 1 (необяз.)</span>
-</span><span id="Thread-144"><a href="#Thread-144"><span class="linenos">144</span></a><span class="sd">            </span>
-</span><span id="Thread-145"><a href="#Thread-145"><span class="linenos">145</span></a><span class="sd">        Returns:</span>
-</span><span id="Thread-146"><a href="#Thread-146"><span class="linenos">146</span></a><span class="sd">            Объект Response модуля requests</span>
-</span><span id="Thread-147"><a href="#Thread-147"><span class="linenos">147</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="Thread-148"><a href="#Thread-148"><span class="linenos">148</span></a>
-</span><span id="Thread-149"><a href="#Thread-149"><span class="linenos">149</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">react_thread</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">reaction_id</span><span class="p">)</span>
-</span><span id="Thread-150"><a href="#Thread-150"><span class="linenos">150</span></a>    
-</span><span id="Thread-151"><a href="#Thread-151"><span class="linenos">151</span></a>
-</span><span id="Thread-152"><a href="#Thread-152"><span class="linenos">152</span></a>    <span class="k">def</span> <span class="nf">get_url</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span id="Thread-153"><a href="#Thread-153"><span class="linenos">153</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Получить ссылку на объект</span>
-</span><span id="Thread-154"><a href="#Thread-154"><span class="linenos">154</span></a><span class="sd">        </span>
-</span><span id="Thread-155"><a href="#Thread-155"><span class="linenos">155</span></a><span class="sd">        Returns:</span>
-</span><span id="Thread-156"><a href="#Thread-156"><span class="linenos">156</span></a><span class="sd">            Ссылку в формате https://forum.arizona-rp.com/threads/x/&quot;&quot;&quot;</span>
-</span><span id="Thread-157"><a href="#Thread-157"><span class="linenos">157</span></a>        
-</span><span id="Thread-158"><a href="#Thread-158"><span class="linenos">158</span></a>        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;https://forum.arizona-rp.com/threads/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/&quot;</span>
+</span><span id="Thread-138"><a href="#Thread-138"><span class="linenos">138</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">get_thread_posts</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">page</span><span class="p">)</span>
+</span><span id="Thread-139"><a href="#Thread-139"><span class="linenos">139</span></a>
+</span><span id="Thread-140"><a href="#Thread-140"><span class="linenos">140</span></a>
+</span><span id="Thread-141"><a href="#Thread-141"><span class="linenos">141</span></a>    <span class="k">def</span> <span class="nf">react</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reaction_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
+</span><span id="Thread-142"><a href="#Thread-142"><span class="linenos">142</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Поставить реакцию на тему</span>
+</span><span id="Thread-143"><a href="#Thread-143"><span class="linenos">143</span></a>
+</span><span id="Thread-144"><a href="#Thread-144"><span class="linenos">144</span></a><span class="sd">        Attributes:</span>
+</span><span id="Thread-145"><a href="#Thread-145"><span class="linenos">145</span></a><span class="sd">            reaction_id (int): ID реакции. По умолчанию 1 (необяз.)</span>
+</span><span id="Thread-146"><a href="#Thread-146"><span class="linenos">146</span></a><span class="sd">            </span>
+</span><span id="Thread-147"><a href="#Thread-147"><span class="linenos">147</span></a><span class="sd">        Returns:</span>
+</span><span id="Thread-148"><a href="#Thread-148"><span class="linenos">148</span></a><span class="sd">            Объект Response модуля requests</span>
+</span><span id="Thread-149"><a href="#Thread-149"><span class="linenos">149</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="Thread-150"><a href="#Thread-150"><span class="linenos">150</span></a>
+</span><span id="Thread-151"><a href="#Thread-151"><span class="linenos">151</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">react_thread</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">reaction_id</span><span class="p">)</span>
+</span><span id="Thread-152"><a href="#Thread-152"><span class="linenos">152</span></a>    
+</span><span id="Thread-153"><a href="#Thread-153"><span class="linenos">153</span></a>
+</span><span id="Thread-154"><a href="#Thread-154"><span class="linenos">154</span></a>    <span class="k">def</span> <span class="nf">get_url</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span id="Thread-155"><a href="#Thread-155"><span class="linenos">155</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Получить ссылку на объект</span>
+</span><span id="Thread-156"><a href="#Thread-156"><span class="linenos">156</span></a><span class="sd">        </span>
+</span><span id="Thread-157"><a href="#Thread-157"><span class="linenos">157</span></a><span class="sd">        Returns:</span>
+</span><span id="Thread-158"><a href="#Thread-158"><span class="linenos">158</span></a><span class="sd">            Ссылку в формате https://forum.arizona-rp.com/threads/x/&quot;&quot;&quot;</span>
+</span><span id="Thread-159"><a href="#Thread-159"><span class="linenos">159</span></a>        
+</span><span id="Thread-160"><a href="#Thread-160"><span class="linenos">160</span></a>        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;https://forum.arizona-rp.com/threads/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/&quot;</span>
 </span></pre></div>
 
 
@@ -888,24 +892,26 @@
 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">edit_info</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">prefix_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span></span><span class="return-annotation">) -> <span class="n">requests</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">Response</span>:</span></span>
+        <span class="name">edit_info</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">prefix_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">sticky</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>,</span><span class="param">	<span class="n">opened</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span></span><span class="return-annotation">) -> <span class="n">requests</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">Response</span>:</span></span>
 
                 <label class="view-source-button" for="Thread.edit_info-view-source"><span>View Source</span></label>
 
     </div>
     <a class="headerlink" href="#Thread.edit_info"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Thread.edit_info-112"><a href="#Thread.edit_info-112"><span class="linenos">112</span></a>    <span class="k">def</span> <span class="nf">edit_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">prefix_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Thread.edit_info-112"><a href="#Thread.edit_info-112"><span class="linenos">112</span></a>    <span class="k">def</span> <span class="nf">edit_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">prefix_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">sticky</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">opened</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
 </span><span id="Thread.edit_info-113"><a href="#Thread.edit_info-113"><span class="linenos">113</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Изменить заголовок и/или префикс темы</span>
 </span><span id="Thread.edit_info-114"><a href="#Thread.edit_info-114"><span class="linenos">114</span></a>
 </span><span id="Thread.edit_info-115"><a href="#Thread.edit_info-115"><span class="linenos">115</span></a><span class="sd">        Attributes:</span>
 </span><span id="Thread.edit_info-116"><a href="#Thread.edit_info-116"><span class="linenos">116</span></a><span class="sd">            title (str): Новое название</span>
 </span><span id="Thread.edit_info-117"><a href="#Thread.edit_info-117"><span class="linenos">117</span></a><span class="sd">            prefix_id (int): Новый ID префикса</span>
-</span><span id="Thread.edit_info-118"><a href="#Thread.edit_info-118"><span class="linenos">118</span></a><span class="sd">        </span>
-</span><span id="Thread.edit_info-119"><a href="#Thread.edit_info-119"><span class="linenos">119</span></a><span class="sd">        Returns:</span>
-</span><span id="Thread.edit_info-120"><a href="#Thread.edit_info-120"><span class="linenos">120</span></a><span class="sd">            Объект Response модуля requests</span>
-</span><span id="Thread.edit_info-121"><a href="#Thread.edit_info-121"><span class="linenos">121</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="Thread.edit_info-122"><a href="#Thread.edit_info-122"><span class="linenos">122</span></a>
-</span><span id="Thread.edit_info-123"><a href="#Thread.edit_info-123"><span class="linenos">123</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">edit_thread_info</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">prefix_id</span><span class="p">)</span>
+</span><span id="Thread.edit_info-118"><a href="#Thread.edit_info-118"><span class="linenos">118</span></a><span class="sd">            sticky (bool): Закрепить (True - закреп / False - не закреп)</span>
+</span><span id="Thread.edit_info-119"><a href="#Thread.edit_info-119"><span class="linenos">119</span></a><span class="sd">            opened (bool): Открыть/закрыть тему (True - открыть / False - закрыть)</span>
+</span><span id="Thread.edit_info-120"><a href="#Thread.edit_info-120"><span class="linenos">120</span></a><span class="sd">        </span>
+</span><span id="Thread.edit_info-121"><a href="#Thread.edit_info-121"><span class="linenos">121</span></a><span class="sd">        Returns:</span>
+</span><span id="Thread.edit_info-122"><a href="#Thread.edit_info-122"><span class="linenos">122</span></a><span class="sd">            Объект Response модуля requests</span>
+</span><span id="Thread.edit_info-123"><a href="#Thread.edit_info-123"><span class="linenos">123</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="Thread.edit_info-124"><a href="#Thread.edit_info-124"><span class="linenos">124</span></a>
+</span><span id="Thread.edit_info-125"><a href="#Thread.edit_info-125"><span class="linenos">125</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">edit_thread_info</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">prefix_id</span><span class="p">,</span> <span class="n">sticky</span><span class="p">,</span> <span class="n">opened</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -916,6 +922,8 @@
 <ul>
 <li><strong>title (str):</strong>  Новое название</li>
 <li><strong>prefix_id (int):</strong>  Новый ID префикса</li>
+<li><strong>sticky (bool):</strong>  Закрепить (True - закреп / False - не закреп)</li>
+<li><strong>opened (bool):</strong>  Открыть/закрыть тему (True - открыть / False - закрыть)</li>
 </ul>
 
 <h6 id="returns">Returns:</h6>
@@ -938,17 +946,17 @@
 
     </div>
     <a class="headerlink" href="#Thread.get_posts"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Thread.get_posts-126"><a href="#Thread.get_posts-126"><span class="linenos">126</span></a>    <span class="k">def</span> <span class="nf">get_posts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">page</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
-</span><span id="Thread.get_posts-127"><a href="#Thread.get_posts-127"><span class="linenos">127</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Получить все ID сообщений из темы на странице</span>
-</span><span id="Thread.get_posts-128"><a href="#Thread.get_posts-128"><span class="linenos">128</span></a>
-</span><span id="Thread.get_posts-129"><a href="#Thread.get_posts-129"><span class="linenos">129</span></a><span class="sd">        Attributes:</span>
-</span><span id="Thread.get_posts-130"><a href="#Thread.get_posts-130"><span class="linenos">130</span></a><span class="sd">            page (int): Cтраница для поиска. По умолчанию 1 (необяз.)</span>
-</span><span id="Thread.get_posts-131"><a href="#Thread.get_posts-131"><span class="linenos">131</span></a><span class="sd">        </span>
-</span><span id="Thread.get_posts-132"><a href="#Thread.get_posts-132"><span class="linenos">132</span></a><span class="sd">        Returns:</span>
-</span><span id="Thread.get_posts-133"><a href="#Thread.get_posts-133"><span class="linenos">133</span></a><span class="sd">            Список (list), состоящий из ID всех сообщений на странице</span>
-</span><span id="Thread.get_posts-134"><a href="#Thread.get_posts-134"><span class="linenos">134</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="Thread.get_posts-135"><a href="#Thread.get_posts-135"><span class="linenos">135</span></a>
-</span><span id="Thread.get_posts-136"><a href="#Thread.get_posts-136"><span class="linenos">136</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">get_thread_posts</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">page</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Thread.get_posts-128"><a href="#Thread.get_posts-128"><span class="linenos">128</span></a>    <span class="k">def</span> <span class="nf">get_posts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">page</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+</span><span id="Thread.get_posts-129"><a href="#Thread.get_posts-129"><span class="linenos">129</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Получить все ID сообщений из темы на странице</span>
+</span><span id="Thread.get_posts-130"><a href="#Thread.get_posts-130"><span class="linenos">130</span></a>
+</span><span id="Thread.get_posts-131"><a href="#Thread.get_posts-131"><span class="linenos">131</span></a><span class="sd">        Attributes:</span>
+</span><span id="Thread.get_posts-132"><a href="#Thread.get_posts-132"><span class="linenos">132</span></a><span class="sd">            page (int): Cтраница для поиска. По умолчанию 1 (необяз.)</span>
+</span><span id="Thread.get_posts-133"><a href="#Thread.get_posts-133"><span class="linenos">133</span></a><span class="sd">        </span>
+</span><span id="Thread.get_posts-134"><a href="#Thread.get_posts-134"><span class="linenos">134</span></a><span class="sd">        Returns:</span>
+</span><span id="Thread.get_posts-135"><a href="#Thread.get_posts-135"><span class="linenos">135</span></a><span class="sd">            Список (list), состоящий из ID всех сообщений на странице</span>
+</span><span id="Thread.get_posts-136"><a href="#Thread.get_posts-136"><span class="linenos">136</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="Thread.get_posts-137"><a href="#Thread.get_posts-137"><span class="linenos">137</span></a>
+</span><span id="Thread.get_posts-138"><a href="#Thread.get_posts-138"><span class="linenos">138</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">get_thread_posts</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">page</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -980,17 +988,17 @@
 
     </div>
     <a class="headerlink" href="#Thread.react"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Thread.react-139"><a href="#Thread.react-139"><span class="linenos">139</span></a>    <span class="k">def</span> <span class="nf">react</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reaction_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
-</span><span id="Thread.react-140"><a href="#Thread.react-140"><span class="linenos">140</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Поставить реакцию на тему</span>
-</span><span id="Thread.react-141"><a href="#Thread.react-141"><span class="linenos">141</span></a>
-</span><span id="Thread.react-142"><a href="#Thread.react-142"><span class="linenos">142</span></a><span class="sd">        Attributes:</span>
-</span><span id="Thread.react-143"><a href="#Thread.react-143"><span class="linenos">143</span></a><span class="sd">            reaction_id (int): ID реакции. По умолчанию 1 (необяз.)</span>
-</span><span id="Thread.react-144"><a href="#Thread.react-144"><span class="linenos">144</span></a><span class="sd">            </span>
-</span><span id="Thread.react-145"><a href="#Thread.react-145"><span class="linenos">145</span></a><span class="sd">        Returns:</span>
-</span><span id="Thread.react-146"><a href="#Thread.react-146"><span class="linenos">146</span></a><span class="sd">            Объект Response модуля requests</span>
-</span><span id="Thread.react-147"><a href="#Thread.react-147"><span class="linenos">147</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="Thread.react-148"><a href="#Thread.react-148"><span class="linenos">148</span></a>
-</span><span id="Thread.react-149"><a href="#Thread.react-149"><span class="linenos">149</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">react_thread</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">reaction_id</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Thread.react-141"><a href="#Thread.react-141"><span class="linenos">141</span></a>    <span class="k">def</span> <span class="nf">react</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reaction_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
+</span><span id="Thread.react-142"><a href="#Thread.react-142"><span class="linenos">142</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Поставить реакцию на тему</span>
+</span><span id="Thread.react-143"><a href="#Thread.react-143"><span class="linenos">143</span></a>
+</span><span id="Thread.react-144"><a href="#Thread.react-144"><span class="linenos">144</span></a><span class="sd">        Attributes:</span>
+</span><span id="Thread.react-145"><a href="#Thread.react-145"><span class="linenos">145</span></a><span class="sd">            reaction_id (int): ID реакции. По умолчанию 1 (необяз.)</span>
+</span><span id="Thread.react-146"><a href="#Thread.react-146"><span class="linenos">146</span></a><span class="sd">            </span>
+</span><span id="Thread.react-147"><a href="#Thread.react-147"><span class="linenos">147</span></a><span class="sd">        Returns:</span>
+</span><span id="Thread.react-148"><a href="#Thread.react-148"><span class="linenos">148</span></a><span class="sd">            Объект Response модуля requests</span>
+</span><span id="Thread.react-149"><a href="#Thread.react-149"><span class="linenos">149</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="Thread.react-150"><a href="#Thread.react-150"><span class="linenos">150</span></a>
+</span><span id="Thread.react-151"><a href="#Thread.react-151"><span class="linenos">151</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">react_thread</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">reaction_id</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -1022,13 +1030,13 @@
 
     </div>
     <a class="headerlink" href="#Thread.get_url"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Thread.get_url-152"><a href="#Thread.get_url-152"><span class="linenos">152</span></a>    <span class="k">def</span> <span class="nf">get_url</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span id="Thread.get_url-153"><a href="#Thread.get_url-153"><span class="linenos">153</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Получить ссылку на объект</span>
-</span><span id="Thread.get_url-154"><a href="#Thread.get_url-154"><span class="linenos">154</span></a><span class="sd">        </span>
-</span><span id="Thread.get_url-155"><a href="#Thread.get_url-155"><span class="linenos">155</span></a><span class="sd">        Returns:</span>
-</span><span id="Thread.get_url-156"><a href="#Thread.get_url-156"><span class="linenos">156</span></a><span class="sd">            Ссылку в формате https://forum.arizona-rp.com/threads/x/&quot;&quot;&quot;</span>
-</span><span id="Thread.get_url-157"><a href="#Thread.get_url-157"><span class="linenos">157</span></a>        
-</span><span id="Thread.get_url-158"><a href="#Thread.get_url-158"><span class="linenos">158</span></a>        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;https://forum.arizona-rp.com/threads/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/&quot;</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Thread.get_url-154"><a href="#Thread.get_url-154"><span class="linenos">154</span></a>    <span class="k">def</span> <span class="nf">get_url</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span id="Thread.get_url-155"><a href="#Thread.get_url-155"><span class="linenos">155</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Получить ссылку на объект</span>
+</span><span id="Thread.get_url-156"><a href="#Thread.get_url-156"><span class="linenos">156</span></a><span class="sd">        </span>
+</span><span id="Thread.get_url-157"><a href="#Thread.get_url-157"><span class="linenos">157</span></a><span class="sd">        Returns:</span>
+</span><span id="Thread.get_url-158"><a href="#Thread.get_url-158"><span class="linenos">158</span></a><span class="sd">            Ссылку в формате https://forum.arizona-rp.com/threads/x/&quot;&quot;&quot;</span>
+</span><span id="Thread.get_url-159"><a href="#Thread.get_url-159"><span class="linenos">159</span></a>        
+</span><span id="Thread.get_url-160"><a href="#Thread.get_url-160"><span class="linenos">160</span></a>        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;https://forum.arizona-rp.com/threads/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/&quot;</span>
 </span></pre></div>
 
 
