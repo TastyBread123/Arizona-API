@@ -10,19 +10,7 @@ if TYPE_CHECKING:
 
 
 class Member:
-    API: 'ArizonaAPI'  # Объект ArizonaAPI
-
-    id: int
-    username: str
-    user_title: str
-    avatar: str
-    roles: list
-    
-    messages_count: int
-    reactions_count: int
-    trophies_count: int
-
-    def __init__(self, API, id: int, username: str, user_title: str, avatar: str, roles: list, messages_count: int, reactions_count: int, trophies_count: int) -> None:
+    def __init__(self, API : 'ArizonaAPI', id: int, username: str, user_title: str, avatar: str, roles: list, messages_count: int, reactions_count: int, trophies_count: int) -> None:
         self.API = API
         self.id = id
         """**ID пользователя**"""
@@ -41,6 +29,10 @@ class Member:
         """**Количество реакций в счетчике**"""
         self.trophies_count = trophies_count
         """**Количество баллов в счетчике**"""
+
+        self.url = f"{MAIN_URL}/members/{self.id}/"
+        """Ссылка на объект"""
+        
 
     def follow(self) -> Response:
         """Изменить статус подписки на пользователя
@@ -83,14 +75,6 @@ class Member:
         """
 
         return self.API.get_profile_messages(self.id, page)
-    
-    def get_url(self) -> str:
-        """Получить ссылку на объект
-        
-        Returns:
-            Ссылку в формате https://forum.arizona-rp.com/members/x/"""
-        
-        return f"https://forum.arizona-rp.com/members/{self.id}/"
 
 
 class CurrentMember(Member):

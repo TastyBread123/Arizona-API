@@ -1,5 +1,6 @@
 from requests import Response
 from typing import TYPE_CHECKING
+from arz_api.consts import MAIN_URL
 
 if TYPE_CHECKING:
     from arz_api.models.member_object import Member
@@ -8,14 +9,12 @@ if TYPE_CHECKING:
 
 
 class Thread:
-    def __init__(self, API: 'ArizonaAPI', id: int, creator: 'Member', category: 'Category', create_date: int, title: str, prefix: str, content: str, html_content: str, pages_content: int, thread_post_id: int, is_closed: bool) -> None:
+    def __init__(self, API: 'ArizonaAPI', id: int, creator: 'Member', create_date: int, title: str, prefix: str, content: str, html_content: str, pages_content: int, thread_post_id: int, is_closed: bool) -> None:
         self.API = API
         self.id = id
         """**ID темы**"""
         self.creator = creator
         """**Объект Member создателя темы**"""
-        self.category = category
-        """**Объект Category раздела, в котором создана тема**"""
         self.create_date = create_date
         """**Дата создания темы в UNIX**"""
         self.title = title
@@ -32,26 +31,8 @@ class Thread:
         """**Закрыта ли тема**"""
         self.thread_post_id = thread_post_id
         """**ID сообщения темы (post_id)**"""
-
-
-    def close(self) -> Response:
-        """Закрыть/открыть тему (для модерации)
-        
-        Returns:
-            Объект Response модуля requests
-        """
-
-        return self.API.close_thread(self.id)
-
-
-    def pin(self) -> Response:
-        """Закрепить/открепить тему (для модерации)
-        
-        Returns:
-            Объект Response модуля requests
-        """
-
-        return self.API.pin_thread(self.id)
+        self.url = f"{MAIN_URL}/threads/{self.id}/"
+        """Ссылка на объект"""
     
 
     def answer(self, message_html: str) -> Response:
@@ -150,10 +131,11 @@ class Thread:
         return self.API.react_thread(self.id, reaction_id)
     
 
-    def get_url(self) -> str:
-        """Получить ссылку на объект
+    def get_category(self) -> 'Category':
+        """Получить родительский раздел раздела
         
         Returns:
-            Ссылку в формате https://forum.arizona-rp.com/threads/x/"""
-        
-        return f"https://forum.arizona-rp.com/threads/{self.id}/"
+            Объект Catrgory, в котором создан раздел
+        """
+
+        return self.API.get_thread_category(self.id)

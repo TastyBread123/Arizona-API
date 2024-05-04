@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 from re import compile, findall
 from requests import session, Response
+from html import unescape
 
 from arz_api.consts import MAIN_URL
 from arz_api.bypass_antibot import bypass
@@ -11,7 +12,6 @@ from arz_api.models.post_object import Post, ProfilePost
 from arz_api.models.member_object import Member, CurrentMember
 from arz_api.models.thread_object import Thread
 from arz_api.models.category_object import Category
-
 
 
 class ArizonaAPI:
@@ -46,36 +46,40 @@ class ArizonaAPI:
 
         return CurrentMember(self, user_id, member_info.username, member_info.user_title, member_info.avatar, member_info.roles, member_info.messages_count, member_info.reactions_count, member_info.trophies_count)
 
-    
+    @property
+    def token(self) -> str:
+        """Получить токен CSRF"""
+        return BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
+
+
     def get_category(self, category_id: int) -> Category:
         """Найти раздел по ID"""
 
-        content = BeautifulSoup(self.session.get(f"{MAIN_URL}/forums/{category_id}").content, 'lxml')
-        title = content.find('h1', {'class': 'p-title-value'}).text
-        if "Упс! Мы столкнулись с некоторыми проблемами." in title:
+        request = self.session.get(f"{MAIN_URL}/forums/{category_id}?&_xfResponseType=json&_xfToken={self.token}").json()
+        if request['status'] == 'error':
             return None
 
+        content = unescape(request['html']['content'])
+        content = BeautifulSoup(content, 'lxml')
+
+        title = request['html']['title']
         try: pages_count = int(content.find_all('li', {'class': 'pageNav-page'})[-1].text)
         except IndexError: pages_count = 1
-        try: parent_category_id = int(content.find('html')['data-container-key'].strip('node-'))
-        except: parent_category_id = None
 
-        temp_url = ''
-        if parent_category_id is not None: temp_url = f'forums/{parent_category_id}/'
-        content = BeautifulSoup(self.session.get(f"{MAIN_URL}/{temp_url}").content, 'lxml')
-        
-        return Category(self, category_id, title, pages_count, parent_category_id)
+        return Category(self, category_id, title, pages_count)
     
     
     def get_member(self, user_id: int) -> Member:
         """Найти пользователя по ID (возвращает либо Member, либо None (если профиль закрыт / не существует))"""
 
-        content = BeautifulSoup(self.session.get(f"{MAIN_URL}/members/{user_id}").content, 'lxml')
-
-        username = content.find('span', {'class': 'username'})
-        if username is None:
+        request = self.session.get(f"{MAIN_URL}/members/{user_id}?&_xfResponseType=json&_xfToken={self.token}").json()
+        if request['status'] == 'error':
             return None
-        username = username.text
+
+        content = unescape(request['html']['content'])
+        content = BeautifulSoup(content, 'lxml')
+
+        username = request['html']['title']
 
         roles = []
         for i in content.find('div', {'class': 'memberHeader-banners'}).children:
@@ -91,26 +95,29 @@ class ArizonaAPI:
         trophies_count = int(content.find('a', {'href': f'/members/{user_id}/trophies'}).text.strip().replace(',', ''))
         
         return Member(self, user_id, username, user_title, avatar, roles, messages_count, reactions_count, trophies_count)
-
     
-    def get_thread(self, thread_id: int) -> Thread:
-        """Найти тему по ID (Thread если тема существует, None если недоступна / не существует)"""
 
-        content = BeautifulSoup(self.session.get(f"{MAIN_URL}/threads/{thread_id}/page-1").content, 'lxml')
-        
-        creator_id = content.find('a', {'class': 'username'})
-        if creator_id is None:
+    def get_thread(self, thread_id: int):
+        request = self.session.get(f"{MAIN_URL}/threads/{thread_id}/page-1?&_xfResponseType=json&_xfToken={self.token}").json()
+        if request['status'] == 'error':
             return None
+        
+        if request.get('redirect') is not None:
+            return self.get_thread(request['redirect'].strip(MAIN_URL).split('/')[1])
 
+        content = unescape(request['html']['content'])
+        content_h1 = unescape(request['html']['h1'])
+        content = BeautifulSoup(content, 'lxml')
+        content_h1 = BeautifulSoup(content_h1, 'lxml')
+
+        creator_id = content.find('a', {'class': 'username'})
         try: creator = self.get_member(int(creator_id['data-user-id']))
         except: creator = Member(self, int(creator_id['data-user-id']), content.find('a', {'class': 'username'}).text, None, None, None, None, None, None)
         
-        category = self.get_category(int(content.find('html')['data-container-key'].strip('node-')))
         create_date = int(content.find('time')['data-time'])
         
-        try: title = [i for i in content.find('h1', {'class': 'p-title-value'}).strings][-1]
-        except: title = ""
-        try: prefix = content.find('h1', {'class': 'p-title-value'}).find('span', {'class': 'label'}).text
+        title = request['html']['title']
+        try: prefix = content_h1.find('span', {'class': 'label'}).text
         except: prefix = ""
         thread_content_html = content.find('div', {'class': 'bbWrapper'})
         thread_content = thread_content_html.text
@@ -122,8 +129,8 @@ class ArizonaAPI:
         if content.find('dl', {'class': 'blockStatus'}): is_closed = True
         thread_post_id = content.find('article', {'id': compile('js-post-*')})['id'].strip('js-post-')
 
-        return Thread(self, thread_id, creator, category, create_date, title, prefix, thread_content, thread_content_html, pages_count, thread_post_id, is_closed)
-    
+        return Thread(self, thread_id, creator, create_date, title, prefix, thread_content, thread_content_html, pages_count, thread_post_id, is_closed)
+
 
     def get_post(self, post_id: int) -> Post:
         """Найти пост по ID (Post если существует, None - удален / нет доступа)"""
@@ -194,8 +201,7 @@ class ArizonaAPI:
             Cделать возврат ID новой темы
         """
 
-        token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        return self.session.post(f"{MAIN_URL}/forums/{category_id}/post-thread?inline-mode=1", {'_xfToken': token, 'title': title, 'message_html': message_html, 'discussion_type': discussion_type, 'watch_thread': int(watch_thread)})
+        return self.session.post(f"{MAIN_URL}/forums/{category_id}/post-thread?inline-mode=1", {'_xfToken': self.token, 'title': title, 'message_html': message_html, 'discussion_type': discussion_type, 'watch_thread': int(watch_thread)})
     
 
     def set_read_category(self, category_id: int) -> Response:
@@ -208,8 +214,7 @@ class ArizonaAPI:
             Объект Response модуля requests
         """
 
-        token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        return self.session.post(f"{MAIN_URL}/forums/{category_id}/mark-read", {'_xfToken': token})
+        return self.session.post(f"{MAIN_URL}/forums/{category_id}/mark-read", {'_xfToken': self.token})
     
 
     def watch_category(self, category_id: int, notify: str, send_alert: bool = True, send_email: bool = False, stop: bool = False) -> Response:
@@ -226,10 +231,8 @@ class ArizonaAPI:
             Объект Response модуля requests    
         """
 
-        token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-
-        if stop: return self.session.post(f"{MAIN_URL}/forums/{category_id}/watch", {'_xfToken': token, 'stop': "1"})
-        else: return self.session.post(f"{MAIN_URL}/forums/{category_id}/watch", {'_xfToken': token, 'send_alert': int(send_alert), 'send_email': int(send_email), 'notify': notify})
+        if stop: return self.session.post(f"{MAIN_URL}/forums/{category_id}/watch", {'_xfToken': self.token, 'stop': "1"})
+        else: return self.session.post(f"{MAIN_URL}/forums/{category_id}/watch", {'_xfToken': self.token, 'send_alert': int(send_alert), 'send_email': int(send_email), 'notify': notify})
 
 
     def get_threads(self, category_id: int, page: int = 1) -> dict:
@@ -243,7 +246,11 @@ class ArizonaAPI:
             Словарь (dict), состоящий из списков закрепленных ('pins') и незакрепленных ('unpins') тем
         """
 
-        soup = BeautifulSoup(self.session.get(f"{MAIN_URL}/forums/{category_id}/page-{page}").content, "lxml")
+        request = self.session.get(f"{MAIN_URL}/forums/{category_id}/page-{page}?_xfResponseType=json&_xfToken={self.token}").json()
+        if request['status'] == 'error':
+            return None
+        
+        soup = BeautifulSoup(unescape(request['html']['content']), "lxml")
         result = {'pins': [], 'unpins': []}
         for thread in soup.find_all('div', compile('structItem structItem--thread.*')):
             link = thread.find_all('div', "structItem-title")[0].find_all("a")[-1]
@@ -253,6 +260,26 @@ class ArizonaAPI:
             else: result['unpins'].append(int(findall(r'\d+', link['href'])[0]))
         
         return result
+
+    
+    def get_parent_category_of_category(self, category_id: int) -> Category:
+        """Получить родительский раздел раздела
+
+        Attributes:
+            category_id (int): ID категории
+        
+        Returns:
+            - Если существует: Объект Catrgory, в котором создан раздел
+            - Если не существует: None
+        """
+
+        content = BeautifulSoup(self.session.get(f"{MAIN_URL}/forums/{category_id}").content, 'lxml')
+        
+        parent_category_id = str(content.find('ul', {'class': 'p-breadcrumbs'}).find_all('li')[-1].find('a')['href'].split('/')[2])
+        if not parent_category_id.isdigit():
+            return None
+        
+        return self.get_category(parent_category_id)
 
 
     def get_categories(self, category_id: int) -> list:
@@ -265,7 +292,11 @@ class ArizonaAPI:
             Список (list), состоящий из ID дочерних категорий раздела
         """
 
-        soup = BeautifulSoup(self.session.get(f"{MAIN_URL}/forums/{category_id}").content, "lxml")
+        request = self.session.get(f"{MAIN_URL}/forums/{category_id}/page-1?_xfResponseType=json&_xfToken={self.token}").json()
+        if request['status'] == 'error':
+            return None
+        
+        soup = BeautifulSoup(unescape(request['html']['content']), "lxml")
         return [int(findall(r'\d+', category.find("a")['href'])[0]) for category in soup.find_all('div', compile('.*node--depth2 node--forum.*'))]
     
 
@@ -280,10 +311,10 @@ class ArizonaAPI:
             Объект Response модуля requests
         """
 
-        if member_id == self.current_member.id: raise ThisIsYouError(member_id)
+        if member_id == self.current_member.id:
+            raise ThisIsYouError(member_id)
 
-        token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        return self.session.post(f"{MAIN_URL}/members/{member_id}/follow", {'_xfToken': token})
+        return self.session.post(f"{MAIN_URL}/members/{member_id}/follow", {'_xfToken': self.token})
     
 
     def ignore_member(self, member_id: int) -> Response:
@@ -296,10 +327,10 @@ class ArizonaAPI:
             Объект Response модуля requests
         """
 
-        if member_id == self.current_member.id: raise ThisIsYouError(member_id)
+        if member_id == self.current_member.id:
+            raise ThisIsYouError(member_id)
 
-        token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        return self.session.post(f"{MAIN_URL}/members/{member_id}/ignore", {'_xfToken': token})
+        return self.session.post(f"{MAIN_URL}/members/{member_id}/ignore", {'_xfToken': self.token})
     
 
     def add_profile_message(self, member_id: int, message_html: str) -> Response:
@@ -313,11 +344,10 @@ class ArizonaAPI:
             Объект Response модуля requests
         """
 
-        token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        return self.session.post(f"{MAIN_URL}/members/{member_id}/post", {'_xfToken': token, 'message_html': message_html})
+        return self.session.post(f"{MAIN_URL}/members/{member_id}/post", {'_xfToken': self.token, 'message_html': message_html})
     
 
-    def get_profile_messages(self, member_id: int, page: int = 1) -> list:
+    def get_profile_messages(self, member_id: int, page: int = 1) -> list | None:
         """Возвращает ID всех сообщений со стенки пользователя на странице
 
         Attributes:
@@ -325,10 +355,15 @@ class ArizonaAPI:
             page (int): Страница для поиска. По умолчанию 1 (необяз.)
             
         Returns:
-            Cписок (list) с ID всех сообщений профиля
+            - Cписок (list) с ID всех сообщений профиля
+            - None, если пользователя не существует / закрыл профиль
         """
 
-        soup = BeautifulSoup(self.session.get(f"{MAIN_URL}/members/{member_id}/page-{page}").content, "lxml")
+        request = self.session.get(f"{MAIN_URL}/members/{member_id}/page-{page}?_xfResponseType=json&_xfToken={self.token}").json()
+        if request['status'] == 'error':
+            return None
+        
+        soup = BeautifulSoup(unescape(request['html']['content']), "lxml")
         return [int(post['id'].strip('js-profilePost-')) for post in soup.find_all('article', {'id': compile('js-profilePost-*')})]
 
 
@@ -344,8 +379,7 @@ class ArizonaAPI:
             Объект Response модуля requests
         """
 
-        token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        return self.session.post(f'{MAIN_URL}/posts/{post_id}/react?reaction_id={reaction_id}', {'_xfToken': token})
+        return self.session.post(f'{MAIN_URL}/posts/{post_id}/react?reaction_id={reaction_id}', {'_xfToken': self.token})
     
 
     def edit_post(self, post_id: int, message_html: str) -> Response:
@@ -359,8 +393,7 @@ class ArizonaAPI:
             Объект Response модуля requests
         """
 
-        token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        return self.session.post(f"{MAIN_URL}/posts/{post_id}/edit", {"message_html": message_html, "message": message_html, "_xfToken": token})
+        return self.session.post(f"{MAIN_URL}/posts/{post_id}/edit", {"message_html": message_html, "message": message_html, "_xfToken": self.token})
 
 
     def delete_post(self, post_id: int, reason: str, hard_delete: bool = False) -> Response:
@@ -375,8 +408,7 @@ class ArizonaAPI:
             Объект Response модуля requests
         """
 
-        token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        return self.session.post(f"{MAIN_URL}/posts/{post_id}/delete", {"reason": reason, "hard_delete": int(hard_delete), "_xfToken": token})
+        return self.session.post(f"{MAIN_URL}/posts/{post_id}/delete", {"reason": reason, "hard_delete": int(hard_delete), "_xfToken": self.token})
     
 
     def bookmark_post(self, post_id: int) -> Response:
@@ -389,8 +421,7 @@ class ArizonaAPI:
             Объект Response модуля requests
         """
 
-        token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        return self.session.post(f"{MAIN_URL}/posts/{post_id}/bookmark", {"_xfToken": token})
+        return self.session.post(f"{MAIN_URL}/posts/{post_id}/bookmark", {"_xfToken": self.token})
 
 
     # PROFILE POST
@@ -405,8 +436,7 @@ class ArizonaAPI:
             Объект Response модуля requests
         """
 
-        token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        return self.session.post(f'{MAIN_URL}/profile-posts/{post_id}/react?reaction_id={reaction_id}', {'_xfToken': token})
+        return self.session.post(f'{MAIN_URL}/profile-posts/{post_id}/react?reaction_id={reaction_id}', {'_xfToken': self.token})
 
 
     def comment_profile_post(self, post_id: int, message_html: str) -> Response:
@@ -420,8 +450,7 @@ class ArizonaAPI:
             Объект Response модуля requests
         """
 
-        token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        return self.session.post(f"{MAIN_URL}/profile-posts/{post_id}/add-comment", {"message_html": message_html, "_xfToken": token})
+        return self.session.post(f"{MAIN_URL}/profile-posts/{post_id}/add-comment", {"message_html": message_html, "_xfToken": self.token})
 
 
     def delete_profile_post(self, post_id: int, reason: str, hard_delete: bool = False) -> Response:
@@ -436,8 +465,7 @@ class ArizonaAPI:
             Объект Response модуля requests
         """
 
-        token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        return self.session.post(f"{MAIN_URL}/profile-posts/{post_id}/delete", {"reason": reason, "hard_delete": int(hard_delete), "_xfToken": token})
+        return self.session.post(f"{MAIN_URL}/profile-posts/{post_id}/delete", {"reason": reason, "hard_delete": int(hard_delete), "_xfToken": self.token})
     
 
     def edit_profile_post(self, post_id: int, message_html: str) -> Response:
@@ -451,39 +479,10 @@ class ArizonaAPI:
             Объект Response модуля requests
         """
 
-        token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        return self.session.post(f"{MAIN_URL}/profile-posts/{post_id}/edit", {"message_html": message_html, "message": message_html, "_xfToken": token})
+        return self.session.post(f"{MAIN_URL}/profile-posts/{post_id}/edit", {"message_html": message_html, "message": message_html, "_xfToken": self.token})
 
 
     # THREAD
-    def close_thread(self, thread_id: int) -> Response:
-        """Закрыть/открыть тему (для модерации)
-        
-        Attributes:
-            thread_id (int): ID темы
-        
-        Returns:
-            Объект Response модуля requests
-        """
-
-        token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        return self.session.post(f"{MAIN_URL}/threads/{thread_id}/quick-close", {'_xfToken': token})
-
-
-    def pin_thread(self, thread_id: int) -> Response:
-        """Закрепить/открепить тему (для модерации)
-        
-        Attributes:
-            thread_id (int): ID темы
-        
-        Returns:
-            Объект Response модуля requests
-        """
-
-        token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        return self.session.post(f"{MAIN_URL}/threads/{thread_id}/quick-stick", {'_xfToken': token})
-    
-
     def answer_thread(self, thread_id: int, message_html: str) -> Response:
         """Оставить сообщенме в теме
 
@@ -495,8 +494,7 @@ class ArizonaAPI:
             Объект Response модуля requests
         """
 
-        token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        return self.session.post(f"{MAIN_URL}/threads/{thread_id}/add-reply", {'_xfToken': token, 'message_html': message_html})
+        return self.session.post(f"{MAIN_URL}/threads/{thread_id}/add-reply", {'_xfToken': self.token, 'message_html': message_html})
 
 
     def watch_thread(self, thread_id: int, email_subscribe: bool = False, stop: bool = False) -> Response:
@@ -511,8 +509,7 @@ class ArizonaAPI:
             Объект Response модуля requests
         """
 
-        token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        return self.session.post(f"{MAIN_URL}/threads/{thread_id}/watch", {'_xfToken': token, 'stop': int(stop), 'email_subscribe': int(email_subscribe)})
+        return self.session.post(f"{MAIN_URL}/threads/{thread_id}/watch", {'_xfToken': self.token, 'stop': int(stop), 'email_subscribe': int(email_subscribe)})
     
 
     def delete_thread(self, thread_id: int, reason: str, hard_delete: bool = False) -> Response:
@@ -527,8 +524,7 @@ class ArizonaAPI:
             Объект Response модуля requests
         """
 
-        token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        return self.session.post(f"{MAIN_URL}/threads/{thread_id}/delete", {"reason": reason, "hard_delete": int(hard_delete), "_xfToken": token})
+        return self.session.post(f"{MAIN_URL}/threads/{thread_id}/delete", {"reason": reason, "hard_delete": int(hard_delete), "_xfToken": self.token})
     
 
     def edit_thread(self, thread_id: int, message_html: str) -> Response:
@@ -543,9 +539,8 @@ class ArizonaAPI:
         """
 
         content = BeautifulSoup(self.session.get(f"{MAIN_URL}/threads/{thread_id}/page-1").content, 'lxml')
-        token = content.find('html')['data-csrf']
         thread_post_id = content.find('article', {'id': compile('js-post-*')})['id'].strip('js-post-')
-        return self.session.post(f"{MAIN_URL}/posts/{thread_post_id}/edit", {"message_html": message_html, "message": message_html, "_xfToken": token})
+        return self.session.post(f"{MAIN_URL}/posts/{thread_post_id}/edit", {"message_html": message_html, "message": message_html, "_xfToken": self.token})
     
 
     def edit_thread_info(self, thread_id: int, title: str = None, prefix_id: int = None, sticky: bool = True, opened: bool = True) -> Response:
@@ -562,13 +557,31 @@ class ArizonaAPI:
             Объект Response модуля requests
         """
         
-        token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        data = {"_xfToken": token, "sticky": sticky, "discussion_open": opened}
+        data = {"_xfToken": self.token}
 
         if title is not None: data.update({'title': title})
-        if prefix_id is not None: data.update({'prefix_id[]': prefix_id})
+        if prefix_id is not None: data.update({'prefix_id': prefix_id})
+        if opened: data.update({"discussion_open": 1})
+        if sticky: data.update({"sticky": 1})
 
         return self.session.post(f"{MAIN_URL}/threads/{thread_id}/edit", data)
+    
+
+    def get_thread_category(self, thread_id: int) -> Category:
+        """Получить объект раздела, в котором создана тема
+
+        Attributes:
+            thread_id (int): ID темы
+        
+        Returns:
+            Объект Catrgory, в котормо создана тема
+        """
+        content = BeautifulSoup(self.session.get(f"{MAIN_URL}/threads/{thread_id}/page-1").content, 'lxml')
+        
+        creator_id = content.find('a', {'class': 'username'})
+        if creator_id is None: return None
+        
+        return self.get_category(int(content.find('html')['data-container-key'].strip('node-')))
     
 
     def get_thread_posts(self, thread_id: int, page: int = 1) -> list:
@@ -582,7 +595,11 @@ class ArizonaAPI:
             Список (list), состоящий из ID всех сообщений на странице
         """
 
-        soup = BeautifulSoup(self.session.get(f"{MAIN_URL}/threads/{thread_id}/page-{page}").content, 'lxml')
+        request = self.session.get(f"{MAIN_URL}/threads/{thread_id}/page-{page}?_xfResponseType=json&_xfToken={self.token}").json()
+        if request['status'] == 'error':
+            return None
+        
+        soup = BeautifulSoup(unescape(request['html']['content']), "lxml")
         return [i['id'].strip('js-post-') for i in soup.find_all('article', {'id': compile('js-post-*')})]
     
 
@@ -598,9 +615,8 @@ class ArizonaAPI:
         """
 
         content = BeautifulSoup(self.session.get(f"{MAIN_URL}/threads/{thread_id}/page-1").content, 'lxml')
-        token = content.find('html')['data-csrf']
         thread_post_id = content.find('article', {'id': compile('js-post-*')})['id'].strip('js-post-')
-        return self.session.post(f'{MAIN_URL}/posts/{thread_post_id}/react?reaction_id={reaction_id}', {'_xfToken': token})
+        return self.session.post(f'{MAIN_URL}/posts/{thread_post_id}/react?reaction_id={reaction_id}', {'_xfToken': self.token})
 
 
     # OTHER
@@ -615,8 +631,5 @@ class ArizonaAPI:
             Объект Response модуля requests
         """
 
-        token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
-        data.update({'_xfToken': token})
-        response = self.session.post(f"{MAIN_URL}/form/{form_id}/submit", data)
-
-        return response
+        data.update({'_xfToken': self.token})
+        return self.session.post(f"{MAIN_URL}/form/{form_id}/submit", data)

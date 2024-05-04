@@ -1,5 +1,6 @@
 from requests import Response
 from typing import TYPE_CHECKING
+from arz_api.consts import MAIN_URL
 
 if TYPE_CHECKING:
     from arz_api import ArizonaAPI
@@ -21,6 +22,8 @@ class Post:
         """**Сырое содержимое сообщения**"""
         self.text_content = text_content
         """**Текст из сообщения**"""
+        self.url = f"{MAIN_URL}/posts/{self.id}/"
+        """Ссылка на объект"""
 
 
     def react(self, reaction_id: int = 1) -> Response:
@@ -69,15 +72,7 @@ class Post:
         Returns:
             Объект Response модуля requests"""
         return self.API.bookmark_post(self.id)
-    
 
-    def get_url(self) -> str:
-        """Получить ссылку на объект
-        
-        Returns:
-            Ссылку в формате https://forum.arizona-rp.com/posts/x/"""
-        
-        return f"https://forum.arizona-rp.com/posts/{self.id}/"
 
 
 class ProfilePost:
@@ -95,6 +90,8 @@ class ProfilePost:
         """**Сырое содержимое сообщения**"""
         self.text_content = text_content
         """**Текст из сообщения**"""
+        self.url = f"{MAIN_URL}/profile-posts/{self.id}/"
+        """Ссылка на объект"""
 
 
     def react(self, reaction_id: int = 1) -> Response:
@@ -148,12 +145,3 @@ class ProfilePost:
         """
 
         return self.API.edit_profile_post(self.id, message_html)
-
-
-    def get_url(self) -> str:
-        """Получить ссылку на объект
-        
-        Returns:
-            Ссылку в формате https://forum.arizona-rp.com/profile-posts/x/"""
-        
-        return f"https://forum.arizona-rp.com/profile-posts/{self.id}/"
