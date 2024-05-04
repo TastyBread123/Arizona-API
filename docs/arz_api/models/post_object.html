@@ -58,6 +58,9 @@
                                 <a class="variable" href="#Post.text_content">text_content</a>
                         </li>
                         <li>
+                                <a class="variable" href="#Post.url">url</a>
+                        </li>
+                        <li>
                                 <a class="function" href="#Post.react">react</a>
                         </li>
                         <li>
@@ -68,9 +71,6 @@
                         </li>
                         <li>
                                 <a class="function" href="#Post.bookmark">bookmark</a>
-                        </li>
-                        <li>
-                                <a class="function" href="#Post.get_url">get_url</a>
                         </li>
                 </ul>
 
@@ -103,6 +103,9 @@
                                 <a class="variable" href="#ProfilePost.text_content">text_content</a>
                         </li>
                         <li>
+                                <a class="variable" href="#ProfilePost.url">url</a>
+                        </li>
+                        <li>
                                 <a class="function" href="#ProfilePost.react">react</a>
                         </li>
                         <li>
@@ -113,9 +116,6 @@
                         </li>
                         <li>
                                 <a class="function" href="#ProfilePost.edit">edit</a>
-                        </li>
-                        <li>
-                                <a class="function" href="#ProfilePost.get_url">get_url</a>
                         </li>
                 </ul>
 
@@ -143,163 +143,151 @@
 
                         <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos">  1</span></a><span class="kn">from</span> <span class="nn">requests</span> <span class="kn">import</span> <span class="n">Response</span>
 </span><span id="L-2"><a href="#L-2"><span class="linenos">  2</span></a><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
-</span><span id="L-3"><a href="#L-3"><span class="linenos">  3</span></a>
-</span><span id="L-4"><a href="#L-4"><span class="linenos">  4</span></a><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-</span><span id="L-5"><a href="#L-5"><span class="linenos">  5</span></a>    <span class="kn">from</span> <span class="nn">arz_api</span> <span class="kn">import</span> <span class="n">ArizonaAPI</span>
-</span><span id="L-6"><a href="#L-6"><span class="linenos">  6</span></a>    <span class="kn">from</span> <span class="nn">arz_api.models</span> <span class="kn">import</span> <span class="n">Member</span><span class="p">,</span> <span class="n">Thread</span>
-</span><span id="L-7"><a href="#L-7"><span class="linenos">  7</span></a>
+</span><span id="L-3"><a href="#L-3"><span class="linenos">  3</span></a><span class="kn">from</span> <span class="nn">arz_api.consts</span> <span class="kn">import</span> <span class="n">MAIN_URL</span>
+</span><span id="L-4"><a href="#L-4"><span class="linenos">  4</span></a>
+</span><span id="L-5"><a href="#L-5"><span class="linenos">  5</span></a><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+</span><span id="L-6"><a href="#L-6"><span class="linenos">  6</span></a>    <span class="kn">from</span> <span class="nn">arz_api</span> <span class="kn">import</span> <span class="n">ArizonaAPI</span>
+</span><span id="L-7"><a href="#L-7"><span class="linenos">  7</span></a>    <span class="kn">from</span> <span class="nn">arz_api.models</span> <span class="kn">import</span> <span class="n">Member</span><span class="p">,</span> <span class="n">Thread</span>
 </span><span id="L-8"><a href="#L-8"><span class="linenos">  8</span></a>
-</span><span id="L-9"><a href="#L-9"><span class="linenos">  9</span></a><span class="k">class</span> <span class="nc">Post</span><span class="p">:</span>
-</span><span id="L-10"><a href="#L-10"><span class="linenos"> 10</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">API</span><span class="p">:</span> <span class="s1">&#39;ArizonaAPI&#39;</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">creator</span><span class="p">:</span> <span class="s1">&#39;Member&#39;</span><span class="p">,</span> <span class="n">thread</span><span class="p">:</span> <span class="s1">&#39;Thread&#39;</span><span class="p">,</span> <span class="n">create_date</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">bb_content</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">text_content</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="L-11"><a href="#L-11"><span class="linenos"> 11</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">API</span> <span class="o">=</span> <span class="n">API</span>
-</span><span id="L-12"><a href="#L-12"><span class="linenos"> 12</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">id</span>
-</span><span id="L-13"><a href="#L-13"><span class="linenos"> 13</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**ID сообщения**&quot;&quot;&quot;</span>
-</span><span id="L-14"><a href="#L-14"><span class="linenos"> 14</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">creator</span> <span class="o">=</span> <span class="n">creator</span>
-</span><span id="L-15"><a href="#L-15"><span class="linenos"> 15</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Объект Member отправителя сообщения**&quot;&quot;&quot;</span>
-</span><span id="L-16"><a href="#L-16"><span class="linenos"> 16</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">thread</span> <span class="o">=</span> <span class="n">thread</span>
-</span><span id="L-17"><a href="#L-17"><span class="linenos"> 17</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Объект Thread темы, в которой оставлено сообщение**&quot;&quot;&quot;</span>
-</span><span id="L-18"><a href="#L-18"><span class="linenos"> 18</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">create_date</span> <span class="o">=</span> <span class="n">create_date</span>
-</span><span id="L-19"><a href="#L-19"><span class="linenos"> 19</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Дата отправки сообщения в UNIX**&quot;&quot;&quot;</span>
-</span><span id="L-20"><a href="#L-20"><span class="linenos"> 20</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">bb_content</span> <span class="o">=</span> <span class="n">bb_content</span>
-</span><span id="L-21"><a href="#L-21"><span class="linenos"> 21</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Сырое содержимое сообщения**&quot;&quot;&quot;</span>
-</span><span id="L-22"><a href="#L-22"><span class="linenos"> 22</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">text_content</span> <span class="o">=</span> <span class="n">text_content</span>
-</span><span id="L-23"><a href="#L-23"><span class="linenos"> 23</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Текст из сообщения**&quot;&quot;&quot;</span>
-</span><span id="L-24"><a href="#L-24"><span class="linenos"> 24</span></a>
-</span><span id="L-25"><a href="#L-25"><span class="linenos"> 25</span></a>
-</span><span id="L-26"><a href="#L-26"><span class="linenos"> 26</span></a>    <span class="k">def</span> <span class="nf">react</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reaction_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
-</span><span id="L-27"><a href="#L-27"><span class="linenos"> 27</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Поставить реакцию на сообщение</span>
+</span><span id="L-9"><a href="#L-9"><span class="linenos">  9</span></a>
+</span><span id="L-10"><a href="#L-10"><span class="linenos"> 10</span></a><span class="k">class</span> <span class="nc">Post</span><span class="p">:</span>
+</span><span id="L-11"><a href="#L-11"><span class="linenos"> 11</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">API</span><span class="p">:</span> <span class="s1">&#39;ArizonaAPI&#39;</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">creator</span><span class="p">:</span> <span class="s1">&#39;Member&#39;</span><span class="p">,</span> <span class="n">thread</span><span class="p">:</span> <span class="s1">&#39;Thread&#39;</span><span class="p">,</span> <span class="n">create_date</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">bb_content</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">text_content</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="L-12"><a href="#L-12"><span class="linenos"> 12</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">API</span> <span class="o">=</span> <span class="n">API</span>
+</span><span id="L-13"><a href="#L-13"><span class="linenos"> 13</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">id</span>
+</span><span id="L-14"><a href="#L-14"><span class="linenos"> 14</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**ID сообщения**&quot;&quot;&quot;</span>
+</span><span id="L-15"><a href="#L-15"><span class="linenos"> 15</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">creator</span> <span class="o">=</span> <span class="n">creator</span>
+</span><span id="L-16"><a href="#L-16"><span class="linenos"> 16</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Объект Member отправителя сообщения**&quot;&quot;&quot;</span>
+</span><span id="L-17"><a href="#L-17"><span class="linenos"> 17</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">thread</span> <span class="o">=</span> <span class="n">thread</span>
+</span><span id="L-18"><a href="#L-18"><span class="linenos"> 18</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Объект Thread темы, в которой оставлено сообщение**&quot;&quot;&quot;</span>
+</span><span id="L-19"><a href="#L-19"><span class="linenos"> 19</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">create_date</span> <span class="o">=</span> <span class="n">create_date</span>
+</span><span id="L-20"><a href="#L-20"><span class="linenos"> 20</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Дата отправки сообщения в UNIX**&quot;&quot;&quot;</span>
+</span><span id="L-21"><a href="#L-21"><span class="linenos"> 21</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">bb_content</span> <span class="o">=</span> <span class="n">bb_content</span>
+</span><span id="L-22"><a href="#L-22"><span class="linenos"> 22</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Сырое содержимое сообщения**&quot;&quot;&quot;</span>
+</span><span id="L-23"><a href="#L-23"><span class="linenos"> 23</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">text_content</span> <span class="o">=</span> <span class="n">text_content</span>
+</span><span id="L-24"><a href="#L-24"><span class="linenos"> 24</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Текст из сообщения**&quot;&quot;&quot;</span>
+</span><span id="L-25"><a href="#L-25"><span class="linenos"> 25</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">MAIN_URL</span><span class="si">}</span><span class="s2">/posts/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/&quot;</span>
+</span><span id="L-26"><a href="#L-26"><span class="linenos"> 26</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Ссылка на объект&quot;&quot;&quot;</span>
+</span><span id="L-27"><a href="#L-27"><span class="linenos"> 27</span></a>
 </span><span id="L-28"><a href="#L-28"><span class="linenos"> 28</span></a>
-</span><span id="L-29"><a href="#L-29"><span class="linenos"> 29</span></a><span class="sd">        Attributes:</span>
-</span><span id="L-30"><a href="#L-30"><span class="linenos"> 30</span></a><span class="sd">            reaction_id (int): ID реакции. По умолчанию 1 (необяз.)</span>
-</span><span id="L-31"><a href="#L-31"><span class="linenos"> 31</span></a><span class="sd">            </span>
-</span><span id="L-32"><a href="#L-32"><span class="linenos"> 32</span></a><span class="sd">        Returns:</span>
-</span><span id="L-33"><a href="#L-33"><span class="linenos"> 33</span></a><span class="sd">            Объект Response модуля requests</span>
-</span><span id="L-34"><a href="#L-34"><span class="linenos"> 34</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="L-35"><a href="#L-35"><span class="linenos"> 35</span></a>
-</span><span id="L-36"><a href="#L-36"><span class="linenos"> 36</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">react_post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">reaction_id</span><span class="p">)</span>
-</span><span id="L-37"><a href="#L-37"><span class="linenos"> 37</span></a>    
+</span><span id="L-29"><a href="#L-29"><span class="linenos"> 29</span></a>    <span class="k">def</span> <span class="nf">react</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reaction_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
+</span><span id="L-30"><a href="#L-30"><span class="linenos"> 30</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Поставить реакцию на сообщение</span>
+</span><span id="L-31"><a href="#L-31"><span class="linenos"> 31</span></a>
+</span><span id="L-32"><a href="#L-32"><span class="linenos"> 32</span></a><span class="sd">        Attributes:</span>
+</span><span id="L-33"><a href="#L-33"><span class="linenos"> 33</span></a><span class="sd">            reaction_id (int): ID реакции. По умолчанию 1 (необяз.)</span>
+</span><span id="L-34"><a href="#L-34"><span class="linenos"> 34</span></a><span class="sd">            </span>
+</span><span id="L-35"><a href="#L-35"><span class="linenos"> 35</span></a><span class="sd">        Returns:</span>
+</span><span id="L-36"><a href="#L-36"><span class="linenos"> 36</span></a><span class="sd">            Объект Response модуля requests</span>
+</span><span id="L-37"><a href="#L-37"><span class="linenos"> 37</span></a><span class="sd">        &quot;&quot;&quot;</span>
 </span><span id="L-38"><a href="#L-38"><span class="linenos"> 38</span></a>
-</span><span id="L-39"><a href="#L-39"><span class="linenos"> 39</span></a>    <span class="k">def</span> <span class="nf">edit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message_html</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
-</span><span id="L-40"><a href="#L-40"><span class="linenos"> 40</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Отредактировать сообщение</span>
+</span><span id="L-39"><a href="#L-39"><span class="linenos"> 39</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">react_post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">reaction_id</span><span class="p">)</span>
+</span><span id="L-40"><a href="#L-40"><span class="linenos"> 40</span></a>    
 </span><span id="L-41"><a href="#L-41"><span class="linenos"> 41</span></a>
-</span><span id="L-42"><a href="#L-42"><span class="linenos"> 42</span></a><span class="sd">        Attributes:</span>
-</span><span id="L-43"><a href="#L-43"><span class="linenos"> 43</span></a><span class="sd">            message_html (str): Новое содержание сообщения. Рекомендуется использование HTML</span>
-</span><span id="L-44"><a href="#L-44"><span class="linenos"> 44</span></a><span class="sd">        </span>
-</span><span id="L-45"><a href="#L-45"><span class="linenos"> 45</span></a><span class="sd">        Returns:</span>
-</span><span id="L-46"><a href="#L-46"><span class="linenos"> 46</span></a><span class="sd">            Объект Response модуля requests</span>
-</span><span id="L-47"><a href="#L-47"><span class="linenos"> 47</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="L-48"><a href="#L-48"><span class="linenos"> 48</span></a>
-</span><span id="L-49"><a href="#L-49"><span class="linenos"> 49</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">edit_post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">message_html</span><span class="p">)</span>
-</span><span id="L-50"><a href="#L-50"><span class="linenos"> 50</span></a>
+</span><span id="L-42"><a href="#L-42"><span class="linenos"> 42</span></a>    <span class="k">def</span> <span class="nf">edit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message_html</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
+</span><span id="L-43"><a href="#L-43"><span class="linenos"> 43</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Отредактировать сообщение</span>
+</span><span id="L-44"><a href="#L-44"><span class="linenos"> 44</span></a>
+</span><span id="L-45"><a href="#L-45"><span class="linenos"> 45</span></a><span class="sd">        Attributes:</span>
+</span><span id="L-46"><a href="#L-46"><span class="linenos"> 46</span></a><span class="sd">            message_html (str): Новое содержание сообщения. Рекомендуется использование HTML</span>
+</span><span id="L-47"><a href="#L-47"><span class="linenos"> 47</span></a><span class="sd">        </span>
+</span><span id="L-48"><a href="#L-48"><span class="linenos"> 48</span></a><span class="sd">        Returns:</span>
+</span><span id="L-49"><a href="#L-49"><span class="linenos"> 49</span></a><span class="sd">            Объект Response модуля requests</span>
+</span><span id="L-50"><a href="#L-50"><span class="linenos"> 50</span></a><span class="sd">        &quot;&quot;&quot;</span>
 </span><span id="L-51"><a href="#L-51"><span class="linenos"> 51</span></a>
-</span><span id="L-52"><a href="#L-52"><span class="linenos"> 52</span></a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">hard_delete</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
-</span><span id="L-53"><a href="#L-53"><span class="linenos"> 53</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Удалить сообщение</span>
+</span><span id="L-52"><a href="#L-52"><span class="linenos"> 52</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">edit_post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">message_html</span><span class="p">)</span>
+</span><span id="L-53"><a href="#L-53"><span class="linenos"> 53</span></a>
 </span><span id="L-54"><a href="#L-54"><span class="linenos"> 54</span></a>
-</span><span id="L-55"><a href="#L-55"><span class="linenos"> 55</span></a><span class="sd">        Attributes:</span>
-</span><span id="L-56"><a href="#L-56"><span class="linenos"> 56</span></a><span class="sd">            reason (str): Причина для удаления</span>
-</span><span id="L-57"><a href="#L-57"><span class="linenos"> 57</span></a><span class="sd">            hard_delete (bool): Полное удаление сообщения. По умолчанию False (необяз.)</span>
-</span><span id="L-58"><a href="#L-58"><span class="linenos"> 58</span></a><span class="sd">            </span>
-</span><span id="L-59"><a href="#L-59"><span class="linenos"> 59</span></a><span class="sd">        Returns:</span>
-</span><span id="L-60"><a href="#L-60"><span class="linenos"> 60</span></a><span class="sd">            Объект Response модуля requests</span>
-</span><span id="L-61"><a href="#L-61"><span class="linenos"> 61</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="L-62"><a href="#L-62"><span class="linenos"> 62</span></a>
-</span><span id="L-63"><a href="#L-63"><span class="linenos"> 63</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">delete_post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">reason</span><span class="p">,</span> <span class="n">hard_delete</span><span class="p">)</span>
-</span><span id="L-64"><a href="#L-64"><span class="linenos"> 64</span></a>    
-</span><span id="L-65"><a href="#L-65"><span class="linenos"> 65</span></a>    
-</span><span id="L-66"><a href="#L-66"><span class="linenos"> 66</span></a>    <span class="k">def</span> <span class="nf">bookmark</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
-</span><span id="L-67"><a href="#L-67"><span class="linenos"> 67</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Добавить сообщение в закладки</span>
-</span><span id="L-68"><a href="#L-68"><span class="linenos"> 68</span></a><span class="sd">        </span>
-</span><span id="L-69"><a href="#L-69"><span class="linenos"> 69</span></a><span class="sd">        Returns:</span>
-</span><span id="L-70"><a href="#L-70"><span class="linenos"> 70</span></a><span class="sd">            Объект Response модуля requests&quot;&quot;&quot;</span>
-</span><span id="L-71"><a href="#L-71"><span class="linenos"> 71</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">bookmark_post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
-</span><span id="L-72"><a href="#L-72"><span class="linenos"> 72</span></a>    
-</span><span id="L-73"><a href="#L-73"><span class="linenos"> 73</span></a>
-</span><span id="L-74"><a href="#L-74"><span class="linenos"> 74</span></a>    <span class="k">def</span> <span class="nf">get_url</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span id="L-75"><a href="#L-75"><span class="linenos"> 75</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Получить ссылку на объект</span>
-</span><span id="L-76"><a href="#L-76"><span class="linenos"> 76</span></a><span class="sd">        </span>
-</span><span id="L-77"><a href="#L-77"><span class="linenos"> 77</span></a><span class="sd">        Returns:</span>
-</span><span id="L-78"><a href="#L-78"><span class="linenos"> 78</span></a><span class="sd">            Ссылку в формате https://forum.arizona-rp.com/posts/x/&quot;&quot;&quot;</span>
-</span><span id="L-79"><a href="#L-79"><span class="linenos"> 79</span></a>        
-</span><span id="L-80"><a href="#L-80"><span class="linenos"> 80</span></a>        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;https://forum.arizona-rp.com/posts/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/&quot;</span>
-</span><span id="L-81"><a href="#L-81"><span class="linenos"> 81</span></a>
-</span><span id="L-82"><a href="#L-82"><span class="linenos"> 82</span></a>
-</span><span id="L-83"><a href="#L-83"><span class="linenos"> 83</span></a><span class="k">class</span> <span class="nc">ProfilePost</span><span class="p">:</span>
-</span><span id="L-84"><a href="#L-84"><span class="linenos"> 84</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">API</span><span class="p">:</span> <span class="s1">&#39;ArizonaAPI&#39;</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">creator</span><span class="p">:</span> <span class="s1">&#39;Member&#39;</span><span class="p">,</span> <span class="n">profile</span><span class="p">:</span> <span class="s1">&#39;Member&#39;</span><span class="p">,</span> <span class="n">create_date</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">bb_content</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">text_content</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="L-85"><a href="#L-85"><span class="linenos"> 85</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">API</span> <span class="o">=</span> <span class="n">API</span>
-</span><span id="L-86"><a href="#L-86"><span class="linenos"> 86</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">id</span>
-</span><span id="L-87"><a href="#L-87"><span class="linenos"> 87</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**ID сообщения профиля**&quot;&quot;&quot;</span>
-</span><span id="L-88"><a href="#L-88"><span class="linenos"> 88</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">creator</span> <span class="o">=</span> <span class="n">creator</span>
-</span><span id="L-89"><a href="#L-89"><span class="linenos"> 89</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Объект Member отправителя сообщения**&quot;&quot;&quot;</span>
-</span><span id="L-90"><a href="#L-90"><span class="linenos"> 90</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">profile</span> <span class="o">=</span> <span class="n">profile</span>
-</span><span id="L-91"><a href="#L-91"><span class="linenos"> 91</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Объект Member профиля, в котором оставлено сообщение**&quot;&quot;&quot;</span>
-</span><span id="L-92"><a href="#L-92"><span class="linenos"> 92</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">create_date</span> <span class="o">=</span> <span class="n">create_date</span>
-</span><span id="L-93"><a href="#L-93"><span class="linenos"> 93</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Дата отправки сообщения в UNIX**&quot;&quot;&quot;</span>
-</span><span id="L-94"><a href="#L-94"><span class="linenos"> 94</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">bb_content</span> <span class="o">=</span> <span class="n">bb_content</span>
-</span><span id="L-95"><a href="#L-95"><span class="linenos"> 95</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Сырое содержимое сообщения**&quot;&quot;&quot;</span>
-</span><span id="L-96"><a href="#L-96"><span class="linenos"> 96</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">text_content</span> <span class="o">=</span> <span class="n">text_content</span>
-</span><span id="L-97"><a href="#L-97"><span class="linenos"> 97</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Текст из сообщения**&quot;&quot;&quot;</span>
-</span><span id="L-98"><a href="#L-98"><span class="linenos"> 98</span></a>
+</span><span id="L-55"><a href="#L-55"><span class="linenos"> 55</span></a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">hard_delete</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
+</span><span id="L-56"><a href="#L-56"><span class="linenos"> 56</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Удалить сообщение</span>
+</span><span id="L-57"><a href="#L-57"><span class="linenos"> 57</span></a>
+</span><span id="L-58"><a href="#L-58"><span class="linenos"> 58</span></a><span class="sd">        Attributes:</span>
+</span><span id="L-59"><a href="#L-59"><span class="linenos"> 59</span></a><span class="sd">            reason (str): Причина для удаления</span>
+</span><span id="L-60"><a href="#L-60"><span class="linenos"> 60</span></a><span class="sd">            hard_delete (bool): Полное удаление сообщения. По умолчанию False (необяз.)</span>
+</span><span id="L-61"><a href="#L-61"><span class="linenos"> 61</span></a><span class="sd">            </span>
+</span><span id="L-62"><a href="#L-62"><span class="linenos"> 62</span></a><span class="sd">        Returns:</span>
+</span><span id="L-63"><a href="#L-63"><span class="linenos"> 63</span></a><span class="sd">            Объект Response модуля requests</span>
+</span><span id="L-64"><a href="#L-64"><span class="linenos"> 64</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="L-65"><a href="#L-65"><span class="linenos"> 65</span></a>
+</span><span id="L-66"><a href="#L-66"><span class="linenos"> 66</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">delete_post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">reason</span><span class="p">,</span> <span class="n">hard_delete</span><span class="p">)</span>
+</span><span id="L-67"><a href="#L-67"><span class="linenos"> 67</span></a>    
+</span><span id="L-68"><a href="#L-68"><span class="linenos"> 68</span></a>    
+</span><span id="L-69"><a href="#L-69"><span class="linenos"> 69</span></a>    <span class="k">def</span> <span class="nf">bookmark</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
+</span><span id="L-70"><a href="#L-70"><span class="linenos"> 70</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Добавить сообщение в закладки</span>
+</span><span id="L-71"><a href="#L-71"><span class="linenos"> 71</span></a><span class="sd">        </span>
+</span><span id="L-72"><a href="#L-72"><span class="linenos"> 72</span></a><span class="sd">        Returns:</span>
+</span><span id="L-73"><a href="#L-73"><span class="linenos"> 73</span></a><span class="sd">            Объект Response модуля requests&quot;&quot;&quot;</span>
+</span><span id="L-74"><a href="#L-74"><span class="linenos"> 74</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">bookmark_post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+</span><span id="L-75"><a href="#L-75"><span class="linenos"> 75</span></a>
+</span><span id="L-76"><a href="#L-76"><span class="linenos"> 76</span></a>
+</span><span id="L-77"><a href="#L-77"><span class="linenos"> 77</span></a>
+</span><span id="L-78"><a href="#L-78"><span class="linenos"> 78</span></a><span class="k">class</span> <span class="nc">ProfilePost</span><span class="p">:</span>
+</span><span id="L-79"><a href="#L-79"><span class="linenos"> 79</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">API</span><span class="p">:</span> <span class="s1">&#39;ArizonaAPI&#39;</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">creator</span><span class="p">:</span> <span class="s1">&#39;Member&#39;</span><span class="p">,</span> <span class="n">profile</span><span class="p">:</span> <span class="s1">&#39;Member&#39;</span><span class="p">,</span> <span class="n">create_date</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">bb_content</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">text_content</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="L-80"><a href="#L-80"><span class="linenos"> 80</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">API</span> <span class="o">=</span> <span class="n">API</span>
+</span><span id="L-81"><a href="#L-81"><span class="linenos"> 81</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">id</span>
+</span><span id="L-82"><a href="#L-82"><span class="linenos"> 82</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**ID сообщения профиля**&quot;&quot;&quot;</span>
+</span><span id="L-83"><a href="#L-83"><span class="linenos"> 83</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">creator</span> <span class="o">=</span> <span class="n">creator</span>
+</span><span id="L-84"><a href="#L-84"><span class="linenos"> 84</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Объект Member отправителя сообщения**&quot;&quot;&quot;</span>
+</span><span id="L-85"><a href="#L-85"><span class="linenos"> 85</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">profile</span> <span class="o">=</span> <span class="n">profile</span>
+</span><span id="L-86"><a href="#L-86"><span class="linenos"> 86</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Объект Member профиля, в котором оставлено сообщение**&quot;&quot;&quot;</span>
+</span><span id="L-87"><a href="#L-87"><span class="linenos"> 87</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">create_date</span> <span class="o">=</span> <span class="n">create_date</span>
+</span><span id="L-88"><a href="#L-88"><span class="linenos"> 88</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Дата отправки сообщения в UNIX**&quot;&quot;&quot;</span>
+</span><span id="L-89"><a href="#L-89"><span class="linenos"> 89</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">bb_content</span> <span class="o">=</span> <span class="n">bb_content</span>
+</span><span id="L-90"><a href="#L-90"><span class="linenos"> 90</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Сырое содержимое сообщения**&quot;&quot;&quot;</span>
+</span><span id="L-91"><a href="#L-91"><span class="linenos"> 91</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">text_content</span> <span class="o">=</span> <span class="n">text_content</span>
+</span><span id="L-92"><a href="#L-92"><span class="linenos"> 92</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Текст из сообщения**&quot;&quot;&quot;</span>
+</span><span id="L-93"><a href="#L-93"><span class="linenos"> 93</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">MAIN_URL</span><span class="si">}</span><span class="s2">/profile-posts/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/&quot;</span>
+</span><span id="L-94"><a href="#L-94"><span class="linenos"> 94</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Ссылка на объект&quot;&quot;&quot;</span>
+</span><span id="L-95"><a href="#L-95"><span class="linenos"> 95</span></a>
+</span><span id="L-96"><a href="#L-96"><span class="linenos"> 96</span></a>
+</span><span id="L-97"><a href="#L-97"><span class="linenos"> 97</span></a>    <span class="k">def</span> <span class="nf">react</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reaction_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
+</span><span id="L-98"><a href="#L-98"><span class="linenos"> 98</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Поставить реакцию на сообщение профиля</span>
 </span><span id="L-99"><a href="#L-99"><span class="linenos"> 99</span></a>
-</span><span id="L-100"><a href="#L-100"><span class="linenos">100</span></a>    <span class="k">def</span> <span class="nf">react</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reaction_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
-</span><span id="L-101"><a href="#L-101"><span class="linenos">101</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Поставить реакцию на сообщение профиля</span>
-</span><span id="L-102"><a href="#L-102"><span class="linenos">102</span></a>
-</span><span id="L-103"><a href="#L-103"><span class="linenos">103</span></a><span class="sd">        Attributes:</span>
-</span><span id="L-104"><a href="#L-104"><span class="linenos">104</span></a><span class="sd">            reaction_id (int): ID реакции. По умолчанию 1 (необяз.)</span>
-</span><span id="L-105"><a href="#L-105"><span class="linenos">105</span></a><span class="sd">            </span>
-</span><span id="L-106"><a href="#L-106"><span class="linenos">106</span></a><span class="sd">        Returns:</span>
-</span><span id="L-107"><a href="#L-107"><span class="linenos">107</span></a><span class="sd">            Объект Response модуля requests</span>
-</span><span id="L-108"><a href="#L-108"><span class="linenos">108</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="L-100"><a href="#L-100"><span class="linenos">100</span></a><span class="sd">        Attributes:</span>
+</span><span id="L-101"><a href="#L-101"><span class="linenos">101</span></a><span class="sd">            reaction_id (int): ID реакции. По умолчанию 1 (необяз.)</span>
+</span><span id="L-102"><a href="#L-102"><span class="linenos">102</span></a><span class="sd">            </span>
+</span><span id="L-103"><a href="#L-103"><span class="linenos">103</span></a><span class="sd">        Returns:</span>
+</span><span id="L-104"><a href="#L-104"><span class="linenos">104</span></a><span class="sd">            Объект Response модуля requests</span>
+</span><span id="L-105"><a href="#L-105"><span class="linenos">105</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="L-106"><a href="#L-106"><span class="linenos">106</span></a>
+</span><span id="L-107"><a href="#L-107"><span class="linenos">107</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">react_profile_post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">reaction_id</span><span class="p">)</span>
+</span><span id="L-108"><a href="#L-108"><span class="linenos">108</span></a>
 </span><span id="L-109"><a href="#L-109"><span class="linenos">109</span></a>
-</span><span id="L-110"><a href="#L-110"><span class="linenos">110</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">react_profile_post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">reaction_id</span><span class="p">)</span>
-</span><span id="L-111"><a href="#L-111"><span class="linenos">111</span></a>
+</span><span id="L-110"><a href="#L-110"><span class="linenos">110</span></a>    <span class="k">def</span> <span class="nf">comment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message_html</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
+</span><span id="L-111"><a href="#L-111"><span class="linenos">111</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Прокомментировать сообщение профиля</span>
 </span><span id="L-112"><a href="#L-112"><span class="linenos">112</span></a>
-</span><span id="L-113"><a href="#L-113"><span class="linenos">113</span></a>    <span class="k">def</span> <span class="nf">comment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message_html</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
-</span><span id="L-114"><a href="#L-114"><span class="linenos">114</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Прокомментировать сообщение профиля</span>
-</span><span id="L-115"><a href="#L-115"><span class="linenos">115</span></a>
-</span><span id="L-116"><a href="#L-116"><span class="linenos">116</span></a><span class="sd">        Attributes:</span>
-</span><span id="L-117"><a href="#L-117"><span class="linenos">117</span></a><span class="sd">            message_html (str): Текст комментария. Рекомендуется использование HTML</span>
-</span><span id="L-118"><a href="#L-118"><span class="linenos">118</span></a><span class="sd">        </span>
-</span><span id="L-119"><a href="#L-119"><span class="linenos">119</span></a><span class="sd">        Returns:</span>
-</span><span id="L-120"><a href="#L-120"><span class="linenos">120</span></a><span class="sd">            Объект Response модуля requests</span>
-</span><span id="L-121"><a href="#L-121"><span class="linenos">121</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="L-113"><a href="#L-113"><span class="linenos">113</span></a><span class="sd">        Attributes:</span>
+</span><span id="L-114"><a href="#L-114"><span class="linenos">114</span></a><span class="sd">            message_html (str): Текст комментария. Рекомендуется использование HTML</span>
+</span><span id="L-115"><a href="#L-115"><span class="linenos">115</span></a><span class="sd">        </span>
+</span><span id="L-116"><a href="#L-116"><span class="linenos">116</span></a><span class="sd">        Returns:</span>
+</span><span id="L-117"><a href="#L-117"><span class="linenos">117</span></a><span class="sd">            Объект Response модуля requests</span>
+</span><span id="L-118"><a href="#L-118"><span class="linenos">118</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="L-119"><a href="#L-119"><span class="linenos">119</span></a>
+</span><span id="L-120"><a href="#L-120"><span class="linenos">120</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">comment_profile_post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">message_html</span><span class="p">)</span>
+</span><span id="L-121"><a href="#L-121"><span class="linenos">121</span></a>
 </span><span id="L-122"><a href="#L-122"><span class="linenos">122</span></a>
-</span><span id="L-123"><a href="#L-123"><span class="linenos">123</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">comment_profile_post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">message_html</span><span class="p">)</span>
-</span><span id="L-124"><a href="#L-124"><span class="linenos">124</span></a>
+</span><span id="L-123"><a href="#L-123"><span class="linenos">123</span></a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">hard_delete</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
+</span><span id="L-124"><a href="#L-124"><span class="linenos">124</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Удалить сообщение</span>
 </span><span id="L-125"><a href="#L-125"><span class="linenos">125</span></a>
-</span><span id="L-126"><a href="#L-126"><span class="linenos">126</span></a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">hard_delete</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
-</span><span id="L-127"><a href="#L-127"><span class="linenos">127</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Удалить сообщение</span>
-</span><span id="L-128"><a href="#L-128"><span class="linenos">128</span></a>
-</span><span id="L-129"><a href="#L-129"><span class="linenos">129</span></a><span class="sd">        Attributes:</span>
-</span><span id="L-130"><a href="#L-130"><span class="linenos">130</span></a><span class="sd">            reason (str): Причина для удаления</span>
-</span><span id="L-131"><a href="#L-131"><span class="linenos">131</span></a><span class="sd">            hard_delete (bool): Полное удаление сообщения. По умолчанию False (необяз.)</span>
-</span><span id="L-132"><a href="#L-132"><span class="linenos">132</span></a><span class="sd">            </span>
-</span><span id="L-133"><a href="#L-133"><span class="linenos">133</span></a><span class="sd">        Returns:</span>
-</span><span id="L-134"><a href="#L-134"><span class="linenos">134</span></a><span class="sd">            Объект Response модуля requests</span>
-</span><span id="L-135"><a href="#L-135"><span class="linenos">135</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="L-126"><a href="#L-126"><span class="linenos">126</span></a><span class="sd">        Attributes:</span>
+</span><span id="L-127"><a href="#L-127"><span class="linenos">127</span></a><span class="sd">            reason (str): Причина для удаления</span>
+</span><span id="L-128"><a href="#L-128"><span class="linenos">128</span></a><span class="sd">            hard_delete (bool): Полное удаление сообщения. По умолчанию False (необяз.)</span>
+</span><span id="L-129"><a href="#L-129"><span class="linenos">129</span></a><span class="sd">            </span>
+</span><span id="L-130"><a href="#L-130"><span class="linenos">130</span></a><span class="sd">        Returns:</span>
+</span><span id="L-131"><a href="#L-131"><span class="linenos">131</span></a><span class="sd">            Объект Response модуля requests</span>
+</span><span id="L-132"><a href="#L-132"><span class="linenos">132</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="L-133"><a href="#L-133"><span class="linenos">133</span></a>
+</span><span id="L-134"><a href="#L-134"><span class="linenos">134</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">delete_profile_post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">reason</span><span class="p">,</span> <span class="n">hard_delete</span><span class="p">)</span>
+</span><span id="L-135"><a href="#L-135"><span class="linenos">135</span></a>    
 </span><span id="L-136"><a href="#L-136"><span class="linenos">136</span></a>
-</span><span id="L-137"><a href="#L-137"><span class="linenos">137</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">delete_profile_post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">reason</span><span class="p">,</span> <span class="n">hard_delete</span><span class="p">)</span>
-</span><span id="L-138"><a href="#L-138"><span class="linenos">138</span></a>    
+</span><span id="L-137"><a href="#L-137"><span class="linenos">137</span></a>    <span class="k">def</span> <span class="nf">edit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message_html</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
+</span><span id="L-138"><a href="#L-138"><span class="linenos">138</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Отредактировать сообщение профиля</span>
 </span><span id="L-139"><a href="#L-139"><span class="linenos">139</span></a>
-</span><span id="L-140"><a href="#L-140"><span class="linenos">140</span></a>    <span class="k">def</span> <span class="nf">edit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message_html</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
-</span><span id="L-141"><a href="#L-141"><span class="linenos">141</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Отредактировать сообщение профиля</span>
-</span><span id="L-142"><a href="#L-142"><span class="linenos">142</span></a>
-</span><span id="L-143"><a href="#L-143"><span class="linenos">143</span></a><span class="sd">        Attributes:</span>
-</span><span id="L-144"><a href="#L-144"><span class="linenos">144</span></a><span class="sd">            message_html (str): Новое содержание сообщения профиля. Рекомендуется использование HTML</span>
-</span><span id="L-145"><a href="#L-145"><span class="linenos">145</span></a><span class="sd">        </span>
-</span><span id="L-146"><a href="#L-146"><span class="linenos">146</span></a><span class="sd">        Returns:</span>
-</span><span id="L-147"><a href="#L-147"><span class="linenos">147</span></a><span class="sd">            Объект Response модуля requests</span>
-</span><span id="L-148"><a href="#L-148"><span class="linenos">148</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="L-149"><a href="#L-149"><span class="linenos">149</span></a>
-</span><span id="L-150"><a href="#L-150"><span class="linenos">150</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">edit_profile_post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">message_html</span><span class="p">)</span>
-</span><span id="L-151"><a href="#L-151"><span class="linenos">151</span></a>
-</span><span id="L-152"><a href="#L-152"><span class="linenos">152</span></a>
-</span><span id="L-153"><a href="#L-153"><span class="linenos">153</span></a>    <span class="k">def</span> <span class="nf">get_url</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span id="L-154"><a href="#L-154"><span class="linenos">154</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Получить ссылку на объект</span>
-</span><span id="L-155"><a href="#L-155"><span class="linenos">155</span></a><span class="sd">        </span>
-</span><span id="L-156"><a href="#L-156"><span class="linenos">156</span></a><span class="sd">        Returns:</span>
-</span><span id="L-157"><a href="#L-157"><span class="linenos">157</span></a><span class="sd">            Ссылку в формате https://forum.arizona-rp.com/profile-posts/x/&quot;&quot;&quot;</span>
-</span><span id="L-158"><a href="#L-158"><span class="linenos">158</span></a>        
-</span><span id="L-159"><a href="#L-159"><span class="linenos">159</span></a>        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;https://forum.arizona-rp.com/profile-posts/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/&quot;</span>
+</span><span id="L-140"><a href="#L-140"><span class="linenos">140</span></a><span class="sd">        Attributes:</span>
+</span><span id="L-141"><a href="#L-141"><span class="linenos">141</span></a><span class="sd">            message_html (str): Новое содержание сообщения профиля. Рекомендуется использование HTML</span>
+</span><span id="L-142"><a href="#L-142"><span class="linenos">142</span></a><span class="sd">        </span>
+</span><span id="L-143"><a href="#L-143"><span class="linenos">143</span></a><span class="sd">        Returns:</span>
+</span><span id="L-144"><a href="#L-144"><span class="linenos">144</span></a><span class="sd">            Объект Response модуля requests</span>
+</span><span id="L-145"><a href="#L-145"><span class="linenos">145</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="L-146"><a href="#L-146"><span class="linenos">146</span></a>
+</span><span id="L-147"><a href="#L-147"><span class="linenos">147</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">edit_profile_post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">message_html</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -315,78 +303,71 @@
 
     </div>
     <a class="headerlink" href="#Post"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Post-10"><a href="#Post-10"><span class="linenos">10</span></a><span class="k">class</span> <span class="nc">Post</span><span class="p">:</span>
-</span><span id="Post-11"><a href="#Post-11"><span class="linenos">11</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">API</span><span class="p">:</span> <span class="s1">&#39;ArizonaAPI&#39;</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">creator</span><span class="p">:</span> <span class="s1">&#39;Member&#39;</span><span class="p">,</span> <span class="n">thread</span><span class="p">:</span> <span class="s1">&#39;Thread&#39;</span><span class="p">,</span> <span class="n">create_date</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">bb_content</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">text_content</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="Post-12"><a href="#Post-12"><span class="linenos">12</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">API</span> <span class="o">=</span> <span class="n">API</span>
-</span><span id="Post-13"><a href="#Post-13"><span class="linenos">13</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">id</span>
-</span><span id="Post-14"><a href="#Post-14"><span class="linenos">14</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**ID сообщения**&quot;&quot;&quot;</span>
-</span><span id="Post-15"><a href="#Post-15"><span class="linenos">15</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">creator</span> <span class="o">=</span> <span class="n">creator</span>
-</span><span id="Post-16"><a href="#Post-16"><span class="linenos">16</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Объект Member отправителя сообщения**&quot;&quot;&quot;</span>
-</span><span id="Post-17"><a href="#Post-17"><span class="linenos">17</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">thread</span> <span class="o">=</span> <span class="n">thread</span>
-</span><span id="Post-18"><a href="#Post-18"><span class="linenos">18</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Объект Thread темы, в которой оставлено сообщение**&quot;&quot;&quot;</span>
-</span><span id="Post-19"><a href="#Post-19"><span class="linenos">19</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">create_date</span> <span class="o">=</span> <span class="n">create_date</span>
-</span><span id="Post-20"><a href="#Post-20"><span class="linenos">20</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Дата отправки сообщения в UNIX**&quot;&quot;&quot;</span>
-</span><span id="Post-21"><a href="#Post-21"><span class="linenos">21</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">bb_content</span> <span class="o">=</span> <span class="n">bb_content</span>
-</span><span id="Post-22"><a href="#Post-22"><span class="linenos">22</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Сырое содержимое сообщения**&quot;&quot;&quot;</span>
-</span><span id="Post-23"><a href="#Post-23"><span class="linenos">23</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">text_content</span> <span class="o">=</span> <span class="n">text_content</span>
-</span><span id="Post-24"><a href="#Post-24"><span class="linenos">24</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Текст из сообщения**&quot;&quot;&quot;</span>
-</span><span id="Post-25"><a href="#Post-25"><span class="linenos">25</span></a>
-</span><span id="Post-26"><a href="#Post-26"><span class="linenos">26</span></a>
-</span><span id="Post-27"><a href="#Post-27"><span class="linenos">27</span></a>    <span class="k">def</span> <span class="nf">react</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reaction_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
-</span><span id="Post-28"><a href="#Post-28"><span class="linenos">28</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Поставить реакцию на сообщение</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Post-11"><a href="#Post-11"><span class="linenos">11</span></a><span class="k">class</span> <span class="nc">Post</span><span class="p">:</span>
+</span><span id="Post-12"><a href="#Post-12"><span class="linenos">12</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">API</span><span class="p">:</span> <span class="s1">&#39;ArizonaAPI&#39;</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">creator</span><span class="p">:</span> <span class="s1">&#39;Member&#39;</span><span class="p">,</span> <span class="n">thread</span><span class="p">:</span> <span class="s1">&#39;Thread&#39;</span><span class="p">,</span> <span class="n">create_date</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">bb_content</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">text_content</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="Post-13"><a href="#Post-13"><span class="linenos">13</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">API</span> <span class="o">=</span> <span class="n">API</span>
+</span><span id="Post-14"><a href="#Post-14"><span class="linenos">14</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">id</span>
+</span><span id="Post-15"><a href="#Post-15"><span class="linenos">15</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**ID сообщения**&quot;&quot;&quot;</span>
+</span><span id="Post-16"><a href="#Post-16"><span class="linenos">16</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">creator</span> <span class="o">=</span> <span class="n">creator</span>
+</span><span id="Post-17"><a href="#Post-17"><span class="linenos">17</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Объект Member отправителя сообщения**&quot;&quot;&quot;</span>
+</span><span id="Post-18"><a href="#Post-18"><span class="linenos">18</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">thread</span> <span class="o">=</span> <span class="n">thread</span>
+</span><span id="Post-19"><a href="#Post-19"><span class="linenos">19</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Объект Thread темы, в которой оставлено сообщение**&quot;&quot;&quot;</span>
+</span><span id="Post-20"><a href="#Post-20"><span class="linenos">20</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">create_date</span> <span class="o">=</span> <span class="n">create_date</span>
+</span><span id="Post-21"><a href="#Post-21"><span class="linenos">21</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Дата отправки сообщения в UNIX**&quot;&quot;&quot;</span>
+</span><span id="Post-22"><a href="#Post-22"><span class="linenos">22</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">bb_content</span> <span class="o">=</span> <span class="n">bb_content</span>
+</span><span id="Post-23"><a href="#Post-23"><span class="linenos">23</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Сырое содержимое сообщения**&quot;&quot;&quot;</span>
+</span><span id="Post-24"><a href="#Post-24"><span class="linenos">24</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">text_content</span> <span class="o">=</span> <span class="n">text_content</span>
+</span><span id="Post-25"><a href="#Post-25"><span class="linenos">25</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Текст из сообщения**&quot;&quot;&quot;</span>
+</span><span id="Post-26"><a href="#Post-26"><span class="linenos">26</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">MAIN_URL</span><span class="si">}</span><span class="s2">/posts/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/&quot;</span>
+</span><span id="Post-27"><a href="#Post-27"><span class="linenos">27</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Ссылка на объект&quot;&quot;&quot;</span>
+</span><span id="Post-28"><a href="#Post-28"><span class="linenos">28</span></a>
 </span><span id="Post-29"><a href="#Post-29"><span class="linenos">29</span></a>
-</span><span id="Post-30"><a href="#Post-30"><span class="linenos">30</span></a><span class="sd">        Attributes:</span>
-</span><span id="Post-31"><a href="#Post-31"><span class="linenos">31</span></a><span class="sd">            reaction_id (int): ID реакции. По умолчанию 1 (необяз.)</span>
-</span><span id="Post-32"><a href="#Post-32"><span class="linenos">32</span></a><span class="sd">            </span>
-</span><span id="Post-33"><a href="#Post-33"><span class="linenos">33</span></a><span class="sd">        Returns:</span>
-</span><span id="Post-34"><a href="#Post-34"><span class="linenos">34</span></a><span class="sd">            Объект Response модуля requests</span>
-</span><span id="Post-35"><a href="#Post-35"><span class="linenos">35</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="Post-36"><a href="#Post-36"><span class="linenos">36</span></a>
-</span><span id="Post-37"><a href="#Post-37"><span class="linenos">37</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">react_post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">reaction_id</span><span class="p">)</span>
-</span><span id="Post-38"><a href="#Post-38"><span class="linenos">38</span></a>    
+</span><span id="Post-30"><a href="#Post-30"><span class="linenos">30</span></a>    <span class="k">def</span> <span class="nf">react</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reaction_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
+</span><span id="Post-31"><a href="#Post-31"><span class="linenos">31</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Поставить реакцию на сообщение</span>
+</span><span id="Post-32"><a href="#Post-32"><span class="linenos">32</span></a>
+</span><span id="Post-33"><a href="#Post-33"><span class="linenos">33</span></a><span class="sd">        Attributes:</span>
+</span><span id="Post-34"><a href="#Post-34"><span class="linenos">34</span></a><span class="sd">            reaction_id (int): ID реакции. По умолчанию 1 (необяз.)</span>
+</span><span id="Post-35"><a href="#Post-35"><span class="linenos">35</span></a><span class="sd">            </span>
+</span><span id="Post-36"><a href="#Post-36"><span class="linenos">36</span></a><span class="sd">        Returns:</span>
+</span><span id="Post-37"><a href="#Post-37"><span class="linenos">37</span></a><span class="sd">            Объект Response модуля requests</span>
+</span><span id="Post-38"><a href="#Post-38"><span class="linenos">38</span></a><span class="sd">        &quot;&quot;&quot;</span>
 </span><span id="Post-39"><a href="#Post-39"><span class="linenos">39</span></a>
-</span><span id="Post-40"><a href="#Post-40"><span class="linenos">40</span></a>    <span class="k">def</span> <span class="nf">edit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message_html</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
-</span><span id="Post-41"><a href="#Post-41"><span class="linenos">41</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Отредактировать сообщение</span>
+</span><span id="Post-40"><a href="#Post-40"><span class="linenos">40</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">react_post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">reaction_id</span><span class="p">)</span>
+</span><span id="Post-41"><a href="#Post-41"><span class="linenos">41</span></a>    
 </span><span id="Post-42"><a href="#Post-42"><span class="linenos">42</span></a>
-</span><span id="Post-43"><a href="#Post-43"><span class="linenos">43</span></a><span class="sd">        Attributes:</span>
-</span><span id="Post-44"><a href="#Post-44"><span class="linenos">44</span></a><span class="sd">            message_html (str): Новое содержание сообщения. Рекомендуется использование HTML</span>
-</span><span id="Post-45"><a href="#Post-45"><span class="linenos">45</span></a><span class="sd">        </span>
-</span><span id="Post-46"><a href="#Post-46"><span class="linenos">46</span></a><span class="sd">        Returns:</span>
-</span><span id="Post-47"><a href="#Post-47"><span class="linenos">47</span></a><span class="sd">            Объект Response модуля requests</span>
-</span><span id="Post-48"><a href="#Post-48"><span class="linenos">48</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="Post-49"><a href="#Post-49"><span class="linenos">49</span></a>
-</span><span id="Post-50"><a href="#Post-50"><span class="linenos">50</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">edit_post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">message_html</span><span class="p">)</span>
-</span><span id="Post-51"><a href="#Post-51"><span class="linenos">51</span></a>
+</span><span id="Post-43"><a href="#Post-43"><span class="linenos">43</span></a>    <span class="k">def</span> <span class="nf">edit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message_html</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
+</span><span id="Post-44"><a href="#Post-44"><span class="linenos">44</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Отредактировать сообщение</span>
+</span><span id="Post-45"><a href="#Post-45"><span class="linenos">45</span></a>
+</span><span id="Post-46"><a href="#Post-46"><span class="linenos">46</span></a><span class="sd">        Attributes:</span>
+</span><span id="Post-47"><a href="#Post-47"><span class="linenos">47</span></a><span class="sd">            message_html (str): Новое содержание сообщения. Рекомендуется использование HTML</span>
+</span><span id="Post-48"><a href="#Post-48"><span class="linenos">48</span></a><span class="sd">        </span>
+</span><span id="Post-49"><a href="#Post-49"><span class="linenos">49</span></a><span class="sd">        Returns:</span>
+</span><span id="Post-50"><a href="#Post-50"><span class="linenos">50</span></a><span class="sd">            Объект Response модуля requests</span>
+</span><span id="Post-51"><a href="#Post-51"><span class="linenos">51</span></a><span class="sd">        &quot;&quot;&quot;</span>
 </span><span id="Post-52"><a href="#Post-52"><span class="linenos">52</span></a>
-</span><span id="Post-53"><a href="#Post-53"><span class="linenos">53</span></a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">hard_delete</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
-</span><span id="Post-54"><a href="#Post-54"><span class="linenos">54</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Удалить сообщение</span>
+</span><span id="Post-53"><a href="#Post-53"><span class="linenos">53</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">edit_post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">message_html</span><span class="p">)</span>
+</span><span id="Post-54"><a href="#Post-54"><span class="linenos">54</span></a>
 </span><span id="Post-55"><a href="#Post-55"><span class="linenos">55</span></a>
-</span><span id="Post-56"><a href="#Post-56"><span class="linenos">56</span></a><span class="sd">        Attributes:</span>
-</span><span id="Post-57"><a href="#Post-57"><span class="linenos">57</span></a><span class="sd">            reason (str): Причина для удаления</span>
-</span><span id="Post-58"><a href="#Post-58"><span class="linenos">58</span></a><span class="sd">            hard_delete (bool): Полное удаление сообщения. По умолчанию False (необяз.)</span>
-</span><span id="Post-59"><a href="#Post-59"><span class="linenos">59</span></a><span class="sd">            </span>
-</span><span id="Post-60"><a href="#Post-60"><span class="linenos">60</span></a><span class="sd">        Returns:</span>
-</span><span id="Post-61"><a href="#Post-61"><span class="linenos">61</span></a><span class="sd">            Объект Response модуля requests</span>
-</span><span id="Post-62"><a href="#Post-62"><span class="linenos">62</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="Post-63"><a href="#Post-63"><span class="linenos">63</span></a>
-</span><span id="Post-64"><a href="#Post-64"><span class="linenos">64</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">delete_post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">reason</span><span class="p">,</span> <span class="n">hard_delete</span><span class="p">)</span>
-</span><span id="Post-65"><a href="#Post-65"><span class="linenos">65</span></a>    
-</span><span id="Post-66"><a href="#Post-66"><span class="linenos">66</span></a>    
-</span><span id="Post-67"><a href="#Post-67"><span class="linenos">67</span></a>    <span class="k">def</span> <span class="nf">bookmark</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
-</span><span id="Post-68"><a href="#Post-68"><span class="linenos">68</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Добавить сообщение в закладки</span>
-</span><span id="Post-69"><a href="#Post-69"><span class="linenos">69</span></a><span class="sd">        </span>
-</span><span id="Post-70"><a href="#Post-70"><span class="linenos">70</span></a><span class="sd">        Returns:</span>
-</span><span id="Post-71"><a href="#Post-71"><span class="linenos">71</span></a><span class="sd">            Объект Response модуля requests&quot;&quot;&quot;</span>
-</span><span id="Post-72"><a href="#Post-72"><span class="linenos">72</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">bookmark_post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
-</span><span id="Post-73"><a href="#Post-73"><span class="linenos">73</span></a>    
-</span><span id="Post-74"><a href="#Post-74"><span class="linenos">74</span></a>
-</span><span id="Post-75"><a href="#Post-75"><span class="linenos">75</span></a>    <span class="k">def</span> <span class="nf">get_url</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span id="Post-76"><a href="#Post-76"><span class="linenos">76</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Получить ссылку на объект</span>
-</span><span id="Post-77"><a href="#Post-77"><span class="linenos">77</span></a><span class="sd">        </span>
-</span><span id="Post-78"><a href="#Post-78"><span class="linenos">78</span></a><span class="sd">        Returns:</span>
-</span><span id="Post-79"><a href="#Post-79"><span class="linenos">79</span></a><span class="sd">            Ссылку в формате https://forum.arizona-rp.com/posts/x/&quot;&quot;&quot;</span>
-</span><span id="Post-80"><a href="#Post-80"><span class="linenos">80</span></a>        
-</span><span id="Post-81"><a href="#Post-81"><span class="linenos">81</span></a>        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;https://forum.arizona-rp.com/posts/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/&quot;</span>
+</span><span id="Post-56"><a href="#Post-56"><span class="linenos">56</span></a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">hard_delete</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
+</span><span id="Post-57"><a href="#Post-57"><span class="linenos">57</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Удалить сообщение</span>
+</span><span id="Post-58"><a href="#Post-58"><span class="linenos">58</span></a>
+</span><span id="Post-59"><a href="#Post-59"><span class="linenos">59</span></a><span class="sd">        Attributes:</span>
+</span><span id="Post-60"><a href="#Post-60"><span class="linenos">60</span></a><span class="sd">            reason (str): Причина для удаления</span>
+</span><span id="Post-61"><a href="#Post-61"><span class="linenos">61</span></a><span class="sd">            hard_delete (bool): Полное удаление сообщения. По умолчанию False (необяз.)</span>
+</span><span id="Post-62"><a href="#Post-62"><span class="linenos">62</span></a><span class="sd">            </span>
+</span><span id="Post-63"><a href="#Post-63"><span class="linenos">63</span></a><span class="sd">        Returns:</span>
+</span><span id="Post-64"><a href="#Post-64"><span class="linenos">64</span></a><span class="sd">            Объект Response модуля requests</span>
+</span><span id="Post-65"><a href="#Post-65"><span class="linenos">65</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="Post-66"><a href="#Post-66"><span class="linenos">66</span></a>
+</span><span id="Post-67"><a href="#Post-67"><span class="linenos">67</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">delete_post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">reason</span><span class="p">,</span> <span class="n">hard_delete</span><span class="p">)</span>
+</span><span id="Post-68"><a href="#Post-68"><span class="linenos">68</span></a>    
+</span><span id="Post-69"><a href="#Post-69"><span class="linenos">69</span></a>    
+</span><span id="Post-70"><a href="#Post-70"><span class="linenos">70</span></a>    <span class="k">def</span> <span class="nf">bookmark</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
+</span><span id="Post-71"><a href="#Post-71"><span class="linenos">71</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Добавить сообщение в закладки</span>
+</span><span id="Post-72"><a href="#Post-72"><span class="linenos">72</span></a><span class="sd">        </span>
+</span><span id="Post-73"><a href="#Post-73"><span class="linenos">73</span></a><span class="sd">        Returns:</span>
+</span><span id="Post-74"><a href="#Post-74"><span class="linenos">74</span></a><span class="sd">            Объект Response модуля requests&quot;&quot;&quot;</span>
+</span><span id="Post-75"><a href="#Post-75"><span class="linenos">75</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">bookmark_post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -402,20 +383,22 @@
 
     </div>
     <a class="headerlink" href="#Post.__init__"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Post.__init__-11"><a href="#Post.__init__-11"><span class="linenos">11</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">API</span><span class="p">:</span> <span class="s1">&#39;ArizonaAPI&#39;</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">creator</span><span class="p">:</span> <span class="s1">&#39;Member&#39;</span><span class="p">,</span> <span class="n">thread</span><span class="p">:</span> <span class="s1">&#39;Thread&#39;</span><span class="p">,</span> <span class="n">create_date</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">bb_content</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">text_content</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="Post.__init__-12"><a href="#Post.__init__-12"><span class="linenos">12</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">API</span> <span class="o">=</span> <span class="n">API</span>
-</span><span id="Post.__init__-13"><a href="#Post.__init__-13"><span class="linenos">13</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">id</span>
-</span><span id="Post.__init__-14"><a href="#Post.__init__-14"><span class="linenos">14</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**ID сообщения**&quot;&quot;&quot;</span>
-</span><span id="Post.__init__-15"><a href="#Post.__init__-15"><span class="linenos">15</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">creator</span> <span class="o">=</span> <span class="n">creator</span>
-</span><span id="Post.__init__-16"><a href="#Post.__init__-16"><span class="linenos">16</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Объект Member отправителя сообщения**&quot;&quot;&quot;</span>
-</span><span id="Post.__init__-17"><a href="#Post.__init__-17"><span class="linenos">17</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">thread</span> <span class="o">=</span> <span class="n">thread</span>
-</span><span id="Post.__init__-18"><a href="#Post.__init__-18"><span class="linenos">18</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Объект Thread темы, в которой оставлено сообщение**&quot;&quot;&quot;</span>
-</span><span id="Post.__init__-19"><a href="#Post.__init__-19"><span class="linenos">19</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">create_date</span> <span class="o">=</span> <span class="n">create_date</span>
-</span><span id="Post.__init__-20"><a href="#Post.__init__-20"><span class="linenos">20</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Дата отправки сообщения в UNIX**&quot;&quot;&quot;</span>
-</span><span id="Post.__init__-21"><a href="#Post.__init__-21"><span class="linenos">21</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">bb_content</span> <span class="o">=</span> <span class="n">bb_content</span>
-</span><span id="Post.__init__-22"><a href="#Post.__init__-22"><span class="linenos">22</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Сырое содержимое сообщения**&quot;&quot;&quot;</span>
-</span><span id="Post.__init__-23"><a href="#Post.__init__-23"><span class="linenos">23</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">text_content</span> <span class="o">=</span> <span class="n">text_content</span>
-</span><span id="Post.__init__-24"><a href="#Post.__init__-24"><span class="linenos">24</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Текст из сообщения**&quot;&quot;&quot;</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Post.__init__-12"><a href="#Post.__init__-12"><span class="linenos">12</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">API</span><span class="p">:</span> <span class="s1">&#39;ArizonaAPI&#39;</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">creator</span><span class="p">:</span> <span class="s1">&#39;Member&#39;</span><span class="p">,</span> <span class="n">thread</span><span class="p">:</span> <span class="s1">&#39;Thread&#39;</span><span class="p">,</span> <span class="n">create_date</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">bb_content</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">text_content</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="Post.__init__-13"><a href="#Post.__init__-13"><span class="linenos">13</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">API</span> <span class="o">=</span> <span class="n">API</span>
+</span><span id="Post.__init__-14"><a href="#Post.__init__-14"><span class="linenos">14</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">id</span>
+</span><span id="Post.__init__-15"><a href="#Post.__init__-15"><span class="linenos">15</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**ID сообщения**&quot;&quot;&quot;</span>
+</span><span id="Post.__init__-16"><a href="#Post.__init__-16"><span class="linenos">16</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">creator</span> <span class="o">=</span> <span class="n">creator</span>
+</span><span id="Post.__init__-17"><a href="#Post.__init__-17"><span class="linenos">17</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Объект Member отправителя сообщения**&quot;&quot;&quot;</span>
+</span><span id="Post.__init__-18"><a href="#Post.__init__-18"><span class="linenos">18</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">thread</span> <span class="o">=</span> <span class="n">thread</span>
+</span><span id="Post.__init__-19"><a href="#Post.__init__-19"><span class="linenos">19</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Объект Thread темы, в которой оставлено сообщение**&quot;&quot;&quot;</span>
+</span><span id="Post.__init__-20"><a href="#Post.__init__-20"><span class="linenos">20</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">create_date</span> <span class="o">=</span> <span class="n">create_date</span>
+</span><span id="Post.__init__-21"><a href="#Post.__init__-21"><span class="linenos">21</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Дата отправки сообщения в UNIX**&quot;&quot;&quot;</span>
+</span><span id="Post.__init__-22"><a href="#Post.__init__-22"><span class="linenos">22</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">bb_content</span> <span class="o">=</span> <span class="n">bb_content</span>
+</span><span id="Post.__init__-23"><a href="#Post.__init__-23"><span class="linenos">23</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Сырое содержимое сообщения**&quot;&quot;&quot;</span>
+</span><span id="Post.__init__-24"><a href="#Post.__init__-24"><span class="linenos">24</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">text_content</span> <span class="o">=</span> <span class="n">text_content</span>
+</span><span id="Post.__init__-25"><a href="#Post.__init__-25"><span class="linenos">25</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Текст из сообщения**&quot;&quot;&quot;</span>
+</span><span id="Post.__init__-26"><a href="#Post.__init__-26"><span class="linenos">26</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">MAIN_URL</span><span class="si">}</span><span class="s2">/posts/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/&quot;</span>
+</span><span id="Post.__init__-27"><a href="#Post.__init__-27"><span class="linenos">27</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Ссылка на объект&quot;&quot;&quot;</span>
 </span></pre></div>
 
 
@@ -511,6 +494,19 @@
 
 
                             </div>
+                            <div id="Post.url" class="classattr">
+                                <div class="attr variable">
+            <span class="name">url</span>
+
+        
+    </div>
+    <a class="headerlink" href="#Post.url"></a>
+    
+            <div class="docstring"><p>Ссылка на объект</p>
+</div>
+
+
+                            </div>
                             <div id="Post.react" class="classattr">
                                         <input id="Post.react-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 <div class="attr function">
@@ -522,17 +518,17 @@
 
     </div>
     <a class="headerlink" href="#Post.react"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Post.react-27"><a href="#Post.react-27"><span class="linenos">27</span></a>    <span class="k">def</span> <span class="nf">react</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reaction_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
-</span><span id="Post.react-28"><a href="#Post.react-28"><span class="linenos">28</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Поставить реакцию на сообщение</span>
-</span><span id="Post.react-29"><a href="#Post.react-29"><span class="linenos">29</span></a>
-</span><span id="Post.react-30"><a href="#Post.react-30"><span class="linenos">30</span></a><span class="sd">        Attributes:</span>
-</span><span id="Post.react-31"><a href="#Post.react-31"><span class="linenos">31</span></a><span class="sd">            reaction_id (int): ID реакции. По умолчанию 1 (необяз.)</span>
-</span><span id="Post.react-32"><a href="#Post.react-32"><span class="linenos">32</span></a><span class="sd">            </span>
-</span><span id="Post.react-33"><a href="#Post.react-33"><span class="linenos">33</span></a><span class="sd">        Returns:</span>
-</span><span id="Post.react-34"><a href="#Post.react-34"><span class="linenos">34</span></a><span class="sd">            Объект Response модуля requests</span>
-</span><span id="Post.react-35"><a href="#Post.react-35"><span class="linenos">35</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="Post.react-36"><a href="#Post.react-36"><span class="linenos">36</span></a>
-</span><span id="Post.react-37"><a href="#Post.react-37"><span class="linenos">37</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">react_post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">reaction_id</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Post.react-30"><a href="#Post.react-30"><span class="linenos">30</span></a>    <span class="k">def</span> <span class="nf">react</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reaction_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
+</span><span id="Post.react-31"><a href="#Post.react-31"><span class="linenos">31</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Поставить реакцию на сообщение</span>
+</span><span id="Post.react-32"><a href="#Post.react-32"><span class="linenos">32</span></a>
+</span><span id="Post.react-33"><a href="#Post.react-33"><span class="linenos">33</span></a><span class="sd">        Attributes:</span>
+</span><span id="Post.react-34"><a href="#Post.react-34"><span class="linenos">34</span></a><span class="sd">            reaction_id (int): ID реакции. По умолчанию 1 (необяз.)</span>
+</span><span id="Post.react-35"><a href="#Post.react-35"><span class="linenos">35</span></a><span class="sd">            </span>
+</span><span id="Post.react-36"><a href="#Post.react-36"><span class="linenos">36</span></a><span class="sd">        Returns:</span>
+</span><span id="Post.react-37"><a href="#Post.react-37"><span class="linenos">37</span></a><span class="sd">            Объект Response модуля requests</span>
+</span><span id="Post.react-38"><a href="#Post.react-38"><span class="linenos">38</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="Post.react-39"><a href="#Post.react-39"><span class="linenos">39</span></a>
+</span><span id="Post.react-40"><a href="#Post.react-40"><span class="linenos">40</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">react_post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">reaction_id</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -564,17 +560,17 @@
 
     </div>
     <a class="headerlink" href="#Post.edit"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Post.edit-40"><a href="#Post.edit-40"><span class="linenos">40</span></a>    <span class="k">def</span> <span class="nf">edit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message_html</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
-</span><span id="Post.edit-41"><a href="#Post.edit-41"><span class="linenos">41</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Отредактировать сообщение</span>
-</span><span id="Post.edit-42"><a href="#Post.edit-42"><span class="linenos">42</span></a>
-</span><span id="Post.edit-43"><a href="#Post.edit-43"><span class="linenos">43</span></a><span class="sd">        Attributes:</span>
-</span><span id="Post.edit-44"><a href="#Post.edit-44"><span class="linenos">44</span></a><span class="sd">            message_html (str): Новое содержание сообщения. Рекомендуется использование HTML</span>
-</span><span id="Post.edit-45"><a href="#Post.edit-45"><span class="linenos">45</span></a><span class="sd">        </span>
-</span><span id="Post.edit-46"><a href="#Post.edit-46"><span class="linenos">46</span></a><span class="sd">        Returns:</span>
-</span><span id="Post.edit-47"><a href="#Post.edit-47"><span class="linenos">47</span></a><span class="sd">            Объект Response модуля requests</span>
-</span><span id="Post.edit-48"><a href="#Post.edit-48"><span class="linenos">48</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="Post.edit-49"><a href="#Post.edit-49"><span class="linenos">49</span></a>
-</span><span id="Post.edit-50"><a href="#Post.edit-50"><span class="linenos">50</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">edit_post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">message_html</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Post.edit-43"><a href="#Post.edit-43"><span class="linenos">43</span></a>    <span class="k">def</span> <span class="nf">edit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message_html</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
+</span><span id="Post.edit-44"><a href="#Post.edit-44"><span class="linenos">44</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Отредактировать сообщение</span>
+</span><span id="Post.edit-45"><a href="#Post.edit-45"><span class="linenos">45</span></a>
+</span><span id="Post.edit-46"><a href="#Post.edit-46"><span class="linenos">46</span></a><span class="sd">        Attributes:</span>
+</span><span id="Post.edit-47"><a href="#Post.edit-47"><span class="linenos">47</span></a><span class="sd">            message_html (str): Новое содержание сообщения. Рекомендуется использование HTML</span>
+</span><span id="Post.edit-48"><a href="#Post.edit-48"><span class="linenos">48</span></a><span class="sd">        </span>
+</span><span id="Post.edit-49"><a href="#Post.edit-49"><span class="linenos">49</span></a><span class="sd">        Returns:</span>
+</span><span id="Post.edit-50"><a href="#Post.edit-50"><span class="linenos">50</span></a><span class="sd">            Объект Response модуля requests</span>
+</span><span id="Post.edit-51"><a href="#Post.edit-51"><span class="linenos">51</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="Post.edit-52"><a href="#Post.edit-52"><span class="linenos">52</span></a>
+</span><span id="Post.edit-53"><a href="#Post.edit-53"><span class="linenos">53</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">edit_post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">message_html</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -606,18 +602,18 @@
 
     </div>
     <a class="headerlink" href="#Post.delete"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Post.delete-53"><a href="#Post.delete-53"><span class="linenos">53</span></a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">hard_delete</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
-</span><span id="Post.delete-54"><a href="#Post.delete-54"><span class="linenos">54</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Удалить сообщение</span>
-</span><span id="Post.delete-55"><a href="#Post.delete-55"><span class="linenos">55</span></a>
-</span><span id="Post.delete-56"><a href="#Post.delete-56"><span class="linenos">56</span></a><span class="sd">        Attributes:</span>
-</span><span id="Post.delete-57"><a href="#Post.delete-57"><span class="linenos">57</span></a><span class="sd">            reason (str): Причина для удаления</span>
-</span><span id="Post.delete-58"><a href="#Post.delete-58"><span class="linenos">58</span></a><span class="sd">            hard_delete (bool): Полное удаление сообщения. По умолчанию False (необяз.)</span>
-</span><span id="Post.delete-59"><a href="#Post.delete-59"><span class="linenos">59</span></a><span class="sd">            </span>
-</span><span id="Post.delete-60"><a href="#Post.delete-60"><span class="linenos">60</span></a><span class="sd">        Returns:</span>
-</span><span id="Post.delete-61"><a href="#Post.delete-61"><span class="linenos">61</span></a><span class="sd">            Объект Response модуля requests</span>
-</span><span id="Post.delete-62"><a href="#Post.delete-62"><span class="linenos">62</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="Post.delete-63"><a href="#Post.delete-63"><span class="linenos">63</span></a>
-</span><span id="Post.delete-64"><a href="#Post.delete-64"><span class="linenos">64</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">delete_post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">reason</span><span class="p">,</span> <span class="n">hard_delete</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Post.delete-56"><a href="#Post.delete-56"><span class="linenos">56</span></a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">hard_delete</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
+</span><span id="Post.delete-57"><a href="#Post.delete-57"><span class="linenos">57</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Удалить сообщение</span>
+</span><span id="Post.delete-58"><a href="#Post.delete-58"><span class="linenos">58</span></a>
+</span><span id="Post.delete-59"><a href="#Post.delete-59"><span class="linenos">59</span></a><span class="sd">        Attributes:</span>
+</span><span id="Post.delete-60"><a href="#Post.delete-60"><span class="linenos">60</span></a><span class="sd">            reason (str): Причина для удаления</span>
+</span><span id="Post.delete-61"><a href="#Post.delete-61"><span class="linenos">61</span></a><span class="sd">            hard_delete (bool): Полное удаление сообщения. По умолчанию False (необяз.)</span>
+</span><span id="Post.delete-62"><a href="#Post.delete-62"><span class="linenos">62</span></a><span class="sd">            </span>
+</span><span id="Post.delete-63"><a href="#Post.delete-63"><span class="linenos">63</span></a><span class="sd">        Returns:</span>
+</span><span id="Post.delete-64"><a href="#Post.delete-64"><span class="linenos">64</span></a><span class="sd">            Объект Response модуля requests</span>
+</span><span id="Post.delete-65"><a href="#Post.delete-65"><span class="linenos">65</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="Post.delete-66"><a href="#Post.delete-66"><span class="linenos">66</span></a>
+</span><span id="Post.delete-67"><a href="#Post.delete-67"><span class="linenos">67</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">delete_post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">reason</span><span class="p">,</span> <span class="n">hard_delete</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -650,12 +646,12 @@
 
     </div>
     <a class="headerlink" href="#Post.bookmark"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Post.bookmark-67"><a href="#Post.bookmark-67"><span class="linenos">67</span></a>    <span class="k">def</span> <span class="nf">bookmark</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
-</span><span id="Post.bookmark-68"><a href="#Post.bookmark-68"><span class="linenos">68</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Добавить сообщение в закладки</span>
-</span><span id="Post.bookmark-69"><a href="#Post.bookmark-69"><span class="linenos">69</span></a><span class="sd">        </span>
-</span><span id="Post.bookmark-70"><a href="#Post.bookmark-70"><span class="linenos">70</span></a><span class="sd">        Returns:</span>
-</span><span id="Post.bookmark-71"><a href="#Post.bookmark-71"><span class="linenos">71</span></a><span class="sd">            Объект Response модуля requests&quot;&quot;&quot;</span>
-</span><span id="Post.bookmark-72"><a href="#Post.bookmark-72"><span class="linenos">72</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">bookmark_post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Post.bookmark-70"><a href="#Post.bookmark-70"><span class="linenos">70</span></a>    <span class="k">def</span> <span class="nf">bookmark</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
+</span><span id="Post.bookmark-71"><a href="#Post.bookmark-71"><span class="linenos">71</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Добавить сообщение в закладки</span>
+</span><span id="Post.bookmark-72"><a href="#Post.bookmark-72"><span class="linenos">72</span></a><span class="sd">        </span>
+</span><span id="Post.bookmark-73"><a href="#Post.bookmark-73"><span class="linenos">73</span></a><span class="sd">        Returns:</span>
+</span><span id="Post.bookmark-74"><a href="#Post.bookmark-74"><span class="linenos">74</span></a><span class="sd">            Объект Response модуля requests&quot;&quot;&quot;</span>
+</span><span id="Post.bookmark-75"><a href="#Post.bookmark-75"><span class="linenos">75</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">bookmark_post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -665,38 +661,6 @@
 
 <blockquote>
   <p>Объект Response модуля requests</p>
-</blockquote>
-</div>
-
-
-                            </div>
-                            <div id="Post.get_url" class="classattr">
-                                        <input id="Post.get_url-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
-<div class="attr function">
-            
-        <span class="def">def</span>
-        <span class="name">get_url</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span></span><span class="return-annotation">) -> <span class="nb">str</span>:</span></span>
-
-                <label class="view-source-button" for="Post.get_url-view-source"><span>View Source</span></label>
-
-    </div>
-    <a class="headerlink" href="#Post.get_url"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Post.get_url-75"><a href="#Post.get_url-75"><span class="linenos">75</span></a>    <span class="k">def</span> <span class="nf">get_url</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span id="Post.get_url-76"><a href="#Post.get_url-76"><span class="linenos">76</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Получить ссылку на объект</span>
-</span><span id="Post.get_url-77"><a href="#Post.get_url-77"><span class="linenos">77</span></a><span class="sd">        </span>
-</span><span id="Post.get_url-78"><a href="#Post.get_url-78"><span class="linenos">78</span></a><span class="sd">        Returns:</span>
-</span><span id="Post.get_url-79"><a href="#Post.get_url-79"><span class="linenos">79</span></a><span class="sd">            Ссылку в формате https://forum.arizona-rp.com/posts/x/&quot;&quot;&quot;</span>
-</span><span id="Post.get_url-80"><a href="#Post.get_url-80"><span class="linenos">80</span></a>        
-</span><span id="Post.get_url-81"><a href="#Post.get_url-81"><span class="linenos">81</span></a>        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;https://forum.arizona-rp.com/posts/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/&quot;</span>
-</span></pre></div>
-
-
-            <div class="docstring"><p>Получить ссылку на объект</p>
-
-<h6 id="returns">Returns:</h6>
-
-<blockquote>
-  <p>Ссылку в формате <a href="https://forum.arizona-rp.com/posts/x/">https://forum.arizona-rp.com/posts/x/</a></p>
 </blockquote>
 </div>
 
@@ -714,83 +678,76 @@
 
     </div>
     <a class="headerlink" href="#ProfilePost"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="ProfilePost-84"><a href="#ProfilePost-84"><span class="linenos"> 84</span></a><span class="k">class</span> <span class="nc">ProfilePost</span><span class="p">:</span>
-</span><span id="ProfilePost-85"><a href="#ProfilePost-85"><span class="linenos"> 85</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">API</span><span class="p">:</span> <span class="s1">&#39;ArizonaAPI&#39;</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">creator</span><span class="p">:</span> <span class="s1">&#39;Member&#39;</span><span class="p">,</span> <span class="n">profile</span><span class="p">:</span> <span class="s1">&#39;Member&#39;</span><span class="p">,</span> <span class="n">create_date</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">bb_content</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">text_content</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="ProfilePost-86"><a href="#ProfilePost-86"><span class="linenos"> 86</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">API</span> <span class="o">=</span> <span class="n">API</span>
-</span><span id="ProfilePost-87"><a href="#ProfilePost-87"><span class="linenos"> 87</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">id</span>
-</span><span id="ProfilePost-88"><a href="#ProfilePost-88"><span class="linenos"> 88</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**ID сообщения профиля**&quot;&quot;&quot;</span>
-</span><span id="ProfilePost-89"><a href="#ProfilePost-89"><span class="linenos"> 89</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">creator</span> <span class="o">=</span> <span class="n">creator</span>
-</span><span id="ProfilePost-90"><a href="#ProfilePost-90"><span class="linenos"> 90</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Объект Member отправителя сообщения**&quot;&quot;&quot;</span>
-</span><span id="ProfilePost-91"><a href="#ProfilePost-91"><span class="linenos"> 91</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">profile</span> <span class="o">=</span> <span class="n">profile</span>
-</span><span id="ProfilePost-92"><a href="#ProfilePost-92"><span class="linenos"> 92</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Объект Member профиля, в котором оставлено сообщение**&quot;&quot;&quot;</span>
-</span><span id="ProfilePost-93"><a href="#ProfilePost-93"><span class="linenos"> 93</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">create_date</span> <span class="o">=</span> <span class="n">create_date</span>
-</span><span id="ProfilePost-94"><a href="#ProfilePost-94"><span class="linenos"> 94</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Дата отправки сообщения в UNIX**&quot;&quot;&quot;</span>
-</span><span id="ProfilePost-95"><a href="#ProfilePost-95"><span class="linenos"> 95</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">bb_content</span> <span class="o">=</span> <span class="n">bb_content</span>
-</span><span id="ProfilePost-96"><a href="#ProfilePost-96"><span class="linenos"> 96</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Сырое содержимое сообщения**&quot;&quot;&quot;</span>
-</span><span id="ProfilePost-97"><a href="#ProfilePost-97"><span class="linenos"> 97</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">text_content</span> <span class="o">=</span> <span class="n">text_content</span>
-</span><span id="ProfilePost-98"><a href="#ProfilePost-98"><span class="linenos"> 98</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Текст из сообщения**&quot;&quot;&quot;</span>
-</span><span id="ProfilePost-99"><a href="#ProfilePost-99"><span class="linenos"> 99</span></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="ProfilePost-79"><a href="#ProfilePost-79"><span class="linenos"> 79</span></a><span class="k">class</span> <span class="nc">ProfilePost</span><span class="p">:</span>
+</span><span id="ProfilePost-80"><a href="#ProfilePost-80"><span class="linenos"> 80</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">API</span><span class="p">:</span> <span class="s1">&#39;ArizonaAPI&#39;</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">creator</span><span class="p">:</span> <span class="s1">&#39;Member&#39;</span><span class="p">,</span> <span class="n">profile</span><span class="p">:</span> <span class="s1">&#39;Member&#39;</span><span class="p">,</span> <span class="n">create_date</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">bb_content</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">text_content</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="ProfilePost-81"><a href="#ProfilePost-81"><span class="linenos"> 81</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">API</span> <span class="o">=</span> <span class="n">API</span>
+</span><span id="ProfilePost-82"><a href="#ProfilePost-82"><span class="linenos"> 82</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">id</span>
+</span><span id="ProfilePost-83"><a href="#ProfilePost-83"><span class="linenos"> 83</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**ID сообщения профиля**&quot;&quot;&quot;</span>
+</span><span id="ProfilePost-84"><a href="#ProfilePost-84"><span class="linenos"> 84</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">creator</span> <span class="o">=</span> <span class="n">creator</span>
+</span><span id="ProfilePost-85"><a href="#ProfilePost-85"><span class="linenos"> 85</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Объект Member отправителя сообщения**&quot;&quot;&quot;</span>
+</span><span id="ProfilePost-86"><a href="#ProfilePost-86"><span class="linenos"> 86</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">profile</span> <span class="o">=</span> <span class="n">profile</span>
+</span><span id="ProfilePost-87"><a href="#ProfilePost-87"><span class="linenos"> 87</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Объект Member профиля, в котором оставлено сообщение**&quot;&quot;&quot;</span>
+</span><span id="ProfilePost-88"><a href="#ProfilePost-88"><span class="linenos"> 88</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">create_date</span> <span class="o">=</span> <span class="n">create_date</span>
+</span><span id="ProfilePost-89"><a href="#ProfilePost-89"><span class="linenos"> 89</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Дата отправки сообщения в UNIX**&quot;&quot;&quot;</span>
+</span><span id="ProfilePost-90"><a href="#ProfilePost-90"><span class="linenos"> 90</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">bb_content</span> <span class="o">=</span> <span class="n">bb_content</span>
+</span><span id="ProfilePost-91"><a href="#ProfilePost-91"><span class="linenos"> 91</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Сырое содержимое сообщения**&quot;&quot;&quot;</span>
+</span><span id="ProfilePost-92"><a href="#ProfilePost-92"><span class="linenos"> 92</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">text_content</span> <span class="o">=</span> <span class="n">text_content</span>
+</span><span id="ProfilePost-93"><a href="#ProfilePost-93"><span class="linenos"> 93</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Текст из сообщения**&quot;&quot;&quot;</span>
+</span><span id="ProfilePost-94"><a href="#ProfilePost-94"><span class="linenos"> 94</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">MAIN_URL</span><span class="si">}</span><span class="s2">/profile-posts/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/&quot;</span>
+</span><span id="ProfilePost-95"><a href="#ProfilePost-95"><span class="linenos"> 95</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Ссылка на объект&quot;&quot;&quot;</span>
+</span><span id="ProfilePost-96"><a href="#ProfilePost-96"><span class="linenos"> 96</span></a>
+</span><span id="ProfilePost-97"><a href="#ProfilePost-97"><span class="linenos"> 97</span></a>
+</span><span id="ProfilePost-98"><a href="#ProfilePost-98"><span class="linenos"> 98</span></a>    <span class="k">def</span> <span class="nf">react</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reaction_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
+</span><span id="ProfilePost-99"><a href="#ProfilePost-99"><span class="linenos"> 99</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Поставить реакцию на сообщение профиля</span>
 </span><span id="ProfilePost-100"><a href="#ProfilePost-100"><span class="linenos">100</span></a>
-</span><span id="ProfilePost-101"><a href="#ProfilePost-101"><span class="linenos">101</span></a>    <span class="k">def</span> <span class="nf">react</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reaction_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
-</span><span id="ProfilePost-102"><a href="#ProfilePost-102"><span class="linenos">102</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Поставить реакцию на сообщение профиля</span>
-</span><span id="ProfilePost-103"><a href="#ProfilePost-103"><span class="linenos">103</span></a>
-</span><span id="ProfilePost-104"><a href="#ProfilePost-104"><span class="linenos">104</span></a><span class="sd">        Attributes:</span>
-</span><span id="ProfilePost-105"><a href="#ProfilePost-105"><span class="linenos">105</span></a><span class="sd">            reaction_id (int): ID реакции. По умолчанию 1 (необяз.)</span>
-</span><span id="ProfilePost-106"><a href="#ProfilePost-106"><span class="linenos">106</span></a><span class="sd">            </span>
-</span><span id="ProfilePost-107"><a href="#ProfilePost-107"><span class="linenos">107</span></a><span class="sd">        Returns:</span>
-</span><span id="ProfilePost-108"><a href="#ProfilePost-108"><span class="linenos">108</span></a><span class="sd">            Объект Response модуля requests</span>
-</span><span id="ProfilePost-109"><a href="#ProfilePost-109"><span class="linenos">109</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="ProfilePost-101"><a href="#ProfilePost-101"><span class="linenos">101</span></a><span class="sd">        Attributes:</span>
+</span><span id="ProfilePost-102"><a href="#ProfilePost-102"><span class="linenos">102</span></a><span class="sd">            reaction_id (int): ID реакции. По умолчанию 1 (необяз.)</span>
+</span><span id="ProfilePost-103"><a href="#ProfilePost-103"><span class="linenos">103</span></a><span class="sd">            </span>
+</span><span id="ProfilePost-104"><a href="#ProfilePost-104"><span class="linenos">104</span></a><span class="sd">        Returns:</span>
+</span><span id="ProfilePost-105"><a href="#ProfilePost-105"><span class="linenos">105</span></a><span class="sd">            Объект Response модуля requests</span>
+</span><span id="ProfilePost-106"><a href="#ProfilePost-106"><span class="linenos">106</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="ProfilePost-107"><a href="#ProfilePost-107"><span class="linenos">107</span></a>
+</span><span id="ProfilePost-108"><a href="#ProfilePost-108"><span class="linenos">108</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">react_profile_post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">reaction_id</span><span class="p">)</span>
+</span><span id="ProfilePost-109"><a href="#ProfilePost-109"><span class="linenos">109</span></a>
 </span><span id="ProfilePost-110"><a href="#ProfilePost-110"><span class="linenos">110</span></a>
-</span><span id="ProfilePost-111"><a href="#ProfilePost-111"><span class="linenos">111</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">react_profile_post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">reaction_id</span><span class="p">)</span>
-</span><span id="ProfilePost-112"><a href="#ProfilePost-112"><span class="linenos">112</span></a>
+</span><span id="ProfilePost-111"><a href="#ProfilePost-111"><span class="linenos">111</span></a>    <span class="k">def</span> <span class="nf">comment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message_html</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
+</span><span id="ProfilePost-112"><a href="#ProfilePost-112"><span class="linenos">112</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Прокомментировать сообщение профиля</span>
 </span><span id="ProfilePost-113"><a href="#ProfilePost-113"><span class="linenos">113</span></a>
-</span><span id="ProfilePost-114"><a href="#ProfilePost-114"><span class="linenos">114</span></a>    <span class="k">def</span> <span class="nf">comment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message_html</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
-</span><span id="ProfilePost-115"><a href="#ProfilePost-115"><span class="linenos">115</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Прокомментировать сообщение профиля</span>
-</span><span id="ProfilePost-116"><a href="#ProfilePost-116"><span class="linenos">116</span></a>
-</span><span id="ProfilePost-117"><a href="#ProfilePost-117"><span class="linenos">117</span></a><span class="sd">        Attributes:</span>
-</span><span id="ProfilePost-118"><a href="#ProfilePost-118"><span class="linenos">118</span></a><span class="sd">            message_html (str): Текст комментария. Рекомендуется использование HTML</span>
-</span><span id="ProfilePost-119"><a href="#ProfilePost-119"><span class="linenos">119</span></a><span class="sd">        </span>
-</span><span id="ProfilePost-120"><a href="#ProfilePost-120"><span class="linenos">120</span></a><span class="sd">        Returns:</span>
-</span><span id="ProfilePost-121"><a href="#ProfilePost-121"><span class="linenos">121</span></a><span class="sd">            Объект Response модуля requests</span>
-</span><span id="ProfilePost-122"><a href="#ProfilePost-122"><span class="linenos">122</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="ProfilePost-114"><a href="#ProfilePost-114"><span class="linenos">114</span></a><span class="sd">        Attributes:</span>
+</span><span id="ProfilePost-115"><a href="#ProfilePost-115"><span class="linenos">115</span></a><span class="sd">            message_html (str): Текст комментария. Рекомендуется использование HTML</span>
+</span><span id="ProfilePost-116"><a href="#ProfilePost-116"><span class="linenos">116</span></a><span class="sd">        </span>
+</span><span id="ProfilePost-117"><a href="#ProfilePost-117"><span class="linenos">117</span></a><span class="sd">        Returns:</span>
+</span><span id="ProfilePost-118"><a href="#ProfilePost-118"><span class="linenos">118</span></a><span class="sd">            Объект Response модуля requests</span>
+</span><span id="ProfilePost-119"><a href="#ProfilePost-119"><span class="linenos">119</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="ProfilePost-120"><a href="#ProfilePost-120"><span class="linenos">120</span></a>
+</span><span id="ProfilePost-121"><a href="#ProfilePost-121"><span class="linenos">121</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">comment_profile_post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">message_html</span><span class="p">)</span>
+</span><span id="ProfilePost-122"><a href="#ProfilePost-122"><span class="linenos">122</span></a>
 </span><span id="ProfilePost-123"><a href="#ProfilePost-123"><span class="linenos">123</span></a>
-</span><span id="ProfilePost-124"><a href="#ProfilePost-124"><span class="linenos">124</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">comment_profile_post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">message_html</span><span class="p">)</span>
-</span><span id="ProfilePost-125"><a href="#ProfilePost-125"><span class="linenos">125</span></a>
+</span><span id="ProfilePost-124"><a href="#ProfilePost-124"><span class="linenos">124</span></a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">hard_delete</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
+</span><span id="ProfilePost-125"><a href="#ProfilePost-125"><span class="linenos">125</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Удалить сообщение</span>
 </span><span id="ProfilePost-126"><a href="#ProfilePost-126"><span class="linenos">126</span></a>
-</span><span id="ProfilePost-127"><a href="#ProfilePost-127"><span class="linenos">127</span></a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">hard_delete</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
-</span><span id="ProfilePost-128"><a href="#ProfilePost-128"><span class="linenos">128</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Удалить сообщение</span>
-</span><span id="ProfilePost-129"><a href="#ProfilePost-129"><span class="linenos">129</span></a>
-</span><span id="ProfilePost-130"><a href="#ProfilePost-130"><span class="linenos">130</span></a><span class="sd">        Attributes:</span>
-</span><span id="ProfilePost-131"><a href="#ProfilePost-131"><span class="linenos">131</span></a><span class="sd">            reason (str): Причина для удаления</span>
-</span><span id="ProfilePost-132"><a href="#ProfilePost-132"><span class="linenos">132</span></a><span class="sd">            hard_delete (bool): Полное удаление сообщения. По умолчанию False (необяз.)</span>
-</span><span id="ProfilePost-133"><a href="#ProfilePost-133"><span class="linenos">133</span></a><span class="sd">            </span>
-</span><span id="ProfilePost-134"><a href="#ProfilePost-134"><span class="linenos">134</span></a><span class="sd">        Returns:</span>
-</span><span id="ProfilePost-135"><a href="#ProfilePost-135"><span class="linenos">135</span></a><span class="sd">            Объект Response модуля requests</span>
-</span><span id="ProfilePost-136"><a href="#ProfilePost-136"><span class="linenos">136</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="ProfilePost-127"><a href="#ProfilePost-127"><span class="linenos">127</span></a><span class="sd">        Attributes:</span>
+</span><span id="ProfilePost-128"><a href="#ProfilePost-128"><span class="linenos">128</span></a><span class="sd">            reason (str): Причина для удаления</span>
+</span><span id="ProfilePost-129"><a href="#ProfilePost-129"><span class="linenos">129</span></a><span class="sd">            hard_delete (bool): Полное удаление сообщения. По умолчанию False (необяз.)</span>
+</span><span id="ProfilePost-130"><a href="#ProfilePost-130"><span class="linenos">130</span></a><span class="sd">            </span>
+</span><span id="ProfilePost-131"><a href="#ProfilePost-131"><span class="linenos">131</span></a><span class="sd">        Returns:</span>
+</span><span id="ProfilePost-132"><a href="#ProfilePost-132"><span class="linenos">132</span></a><span class="sd">            Объект Response модуля requests</span>
+</span><span id="ProfilePost-133"><a href="#ProfilePost-133"><span class="linenos">133</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="ProfilePost-134"><a href="#ProfilePost-134"><span class="linenos">134</span></a>
+</span><span id="ProfilePost-135"><a href="#ProfilePost-135"><span class="linenos">135</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">delete_profile_post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">reason</span><span class="p">,</span> <span class="n">hard_delete</span><span class="p">)</span>
+</span><span id="ProfilePost-136"><a href="#ProfilePost-136"><span class="linenos">136</span></a>    
 </span><span id="ProfilePost-137"><a href="#ProfilePost-137"><span class="linenos">137</span></a>
-</span><span id="ProfilePost-138"><a href="#ProfilePost-138"><span class="linenos">138</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">delete_profile_post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">reason</span><span class="p">,</span> <span class="n">hard_delete</span><span class="p">)</span>
-</span><span id="ProfilePost-139"><a href="#ProfilePost-139"><span class="linenos">139</span></a>    
+</span><span id="ProfilePost-138"><a href="#ProfilePost-138"><span class="linenos">138</span></a>    <span class="k">def</span> <span class="nf">edit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message_html</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
+</span><span id="ProfilePost-139"><a href="#ProfilePost-139"><span class="linenos">139</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Отредактировать сообщение профиля</span>
 </span><span id="ProfilePost-140"><a href="#ProfilePost-140"><span class="linenos">140</span></a>
-</span><span id="ProfilePost-141"><a href="#ProfilePost-141"><span class="linenos">141</span></a>    <span class="k">def</span> <span class="nf">edit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message_html</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
-</span><span id="ProfilePost-142"><a href="#ProfilePost-142"><span class="linenos">142</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Отредактировать сообщение профиля</span>
-</span><span id="ProfilePost-143"><a href="#ProfilePost-143"><span class="linenos">143</span></a>
-</span><span id="ProfilePost-144"><a href="#ProfilePost-144"><span class="linenos">144</span></a><span class="sd">        Attributes:</span>
-</span><span id="ProfilePost-145"><a href="#ProfilePost-145"><span class="linenos">145</span></a><span class="sd">            message_html (str): Новое содержание сообщения профиля. Рекомендуется использование HTML</span>
-</span><span id="ProfilePost-146"><a href="#ProfilePost-146"><span class="linenos">146</span></a><span class="sd">        </span>
-</span><span id="ProfilePost-147"><a href="#ProfilePost-147"><span class="linenos">147</span></a><span class="sd">        Returns:</span>
-</span><span id="ProfilePost-148"><a href="#ProfilePost-148"><span class="linenos">148</span></a><span class="sd">            Объект Response модуля requests</span>
-</span><span id="ProfilePost-149"><a href="#ProfilePost-149"><span class="linenos">149</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="ProfilePost-150"><a href="#ProfilePost-150"><span class="linenos">150</span></a>
-</span><span id="ProfilePost-151"><a href="#ProfilePost-151"><span class="linenos">151</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">edit_profile_post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">message_html</span><span class="p">)</span>
-</span><span id="ProfilePost-152"><a href="#ProfilePost-152"><span class="linenos">152</span></a>
-</span><span id="ProfilePost-153"><a href="#ProfilePost-153"><span class="linenos">153</span></a>
-</span><span id="ProfilePost-154"><a href="#ProfilePost-154"><span class="linenos">154</span></a>    <span class="k">def</span> <span class="nf">get_url</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span id="ProfilePost-155"><a href="#ProfilePost-155"><span class="linenos">155</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Получить ссылку на объект</span>
-</span><span id="ProfilePost-156"><a href="#ProfilePost-156"><span class="linenos">156</span></a><span class="sd">        </span>
-</span><span id="ProfilePost-157"><a href="#ProfilePost-157"><span class="linenos">157</span></a><span class="sd">        Returns:</span>
-</span><span id="ProfilePost-158"><a href="#ProfilePost-158"><span class="linenos">158</span></a><span class="sd">            Ссылку в формате https://forum.arizona-rp.com/profile-posts/x/&quot;&quot;&quot;</span>
-</span><span id="ProfilePost-159"><a href="#ProfilePost-159"><span class="linenos">159</span></a>        
-</span><span id="ProfilePost-160"><a href="#ProfilePost-160"><span class="linenos">160</span></a>        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;https://forum.arizona-rp.com/profile-posts/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/&quot;</span>
+</span><span id="ProfilePost-141"><a href="#ProfilePost-141"><span class="linenos">141</span></a><span class="sd">        Attributes:</span>
+</span><span id="ProfilePost-142"><a href="#ProfilePost-142"><span class="linenos">142</span></a><span class="sd">            message_html (str): Новое содержание сообщения профиля. Рекомендуется использование HTML</span>
+</span><span id="ProfilePost-143"><a href="#ProfilePost-143"><span class="linenos">143</span></a><span class="sd">        </span>
+</span><span id="ProfilePost-144"><a href="#ProfilePost-144"><span class="linenos">144</span></a><span class="sd">        Returns:</span>
+</span><span id="ProfilePost-145"><a href="#ProfilePost-145"><span class="linenos">145</span></a><span class="sd">            Объект Response модуля requests</span>
+</span><span id="ProfilePost-146"><a href="#ProfilePost-146"><span class="linenos">146</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="ProfilePost-147"><a href="#ProfilePost-147"><span class="linenos">147</span></a>
+</span><span id="ProfilePost-148"><a href="#ProfilePost-148"><span class="linenos">148</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">edit_profile_post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">message_html</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -806,20 +763,22 @@
 
     </div>
     <a class="headerlink" href="#ProfilePost.__init__"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="ProfilePost.__init__-85"><a href="#ProfilePost.__init__-85"><span class="linenos">85</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">API</span><span class="p">:</span> <span class="s1">&#39;ArizonaAPI&#39;</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">creator</span><span class="p">:</span> <span class="s1">&#39;Member&#39;</span><span class="p">,</span> <span class="n">profile</span><span class="p">:</span> <span class="s1">&#39;Member&#39;</span><span class="p">,</span> <span class="n">create_date</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">bb_content</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">text_content</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="ProfilePost.__init__-86"><a href="#ProfilePost.__init__-86"><span class="linenos">86</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">API</span> <span class="o">=</span> <span class="n">API</span>
-</span><span id="ProfilePost.__init__-87"><a href="#ProfilePost.__init__-87"><span class="linenos">87</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">id</span>
-</span><span id="ProfilePost.__init__-88"><a href="#ProfilePost.__init__-88"><span class="linenos">88</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**ID сообщения профиля**&quot;&quot;&quot;</span>
-</span><span id="ProfilePost.__init__-89"><a href="#ProfilePost.__init__-89"><span class="linenos">89</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">creator</span> <span class="o">=</span> <span class="n">creator</span>
-</span><span id="ProfilePost.__init__-90"><a href="#ProfilePost.__init__-90"><span class="linenos">90</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Объект Member отправителя сообщения**&quot;&quot;&quot;</span>
-</span><span id="ProfilePost.__init__-91"><a href="#ProfilePost.__init__-91"><span class="linenos">91</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">profile</span> <span class="o">=</span> <span class="n">profile</span>
-</span><span id="ProfilePost.__init__-92"><a href="#ProfilePost.__init__-92"><span class="linenos">92</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Объект Member профиля, в котором оставлено сообщение**&quot;&quot;&quot;</span>
-</span><span id="ProfilePost.__init__-93"><a href="#ProfilePost.__init__-93"><span class="linenos">93</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">create_date</span> <span class="o">=</span> <span class="n">create_date</span>
-</span><span id="ProfilePost.__init__-94"><a href="#ProfilePost.__init__-94"><span class="linenos">94</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Дата отправки сообщения в UNIX**&quot;&quot;&quot;</span>
-</span><span id="ProfilePost.__init__-95"><a href="#ProfilePost.__init__-95"><span class="linenos">95</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">bb_content</span> <span class="o">=</span> <span class="n">bb_content</span>
-</span><span id="ProfilePost.__init__-96"><a href="#ProfilePost.__init__-96"><span class="linenos">96</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Сырое содержимое сообщения**&quot;&quot;&quot;</span>
-</span><span id="ProfilePost.__init__-97"><a href="#ProfilePost.__init__-97"><span class="linenos">97</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">text_content</span> <span class="o">=</span> <span class="n">text_content</span>
-</span><span id="ProfilePost.__init__-98"><a href="#ProfilePost.__init__-98"><span class="linenos">98</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Текст из сообщения**&quot;&quot;&quot;</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="ProfilePost.__init__-80"><a href="#ProfilePost.__init__-80"><span class="linenos">80</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">API</span><span class="p">:</span> <span class="s1">&#39;ArizonaAPI&#39;</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">creator</span><span class="p">:</span> <span class="s1">&#39;Member&#39;</span><span class="p">,</span> <span class="n">profile</span><span class="p">:</span> <span class="s1">&#39;Member&#39;</span><span class="p">,</span> <span class="n">create_date</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">bb_content</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">text_content</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="ProfilePost.__init__-81"><a href="#ProfilePost.__init__-81"><span class="linenos">81</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">API</span> <span class="o">=</span> <span class="n">API</span>
+</span><span id="ProfilePost.__init__-82"><a href="#ProfilePost.__init__-82"><span class="linenos">82</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">id</span>
+</span><span id="ProfilePost.__init__-83"><a href="#ProfilePost.__init__-83"><span class="linenos">83</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**ID сообщения профиля**&quot;&quot;&quot;</span>
+</span><span id="ProfilePost.__init__-84"><a href="#ProfilePost.__init__-84"><span class="linenos">84</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">creator</span> <span class="o">=</span> <span class="n">creator</span>
+</span><span id="ProfilePost.__init__-85"><a href="#ProfilePost.__init__-85"><span class="linenos">85</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Объект Member отправителя сообщения**&quot;&quot;&quot;</span>
+</span><span id="ProfilePost.__init__-86"><a href="#ProfilePost.__init__-86"><span class="linenos">86</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">profile</span> <span class="o">=</span> <span class="n">profile</span>
+</span><span id="ProfilePost.__init__-87"><a href="#ProfilePost.__init__-87"><span class="linenos">87</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Объект Member профиля, в котором оставлено сообщение**&quot;&quot;&quot;</span>
+</span><span id="ProfilePost.__init__-88"><a href="#ProfilePost.__init__-88"><span class="linenos">88</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">create_date</span> <span class="o">=</span> <span class="n">create_date</span>
+</span><span id="ProfilePost.__init__-89"><a href="#ProfilePost.__init__-89"><span class="linenos">89</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Дата отправки сообщения в UNIX**&quot;&quot;&quot;</span>
+</span><span id="ProfilePost.__init__-90"><a href="#ProfilePost.__init__-90"><span class="linenos">90</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">bb_content</span> <span class="o">=</span> <span class="n">bb_content</span>
+</span><span id="ProfilePost.__init__-91"><a href="#ProfilePost.__init__-91"><span class="linenos">91</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Сырое содержимое сообщения**&quot;&quot;&quot;</span>
+</span><span id="ProfilePost.__init__-92"><a href="#ProfilePost.__init__-92"><span class="linenos">92</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">text_content</span> <span class="o">=</span> <span class="n">text_content</span>
+</span><span id="ProfilePost.__init__-93"><a href="#ProfilePost.__init__-93"><span class="linenos">93</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;**Текст из сообщения**&quot;&quot;&quot;</span>
+</span><span id="ProfilePost.__init__-94"><a href="#ProfilePost.__init__-94"><span class="linenos">94</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">MAIN_URL</span><span class="si">}</span><span class="s2">/profile-posts/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/&quot;</span>
+</span><span id="ProfilePost.__init__-95"><a href="#ProfilePost.__init__-95"><span class="linenos">95</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Ссылка на объект&quot;&quot;&quot;</span>
 </span></pre></div>
 
 
@@ -915,6 +874,19 @@
 
 
                             </div>
+                            <div id="ProfilePost.url" class="classattr">
+                                <div class="attr variable">
+            <span class="name">url</span>
+
+        
+    </div>
+    <a class="headerlink" href="#ProfilePost.url"></a>
+    
+            <div class="docstring"><p>Ссылка на объект</p>
+</div>
+
+
+                            </div>
                             <div id="ProfilePost.react" class="classattr">
                                         <input id="ProfilePost.react-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 <div class="attr function">
@@ -926,17 +898,17 @@
 
     </div>
     <a class="headerlink" href="#ProfilePost.react"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="ProfilePost.react-101"><a href="#ProfilePost.react-101"><span class="linenos">101</span></a>    <span class="k">def</span> <span class="nf">react</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reaction_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
-</span><span id="ProfilePost.react-102"><a href="#ProfilePost.react-102"><span class="linenos">102</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Поставить реакцию на сообщение профиля</span>
-</span><span id="ProfilePost.react-103"><a href="#ProfilePost.react-103"><span class="linenos">103</span></a>
-</span><span id="ProfilePost.react-104"><a href="#ProfilePost.react-104"><span class="linenos">104</span></a><span class="sd">        Attributes:</span>
-</span><span id="ProfilePost.react-105"><a href="#ProfilePost.react-105"><span class="linenos">105</span></a><span class="sd">            reaction_id (int): ID реакции. По умолчанию 1 (необяз.)</span>
-</span><span id="ProfilePost.react-106"><a href="#ProfilePost.react-106"><span class="linenos">106</span></a><span class="sd">            </span>
-</span><span id="ProfilePost.react-107"><a href="#ProfilePost.react-107"><span class="linenos">107</span></a><span class="sd">        Returns:</span>
-</span><span id="ProfilePost.react-108"><a href="#ProfilePost.react-108"><span class="linenos">108</span></a><span class="sd">            Объект Response модуля requests</span>
-</span><span id="ProfilePost.react-109"><a href="#ProfilePost.react-109"><span class="linenos">109</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="ProfilePost.react-110"><a href="#ProfilePost.react-110"><span class="linenos">110</span></a>
-</span><span id="ProfilePost.react-111"><a href="#ProfilePost.react-111"><span class="linenos">111</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">react_profile_post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">reaction_id</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="ProfilePost.react-98"><a href="#ProfilePost.react-98"><span class="linenos"> 98</span></a>    <span class="k">def</span> <span class="nf">react</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reaction_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
+</span><span id="ProfilePost.react-99"><a href="#ProfilePost.react-99"><span class="linenos"> 99</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Поставить реакцию на сообщение профиля</span>
+</span><span id="ProfilePost.react-100"><a href="#ProfilePost.react-100"><span class="linenos">100</span></a>
+</span><span id="ProfilePost.react-101"><a href="#ProfilePost.react-101"><span class="linenos">101</span></a><span class="sd">        Attributes:</span>
+</span><span id="ProfilePost.react-102"><a href="#ProfilePost.react-102"><span class="linenos">102</span></a><span class="sd">            reaction_id (int): ID реакции. По умолчанию 1 (необяз.)</span>
+</span><span id="ProfilePost.react-103"><a href="#ProfilePost.react-103"><span class="linenos">103</span></a><span class="sd">            </span>
+</span><span id="ProfilePost.react-104"><a href="#ProfilePost.react-104"><span class="linenos">104</span></a><span class="sd">        Returns:</span>
+</span><span id="ProfilePost.react-105"><a href="#ProfilePost.react-105"><span class="linenos">105</span></a><span class="sd">            Объект Response модуля requests</span>
+</span><span id="ProfilePost.react-106"><a href="#ProfilePost.react-106"><span class="linenos">106</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="ProfilePost.react-107"><a href="#ProfilePost.react-107"><span class="linenos">107</span></a>
+</span><span id="ProfilePost.react-108"><a href="#ProfilePost.react-108"><span class="linenos">108</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">react_profile_post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">reaction_id</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -968,17 +940,17 @@
 
     </div>
     <a class="headerlink" href="#ProfilePost.comment"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="ProfilePost.comment-114"><a href="#ProfilePost.comment-114"><span class="linenos">114</span></a>    <span class="k">def</span> <span class="nf">comment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message_html</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
-</span><span id="ProfilePost.comment-115"><a href="#ProfilePost.comment-115"><span class="linenos">115</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Прокомментировать сообщение профиля</span>
-</span><span id="ProfilePost.comment-116"><a href="#ProfilePost.comment-116"><span class="linenos">116</span></a>
-</span><span id="ProfilePost.comment-117"><a href="#ProfilePost.comment-117"><span class="linenos">117</span></a><span class="sd">        Attributes:</span>
-</span><span id="ProfilePost.comment-118"><a href="#ProfilePost.comment-118"><span class="linenos">118</span></a><span class="sd">            message_html (str): Текст комментария. Рекомендуется использование HTML</span>
-</span><span id="ProfilePost.comment-119"><a href="#ProfilePost.comment-119"><span class="linenos">119</span></a><span class="sd">        </span>
-</span><span id="ProfilePost.comment-120"><a href="#ProfilePost.comment-120"><span class="linenos">120</span></a><span class="sd">        Returns:</span>
-</span><span id="ProfilePost.comment-121"><a href="#ProfilePost.comment-121"><span class="linenos">121</span></a><span class="sd">            Объект Response модуля requests</span>
-</span><span id="ProfilePost.comment-122"><a href="#ProfilePost.comment-122"><span class="linenos">122</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="ProfilePost.comment-123"><a href="#ProfilePost.comment-123"><span class="linenos">123</span></a>
-</span><span id="ProfilePost.comment-124"><a href="#ProfilePost.comment-124"><span class="linenos">124</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">comment_profile_post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">message_html</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="ProfilePost.comment-111"><a href="#ProfilePost.comment-111"><span class="linenos">111</span></a>    <span class="k">def</span> <span class="nf">comment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message_html</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
+</span><span id="ProfilePost.comment-112"><a href="#ProfilePost.comment-112"><span class="linenos">112</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Прокомментировать сообщение профиля</span>
+</span><span id="ProfilePost.comment-113"><a href="#ProfilePost.comment-113"><span class="linenos">113</span></a>
+</span><span id="ProfilePost.comment-114"><a href="#ProfilePost.comment-114"><span class="linenos">114</span></a><span class="sd">        Attributes:</span>
+</span><span id="ProfilePost.comment-115"><a href="#ProfilePost.comment-115"><span class="linenos">115</span></a><span class="sd">            message_html (str): Текст комментария. Рекомендуется использование HTML</span>
+</span><span id="ProfilePost.comment-116"><a href="#ProfilePost.comment-116"><span class="linenos">116</span></a><span class="sd">        </span>
+</span><span id="ProfilePost.comment-117"><a href="#ProfilePost.comment-117"><span class="linenos">117</span></a><span class="sd">        Returns:</span>
+</span><span id="ProfilePost.comment-118"><a href="#ProfilePost.comment-118"><span class="linenos">118</span></a><span class="sd">            Объект Response модуля requests</span>
+</span><span id="ProfilePost.comment-119"><a href="#ProfilePost.comment-119"><span class="linenos">119</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="ProfilePost.comment-120"><a href="#ProfilePost.comment-120"><span class="linenos">120</span></a>
+</span><span id="ProfilePost.comment-121"><a href="#ProfilePost.comment-121"><span class="linenos">121</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">comment_profile_post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">message_html</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -1010,18 +982,18 @@
 
     </div>
     <a class="headerlink" href="#ProfilePost.delete"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="ProfilePost.delete-127"><a href="#ProfilePost.delete-127"><span class="linenos">127</span></a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">hard_delete</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
-</span><span id="ProfilePost.delete-128"><a href="#ProfilePost.delete-128"><span class="linenos">128</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Удалить сообщение</span>
-</span><span id="ProfilePost.delete-129"><a href="#ProfilePost.delete-129"><span class="linenos">129</span></a>
-</span><span id="ProfilePost.delete-130"><a href="#ProfilePost.delete-130"><span class="linenos">130</span></a><span class="sd">        Attributes:</span>
-</span><span id="ProfilePost.delete-131"><a href="#ProfilePost.delete-131"><span class="linenos">131</span></a><span class="sd">            reason (str): Причина для удаления</span>
-</span><span id="ProfilePost.delete-132"><a href="#ProfilePost.delete-132"><span class="linenos">132</span></a><span class="sd">            hard_delete (bool): Полное удаление сообщения. По умолчанию False (необяз.)</span>
-</span><span id="ProfilePost.delete-133"><a href="#ProfilePost.delete-133"><span class="linenos">133</span></a><span class="sd">            </span>
-</span><span id="ProfilePost.delete-134"><a href="#ProfilePost.delete-134"><span class="linenos">134</span></a><span class="sd">        Returns:</span>
-</span><span id="ProfilePost.delete-135"><a href="#ProfilePost.delete-135"><span class="linenos">135</span></a><span class="sd">            Объект Response модуля requests</span>
-</span><span id="ProfilePost.delete-136"><a href="#ProfilePost.delete-136"><span class="linenos">136</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="ProfilePost.delete-137"><a href="#ProfilePost.delete-137"><span class="linenos">137</span></a>
-</span><span id="ProfilePost.delete-138"><a href="#ProfilePost.delete-138"><span class="linenos">138</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">delete_profile_post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">reason</span><span class="p">,</span> <span class="n">hard_delete</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="ProfilePost.delete-124"><a href="#ProfilePost.delete-124"><span class="linenos">124</span></a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">hard_delete</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
+</span><span id="ProfilePost.delete-125"><a href="#ProfilePost.delete-125"><span class="linenos">125</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Удалить сообщение</span>
+</span><span id="ProfilePost.delete-126"><a href="#ProfilePost.delete-126"><span class="linenos">126</span></a>
+</span><span id="ProfilePost.delete-127"><a href="#ProfilePost.delete-127"><span class="linenos">127</span></a><span class="sd">        Attributes:</span>
+</span><span id="ProfilePost.delete-128"><a href="#ProfilePost.delete-128"><span class="linenos">128</span></a><span class="sd">            reason (str): Причина для удаления</span>
+</span><span id="ProfilePost.delete-129"><a href="#ProfilePost.delete-129"><span class="linenos">129</span></a><span class="sd">            hard_delete (bool): Полное удаление сообщения. По умолчанию False (необяз.)</span>
+</span><span id="ProfilePost.delete-130"><a href="#ProfilePost.delete-130"><span class="linenos">130</span></a><span class="sd">            </span>
+</span><span id="ProfilePost.delete-131"><a href="#ProfilePost.delete-131"><span class="linenos">131</span></a><span class="sd">        Returns:</span>
+</span><span id="ProfilePost.delete-132"><a href="#ProfilePost.delete-132"><span class="linenos">132</span></a><span class="sd">            Объект Response модуля requests</span>
+</span><span id="ProfilePost.delete-133"><a href="#ProfilePost.delete-133"><span class="linenos">133</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="ProfilePost.delete-134"><a href="#ProfilePost.delete-134"><span class="linenos">134</span></a>
+</span><span id="ProfilePost.delete-135"><a href="#ProfilePost.delete-135"><span class="linenos">135</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">delete_profile_post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">reason</span><span class="p">,</span> <span class="n">hard_delete</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -1054,17 +1026,17 @@
 
     </div>
     <a class="headerlink" href="#ProfilePost.edit"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="ProfilePost.edit-141"><a href="#ProfilePost.edit-141"><span class="linenos">141</span></a>    <span class="k">def</span> <span class="nf">edit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message_html</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
-</span><span id="ProfilePost.edit-142"><a href="#ProfilePost.edit-142"><span class="linenos">142</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Отредактировать сообщение профиля</span>
-</span><span id="ProfilePost.edit-143"><a href="#ProfilePost.edit-143"><span class="linenos">143</span></a>
-</span><span id="ProfilePost.edit-144"><a href="#ProfilePost.edit-144"><span class="linenos">144</span></a><span class="sd">        Attributes:</span>
-</span><span id="ProfilePost.edit-145"><a href="#ProfilePost.edit-145"><span class="linenos">145</span></a><span class="sd">            message_html (str): Новое содержание сообщения профиля. Рекомендуется использование HTML</span>
-</span><span id="ProfilePost.edit-146"><a href="#ProfilePost.edit-146"><span class="linenos">146</span></a><span class="sd">        </span>
-</span><span id="ProfilePost.edit-147"><a href="#ProfilePost.edit-147"><span class="linenos">147</span></a><span class="sd">        Returns:</span>
-</span><span id="ProfilePost.edit-148"><a href="#ProfilePost.edit-148"><span class="linenos">148</span></a><span class="sd">            Объект Response модуля requests</span>
-</span><span id="ProfilePost.edit-149"><a href="#ProfilePost.edit-149"><span class="linenos">149</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="ProfilePost.edit-150"><a href="#ProfilePost.edit-150"><span class="linenos">150</span></a>
-</span><span id="ProfilePost.edit-151"><a href="#ProfilePost.edit-151"><span class="linenos">151</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">edit_profile_post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">message_html</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="ProfilePost.edit-138"><a href="#ProfilePost.edit-138"><span class="linenos">138</span></a>    <span class="k">def</span> <span class="nf">edit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message_html</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
+</span><span id="ProfilePost.edit-139"><a href="#ProfilePost.edit-139"><span class="linenos">139</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Отредактировать сообщение профиля</span>
+</span><span id="ProfilePost.edit-140"><a href="#ProfilePost.edit-140"><span class="linenos">140</span></a>
+</span><span id="ProfilePost.edit-141"><a href="#ProfilePost.edit-141"><span class="linenos">141</span></a><span class="sd">        Attributes:</span>
+</span><span id="ProfilePost.edit-142"><a href="#ProfilePost.edit-142"><span class="linenos">142</span></a><span class="sd">            message_html (str): Новое содержание сообщения профиля. Рекомендуется использование HTML</span>
+</span><span id="ProfilePost.edit-143"><a href="#ProfilePost.edit-143"><span class="linenos">143</span></a><span class="sd">        </span>
+</span><span id="ProfilePost.edit-144"><a href="#ProfilePost.edit-144"><span class="linenos">144</span></a><span class="sd">        Returns:</span>
+</span><span id="ProfilePost.edit-145"><a href="#ProfilePost.edit-145"><span class="linenos">145</span></a><span class="sd">            Объект Response модуля requests</span>
+</span><span id="ProfilePost.edit-146"><a href="#ProfilePost.edit-146"><span class="linenos">146</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="ProfilePost.edit-147"><a href="#ProfilePost.edit-147"><span class="linenos">147</span></a>
+</span><span id="ProfilePost.edit-148"><a href="#ProfilePost.edit-148"><span class="linenos">148</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">edit_profile_post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">message_html</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -1080,38 +1052,6 @@
 
 <blockquote>
   <p>Объект Response модуля requests</p>
-</blockquote>
-</div>
-
-
-                            </div>
-                            <div id="ProfilePost.get_url" class="classattr">
-                                        <input id="ProfilePost.get_url-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
-<div class="attr function">
-            
-        <span class="def">def</span>
-        <span class="name">get_url</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span></span><span class="return-annotation">) -> <span class="nb">str</span>:</span></span>
-
-                <label class="view-source-button" for="ProfilePost.get_url-view-source"><span>View Source</span></label>
-
-    </div>
-    <a class="headerlink" href="#ProfilePost.get_url"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="ProfilePost.get_url-154"><a href="#ProfilePost.get_url-154"><span class="linenos">154</span></a>    <span class="k">def</span> <span class="nf">get_url</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span id="ProfilePost.get_url-155"><a href="#ProfilePost.get_url-155"><span class="linenos">155</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Получить ссылку на объект</span>
-</span><span id="ProfilePost.get_url-156"><a href="#ProfilePost.get_url-156"><span class="linenos">156</span></a><span class="sd">        </span>
-</span><span id="ProfilePost.get_url-157"><a href="#ProfilePost.get_url-157"><span class="linenos">157</span></a><span class="sd">        Returns:</span>
-</span><span id="ProfilePost.get_url-158"><a href="#ProfilePost.get_url-158"><span class="linenos">158</span></a><span class="sd">            Ссылку в формате https://forum.arizona-rp.com/profile-posts/x/&quot;&quot;&quot;</span>
-</span><span id="ProfilePost.get_url-159"><a href="#ProfilePost.get_url-159"><span class="linenos">159</span></a>        
-</span><span id="ProfilePost.get_url-160"><a href="#ProfilePost.get_url-160"><span class="linenos">160</span></a>        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;https://forum.arizona-rp.com/profile-posts/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/&quot;</span>
-</span></pre></div>
-
-
-            <div class="docstring"><p>Получить ссылку на объект</p>
-
-<h6 id="returns">Returns:</h6>
-
-<blockquote>
-  <p>Ссылку в формате <a href="https://forum.arizona-rp.com/profile-posts/x/">https://forum.arizona-rp.com/profile-posts/x/</a></p>
 </blockquote>
 </div>
 
