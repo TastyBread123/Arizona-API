@@ -3,9 +3,7 @@ import arz_api
 
 cookies = {"xf_user": "your",
            "xf_tfa_trust": "your",
-           "xf_session": "your",
-           "xf_csrf": "your",
-}
+           "xf_session": "your"}
 
 api = arz_api.ArizonaAPI(user_agent="your", cookie=cookies)
 
@@ -16,7 +14,7 @@ category = api.get_category(1865)
 print(f"Название: {category.title} ({category.id})\nСтраниц: {category.pages_count}\n")
 
 member = api.get_member(583439)
-print(f'Пользователь найден!\nИмя пользователя: {member.username} | Звание: {member.user_title}\nАватарка: {member.avatar}\nСообщений: {member.messages_count} | Реакций: {member.reactions_count}\n')
+print(f'Пользователь найден!\nИмя пользователя: {member.username} | Звание: {member.user_title}\nАватарка: {member.avatar}\nСообщений: {member.messages_count} | Реакций: {member.reactions_count} | Баллов: {member.trophies_count}\n')
 
 thread = api.get_thread(6594323)
 print(f'Название: {thread.title} ({thread.id})\nАвтор темы: {thread.creator.username}\nКатегория: {thread.category.title} ({thread.category.id})\nДата создания: {thread.create_date} | Закрыто: {thread.is_closed}')

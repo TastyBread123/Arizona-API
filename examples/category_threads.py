@@ -2,8 +2,7 @@ import arz_api
 
 cookies = {"xf_user": "your",
            "xf_tfa_trust": "your",
-           "xf_session": "your",
-           "xf_csrf": "your"}
+           "xf_session": "your"}
 
 api = arz_api.ArizonaAPI(user_agent="your", cookie=cookies)
 
