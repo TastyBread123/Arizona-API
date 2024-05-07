@@ -55,14 +55,14 @@ class ArizonaAPI:
     def get_category(self, category_id: int) -> Category:
         """Найти раздел по ID"""
 
-        request = self.session.get(f"{MAIN_URL}/forums/{category_id}?&_xfResponseType=json&_xfToken={self.token}").json()
+        request = self.session.get(f"{MAIN_URL}/forums/{category_id}?_xfResponseType=json&_xfToken={self.token}").json()
         if request['status'] == 'error':
             return None
 
         content = unescape(request['html']['content'])
         content = BeautifulSoup(content, 'lxml')
 
-        title = request['html']['title']
+        title = unescape(request['html']['title'])
         try: pages_count = int(content.find_all('li', {'class': 'pageNav-page'})[-1].text)
         except IndexError: pages_count = 1
 
@@ -72,14 +72,14 @@ class ArizonaAPI:
     def get_member(self, user_id: int) -> Member:
         """Найти пользователя по ID (возвращает либо Member, либо None (если профиль закрыт / не существует))"""
 
-        request = self.session.get(f"{MAIN_URL}/members/{user_id}?&_xfResponseType=json&_xfToken={self.token}").json()
+        request = self.session.get(f"{MAIN_URL}/members/{user_id}?_xfResponseType=json&_xfToken={self.token}").json()
         if request['status'] == 'error':
             return None
 
         content = unescape(request['html']['content'])
         content = BeautifulSoup(content, 'lxml')
 
-        username = request['html']['title']
+        username = unescape(request['html']['title'])
 
         roles = []
         for i in content.find('div', {'class': 'memberHeader-banners'}).children:
@@ -98,7 +98,7 @@ class ArizonaAPI:
     
 
     def get_thread(self, thread_id: int):
-        request = self.session.get(f"{MAIN_URL}/threads/{thread_id}/page-1?&_xfResponseType=json&_xfToken={self.token}").json()
+        request = self.session.get(f"{MAIN_URL}/threads/{thread_id}/page-1?_xfResponseType=json&_xfToken={self.token}").json()
         if request['status'] == 'error':
             return None
         
@@ -116,9 +116,13 @@ class ArizonaAPI:
         
         create_date = int(content.find('time')['data-time'])
         
-        title = request['html']['title']
-        try: prefix = content_h1.find('span', {'class': 'label'}).text
-        except: prefix = ""
+        try:
+            prefix = content_h1.find('span', {'class': 'label'}).text
+            title = content_h1.text.strip(prefix).strip()
+
+        except AttributeError:
+            prefix = ""
+            title = content_h1.text
         thread_content_html = content.find('div', {'class': 'bbWrapper'})
         thread_content = thread_content_html.text
         
@@ -543,8 +547,8 @@ class ArizonaAPI:
         return self.session.post(f"{MAIN_URL}/posts/{thread_post_id}/edit", {"message_html": message_html, "message": message_html, "_xfToken": self.token})
     
 
-    def edit_thread_info(self, thread_id: int, title: str = None, prefix_id: int = None, sticky: bool = True, opened: bool = True) -> Response:
-        """Изменить заголовок и/или префикс темы
+    def edit_thread_info(self, thread_id: int, title: str, prefix_id: int = None, sticky: bool = True, opened: bool = True) -> Response:
+        """Изменить статус темы, ее префикс и название
 
         Attributes:
             thread_id (int): ID темы
@@ -557,9 +561,8 @@ class ArizonaAPI:
             Объект Response модуля requests
         """
         
-        data = {"_xfToken": self.token}
+        data = {"_xfToken": self.token, 'title': title}
 
-        if title is not None: data.update({'title': title})
         if prefix_id is not None: data.update({'prefix_id': prefix_id})
         if opened: data.update({"discussion_open": 1})
         if sticky: data.update({"sticky": 1})
