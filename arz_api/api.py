@@ -32,7 +32,6 @@ class ArizonaAPI:
     
     def logout(self):
         """Закрыть сессию"""
-
         return self.session.close()
 
     
@@ -48,7 +47,7 @@ class ArizonaAPI:
 
     @property
     def token(self) -> str:
-        """Получить токен CSRF"""
+        """Токен CSRF"""
         return BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
 
 
@@ -97,18 +96,17 @@ class ArizonaAPI:
         return Member(self, user_id, username, user_title, avatar, roles, messages_count, reactions_count, trophies_count)
     
 
-    def get_thread(self, thread_id: int):
+    def get_thread(self, thread_id: int) -> Thread:
+        """Найти тему по ID"""
         request = self.session.get(f"{MAIN_URL}/threads/{thread_id}/page-1?_xfResponseType=json&_xfToken={self.token}").json()
         if request['status'] == 'error':
             return None
         
         if request.get('redirect') is not None:
-            return self.get_thread(request['redirect'].strip(MAIN_URL).split('/')[1])
+            return self.get_thread(request['redirect'].split(MAIN_URL, maxsplit=1)[-1].split('/')[1])
 
-        content = unescape(request['html']['content'])
-        content_h1 = unescape(request['html']['h1'])
-        content = BeautifulSoup(content, 'lxml')
-        content_h1 = BeautifulSoup(content_h1, 'lxml')
+        content = BeautifulSoup(unescape(request['html']['content']), 'lxml')
+        content_h1 = BeautifulSoup(unescape(request['html']['h1']), 'lxml')
 
         creator_id = content.find('a', {'class': 'username'})
         try: creator = self.get_member(int(creator_id['data-user-id']))
@@ -118,11 +116,12 @@ class ArizonaAPI:
         
         try:
             prefix = content_h1.find('span', {'class': 'label'}).text
-            title = content_h1.text.strip(prefix).strip()
+            title = content_h1.text.strip().replace(prefix, "").strip()
 
         except AttributeError:
             prefix = ""
             title = content_h1.text
+        
         thread_content_html = content.find('div', {'class': 'bbWrapper'})
         thread_content = thread_content_html.text
         
@@ -131,7 +130,7 @@ class ArizonaAPI:
 
         is_closed = False
         if content.find('dl', {'class': 'blockStatus'}): is_closed = True
-        thread_post_id = content.find('article', {'id': compile('js-post-*')})['id'].strip('js-post-')
+        thread_post_id = content.find('article', {'id': compile('js-post-*')})['id'].split('js-post-', maxsplit=1)[-1]
 
         return Thread(self, thread_id, creator, create_date, title, prefix, thread_content, thread_content_html, pages_count, thread_post_id, is_closed)
 
@@ -149,7 +148,7 @@ class ArizonaAPI:
             user_info = post.find('a', {'data-xf-init': 'member-tooltip'})
             creator = Member(self, int(user_info['data-user-id']), user_info.text, None, None, None, None, None, None)
 
-        thread = self.get_thread(int(content.find('html')['data-content-key'].strip('thread-')))
+        thread = self.get_thread(int(content.find('html')['data-content-key'].split('-')[-1]))
         create_date = int(post.find('time', {'class': 'u-dt'})['data-time'])
         bb_content = post.find('div', {'class': 'bbWrapper'})
         text_content = bb_content.text
@@ -195,8 +194,8 @@ class ArizonaAPI:
             category_id (int): ID категории
             title (str): Название темы
             message_html (str): Содержание темы. Рекомендуется использование HTML
-            discussion_type (str): - Тип темы | Возможные варианты: 'discussion' - обсуждение (по умолчанию), 'article' - статья, 'poll' - опрос (необяз.)
-            watch_thread (str): - Отслеживать ли тему. По умолчанию True (необяз.)
+            discussion_type (str): (необяз.) Тип темы | Возможные варианты: 'discussion' - обсуждение (по умолчанию), 'article' - статья, 'poll' - опрос
+            watch_thread (str): (необяз.) Отслеживать ли тему. По умолчанию True
         
         Returns:
             Объект Response модуля requests
@@ -227,9 +226,9 @@ class ArizonaAPI:
         Attributes:
             category_id (int): ID категории
             notify (str): Объект отслеживания. Возможные варианты: "thread", "message", ""
-            send_alert (bool): - Отправлять ли уведомления на форуме. По умолчанию True (необяз.)
-            send_email (bool): - Отправлять ли уведомления на почту. По умолчанию False (необяз.)
-            stop (bool): - Принудительное завершение отслеживания. По умолчанию False (необяз.)
+            send_alert (bool): (необяз.) Отправлять ли уведомления на форуме. По умолчанию True 
+            send_email (bool): (необяз.) Отправлять ли уведомления на почту. По умолчанию False
+            stop (bool): (необяз.) Принудительное завершение отслеживания. По умолчанию False
 
         Returns:
             Объект Response модуля requests    
@@ -239,15 +238,15 @@ class ArizonaAPI:
         else: return self.session.post(f"{MAIN_URL}/forums/{category_id}/watch", {'_xfToken': self.token, 'send_alert': int(send_alert), 'send_email': int(send_email), 'notify': notify})
 
 
-    def get_threads(self, category_id: int, page: int = 1) -> dict:
+    def get_category_threads(self, category_id: int, page: int = 1) -> dict:
         """Получить темы из раздела
 
         Attributes:
             category_id (int): ID категории
-            page (int): Cтраница для поиска. По умолчанию 1 (необяз.)
+            page (int): (необяз.) Cтраница для поиска. По умолчанию 1 
             
         Returns:
-            Словарь (dict), состоящий из списков закрепленных ('pins') и незакрепленных ('unpins') тем
+            Словарь (dict) по структуре THREAD_ID : 'pin'/'unpin'
         """
 
         request = self.session.get(f"{MAIN_URL}/forums/{category_id}/page-{page}?_xfResponseType=json&_xfToken={self.token}").json()
@@ -255,13 +254,18 @@ class ArizonaAPI:
             return None
         
         soup = BeautifulSoup(unescape(request['html']['content']), "lxml")
-        result = {'pins': [], 'unpins': []}
+        result = {}
         for thread in soup.find_all('div', compile('structItem structItem--thread.*')):
             link = thread.find_all('div', "structItem-title")[0].find_all("a")[-1]
-            if len(findall(r'\d+', link['href'])) < 1: continue
 
-            if len(thread.find_all('i', {'title': 'Закреплено'})) > 0: result['pins'].append(int(findall(r'\d+', link['href'])[0]))
-            else: result['unpins'].append(int(findall(r'\d+', link['href'])[0]))
+            thread_id = findall(r'\d+', link['href']) #
+            if len(thread_id) < 1: continue
+            thread_id = int(thread_id[0])
+
+            template = {thread_id: 'unpin'}
+            if len(thread.find_all('i', {'title': 'Закреплено'})) > 0: template[thread_id] = 'pin'
+
+            result.update(template)
         
         return result
 
@@ -356,7 +360,7 @@ class ArizonaAPI:
 
         Attributes:
             member_id (int): ID пользователя
-            page (int): Страница для поиска. По умолчанию 1 (необяз.)
+            page (int): (необяз.) Страница для поиска. По умолчанию 1
             
         Returns:
             - Cписок (list) с ID всех сообщений профиля
@@ -368,7 +372,7 @@ class ArizonaAPI:
             return None
         
         soup = BeautifulSoup(unescape(request['html']['content']), "lxml")
-        return [int(post['id'].strip('js-profilePost-')) for post in soup.find_all('article', {'id': compile('js-profilePost-*')})]
+        return [int(post['id'].split('-')[2]) for post in soup.find_all('article', {'id': compile('js-profilePost-*')})]
 
 
     # POST
@@ -377,7 +381,7 @@ class ArizonaAPI:
 
         Attributes:
             post_id (int): ID сообщения
-            reaction_id (int): ID реакции. По умолчанию 1 (необяз.)
+            reaction_id (int): (необяз.) ID реакции. По умолчанию 1
             
         Returns:
             Объект Response модуля requests
@@ -397,7 +401,8 @@ class ArizonaAPI:
             Объект Response модуля requests
         """
 
-        return self.session.post(f"{MAIN_URL}/posts/{post_id}/edit", {"message_html": message_html, "message": message_html, "_xfToken": self.token})
+        title_of_thread_post = self.get_post(post_id).thread.title
+        return self.session.post(f"{MAIN_URL}/posts/{post_id}/edit", {"title": title_of_thread_post, "message_html": message_html, "message": message_html, "_xfToken": self.token})
 
 
     def delete_post(self, post_id: int, reason: str, hard_delete: bool = False) -> Response:
@@ -406,7 +411,7 @@ class ArizonaAPI:
         Attributes:
             post_id (int): ID сообщения
             reason (str): Причина для удаления
-            hard_delete (bool): Полное удаление сообщения. По умолчанию False (необяз.)
+            hard_delete (bool): (необяз.) Полное удаление сообщения. По умолчанию False
         
         Returns:
             Объект Response модуля requests
@@ -434,7 +439,7 @@ class ArizonaAPI:
 
         Attributes:
             post_id (int): ID сообщения профиля
-            reaction_id (int): ID реакции. По умолчанию 1 (необяз.)
+            reaction_id (int): (необяз.) ID реакции. По умолчанию 1
             
         Returns:
             Объект Response модуля requests
@@ -506,8 +511,8 @@ class ArizonaAPI:
 
         Attributes:
             thread_id (int): ID темы
-            email_subscribe (bool): Отправлять ли уведомления на почту. По умолчанию False (необяз.)
-            stop (bool): - Принудительно прекратить отслеживание. По умолчанию False (необяз.)
+            email_subscribe (bool): (необяз.) Отправлять ли уведомления на почту. По умолчанию False
+            stop (bool): - (необяз.) Принудительно прекратить отслеживание. По умолчанию False
         
         Returns:
             Объект Response модуля requests
@@ -522,7 +527,7 @@ class ArizonaAPI:
         Attributes:
             thread_id (int): ID темы
             reason (str): Причина для удаления
-            hard_delete (bool): Полное удаление сообщения. По умолчанию False (необяз.)
+            hard_delete (bool): (необяз.) Полное удаление сообщения. По умолчанию False
             
         Returns:
             Объект Response модуля requests
@@ -543,7 +548,7 @@ class ArizonaAPI:
         """
 
         content = BeautifulSoup(self.session.get(f"{MAIN_URL}/threads/{thread_id}/page-1").content, 'lxml')
-        thread_post_id = content.find('article', {'id': compile('js-post-*')})['id'].strip('js-post-')
+        thread_post_id = content.find('article', {'id': compile('js-post-*')})['id'].split('js-post-')
         return self.session.post(f"{MAIN_URL}/posts/{thread_post_id}/edit", {"message_html": message_html, "message": message_html, "_xfToken": self.token})
     
 
@@ -592,7 +597,7 @@ class ArizonaAPI:
         
         Attributes:
             thread_id (int): ID темы
-            page (int): Cтраница для поиска. По умолчанию 1 (необяз.)
+            page (int): (необяз.) Cтраница для поиска. По умолчанию 1
         
         Returns:
             Список (list), состоящий из ID всех сообщений на странице
@@ -611,7 +616,7 @@ class ArizonaAPI:
 
         Attributes:
             thread_id (int): ID темы
-            reaction_id (int): ID реакции. По умолчанию 1 (необяз.)
+            reaction_id (int): (необяз.) ID реакции. По умолчанию 1
             
         Returns:
             Объект Response модуля requests
