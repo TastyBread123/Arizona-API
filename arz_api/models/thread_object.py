@@ -87,6 +87,25 @@ class Thread:
         """
 
         return self.API.edit_thread(self.id, message_html)
+    
+    def close(self) -> Response:
+        """Закрыть/открыть тему (для модерации)
+        
+        Returns:
+            Объект Response модуля requests
+        """
+
+        return self.API.close_thread(self.id)
+
+
+    def pin(self) -> Response:
+        """Закрепить/открепить тему (для модерации)
+        
+        Returns:
+            Объект Response модуля requests
+        """
+
+        return self.API.pin_thread(self.id)
 
 
     def edit_info(self, title: str = None, prefix_id: int = None, sticky: bool = True, opened: bool = True) -> Response:
@@ -130,6 +149,17 @@ class Thread:
 
         return self.API.react_thread(self.id, reaction_id)
     
+    
+    @property
+    def category(self) -> 'Category':
+        """Получить родительский раздел раздела
+        
+        Returns:
+            Объект Catrgory, в котором создан раздел
+        """
+
+        return self.API.get_thread_category(self.id)
+
 
     def get_category(self) -> 'Category':
         """Получить родительский раздел раздела

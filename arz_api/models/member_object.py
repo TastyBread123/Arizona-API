@@ -123,4 +123,4 @@ class CurrentMember(Member):
         return self.API.session.post(f"{MAIN_URL}/account/avatar", files=file_dict, data=data)
 
     # TODO:
-    #def get_last_notifications(self, time_offset: int = 86400, limit: int = 100), change_avatar(), change_banner()
+    #def get_last_notifications(self, time_offset: int = 86400, limit: int = 100), change_banner()

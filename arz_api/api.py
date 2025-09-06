@@ -112,7 +112,15 @@ class ArizonaAPI:
         try: creator = self.get_member(int(creator_id['data-user-id']))
         except: creator = Member(self, int(creator_id['data-user-id']), content.find('a', {'class': 'username'}).text, None, None, None, None, None, None)
         
-        create_date = int(content.find('time')['data-time'])
+        create_date_tag = content.find('time')
+        create_date = 0
+        if create_date_tag and create_date_tag.has_attr('data-time'):
+            data_time_value = create_date_tag['data-time']
+            if data_time_value.isdigit():
+                create_date = int(data_time_value)
+            
+            else:
+                create_date = 0
         
         try:
             prefix = content_h1.find('span', {'class': 'label'}).text
@@ -149,7 +157,16 @@ class ArizonaAPI:
             creator = Member(self, int(user_info['data-user-id']), user_info.text, None, None, None, None, None, None)
 
         thread = self.get_thread(int(content.find('html')['data-content-key'].split('-')[-1]))
-        create_date = int(post.find('time', {'class': 'u-dt'})['data-time'])
+
+        create_date_tag = post.find('time', {'class': 'u-dt'})
+        create_date = 0
+        if create_date_tag and create_date_tag.has_attr('data-time'):
+            data_time_value = create_date_tag['data-time']
+            if data_time_value.isdigit():
+                create_date = int(data_time_value)
+            else:
+                create_date = 0
+
         bb_content = post.find('div', {'class': 'bbWrapper'})
         text_content = bb_content.text
         return Post(self, post_id, creator, thread, create_date, bb_content, text_content)
@@ -165,7 +182,16 @@ class ArizonaAPI:
 
         creator = self.get_member(int(post.find('a', {'class': 'username'})['data-user-id']))
         profile = self.get_member(int(content.find('span', {'class': 'username'})['data-user-id']))
-        create_date = int(post.find('time')['data-time'])
+
+        create_date_tag = post.find('time')
+        create_date = 0
+        if create_date_tag and create_date_tag.has_attr('data-time'):
+            data_time_value = create_date_tag['data-time']
+            if data_time_value.isdigit():
+                create_date = int(data_time_value)
+            else:
+                create_date = 0
+        
         bb_content = post.find('div', {'class': 'bbWrapper'})
         text_content = bb_content.text
 
@@ -504,6 +530,34 @@ class ArizonaAPI:
         """
 
         return self.session.post(f"{MAIN_URL}/threads/{thread_id}/add-reply", {'_xfToken': self.token, 'message_html': message_html})
+    
+
+    def close_thread(self, thread_id: int) -> Response:
+        """Закрыть/открыть тему (для модерации)
+        
+        Attributes:
+            thread_id (int): ID темы
+        
+        Returns:
+            Объект Response модуля requests
+        """
+
+        token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
+        return self.session.post(f"{MAIN_URL}/threads/{thread_id}/quick-close", {'_xfToken': token})
+
+
+    def pin_thread(self, thread_id: int) -> Response:
+        """Закрепить/открепить тему (для модерации)
+        
+        Attributes:
+            thread_id (int): ID темы
+        
+        Returns:
+            Объект Response модуля requests
+        """
+
+        token = BeautifulSoup(self.session.get(f"{MAIN_URL}/help/terms/").content, 'lxml').find('html')['data-csrf']
+        return self.session.post(f"{MAIN_URL}/threads/{thread_id}/quick-stick", {'_xfToken': token})
 
 
     def watch_thread(self, thread_id: int, email_subscribe: bool = False, stop: bool = False) -> Response:
@@ -566,11 +620,19 @@ class ArizonaAPI:
             Объект Response модуля requests
         """
         
-        data = {"_xfToken": self.token, 'title': title}
+        data = {
+            "_xfToken": self.token,
+            'title': title
+        }
 
-        if prefix_id is not None: data.update({'prefix_id': prefix_id})
-        if opened: data.update({"discussion_open": 1})
-        if sticky: data.update({"sticky": 1})
+        if prefix_id:
+            data.update({'prefix_id': prefix_id})
+        
+        if opened:
+            data.update({"discussion_open": 1})
+        
+        if sticky:
+            data.update({"sticky": 1})
 
         return self.session.post(f"{MAIN_URL}/threads/{thread_id}/edit", data)
     
